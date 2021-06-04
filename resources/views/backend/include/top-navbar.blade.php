@@ -4,11 +4,11 @@
         <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
-
     </ul>
 
+
     <!-- Right navbar links -->
-    <ul class="navbar-nav ml-auto">
+{{--    <ul class="navbar-nav ml-auto">--}}
 {{--        <!-- Messages Dropdown Menu -->--}}
 {{--        <li class="nav-item dropdown">--}}
 {{--            <a class="nav-link" data-toggle="dropdown" href="#">--}}
@@ -98,5 +98,5 @@
 {{--            <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i--}}
 {{--                    class="fas fa-th-large"></i></a>--}}
 {{--        </li>--}}
-    </ul>
+{{--    </ul>--}}
 </nav>

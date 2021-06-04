@@ -18,7 +18,7 @@ class RoleController extends Controller
     public function index()
     {
         OwnLibrary::validateAccess($this->moduleId,1);
-        $roles = Role::with('createdBy','updatedBy')->paginate(30);
+        $roles = Role::with('createdBy','updatedBy')->where('id', '!=', 1)->paginate(20);
         return view('backend.role.index',compact('roles'));
     }
 

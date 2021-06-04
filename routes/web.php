@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\FormController;
+use App\Http\Controllers\FormFieldController;
+use App\Http\Controllers\FormSubmitController;
 use App\Http\Controllers\UserAccessController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
@@ -9,9 +12,20 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\Frontend\FormHandleController;
 use App\Http\Controllers\SiteSettingController;
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
 
-
+Route::get('/',[AdminLoginController::class,'loginView'])->name('admin.login.view');
 Route::get('/admin-login',[AdminLoginController::class,'loginView'])->name('admin.login.view');
 Route::post('/admin-login',[AdminLoginController::class,'login'])->name('admin.login');
 
@@ -26,7 +40,7 @@ Route::group(['middleware'=>'authCheck'],function (){
         'role' => RoleController::class,
         'user' => UserController::class,
     ]);
-
+    
     Route::get('site-setting',[SiteSettingController::class,'edit'])->name('site.setting.edit');
     Route::put('site-setting', [SiteSettingController::class,'update'])->name('site.setting.update');
 

@@ -1,10 +1,10 @@
 <?php
-$link_limit = 10;
+$link_limit = 20;
 ?>
 
 @if ($paginator->lastPage() > 1)
-    <ul class="pagination pagination-sm m-0 float-right">
-        <li class="{{ ($paginator->currentPage() == 1) ? ' disabled' : '' }} page-item">
+    <ul class="pagination">
+        <li class="page-item{{ ($paginator->currentPage() == 1) ? ' disabled' : '' }}">
             <a href="{{ $paginator->url(1) }}" class="page-link">First</a>
         </li>
         @for ($i = 1; $i <= $paginator->lastPage(); $i++)

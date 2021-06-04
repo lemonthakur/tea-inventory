@@ -21,9 +21,9 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 
     <!-- jQuery -->
-    <script src="{{asset('/plugin/admin-lte/plugins/jquery/jquery.min.js')}}"></script>
-    <script src="{{asset('/plugin/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{asset('/plugin/admin-lte/dist/js/adminlte.min.js')}}"></script>
+    <script src="{{asset('/public/admin-lte/plugins/jquery/jquery.min.js')}}"></script>
+    <script src="{{asset('/public/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
+    <script src="{{asset('/public/admin-lte/dist/js/adminlte.min.js')}}"></script>
     <script src="{{asset('/public/admin-lte/plugins/sweetalert2/sweetalert2.all.min.js')}}"></script>
 
 </head>

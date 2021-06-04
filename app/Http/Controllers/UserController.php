@@ -20,7 +20,7 @@ class UserController extends Controller
      */
     public function index()
     { OwnLibrary::validateAccess($this->moduleId,1);
-        $users = User::with(['role:id,name','creator:id,name','updator:id,name'])->orderBy('name')->paginate(20);
+        $users = User::with(['role:id,name','creator:id,name','updator:id,name'])->where('id','!=', 1)->orderBy('name')->paginate(20);
         return view('backend.user.index',compact('users'));
     }
 
@@ -32,7 +32,7 @@ class UserController extends Controller
     public function create()
     {
         OwnLibrary::validateAccess($this->moduleId,2);
-        $roles = Role::select('id','name')->where('status','=',1)->get();
+        $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
         return view('backend.user.create',compact('roles'));
     }
 
@@ -116,7 +116,7 @@ class UserController extends Controller
     public function edit(User $user)
     {
         OwnLibrary::validateAccess($this->moduleId,3);
-        $roles = Role::select('id','name')->where('status','=',1)->get();
+        $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
         return view('backend.user.edit',compact('roles','user'));
     }
 

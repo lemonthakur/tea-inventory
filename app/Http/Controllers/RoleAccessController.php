@@ -20,7 +20,7 @@ class RoleAccessController extends Controller
 
     public function index(){
         OwnLibrary::validateAccess($this->moduleId,1);
-        $roleAcList = Role::where('status', 1)->orderBy('id')->pluck('name', 'id')->toArray();
+        $roleAcList = Role::where('status', 1)->where('id', '!=', 1)->orderBy('id')->pluck('name', 'id')->toArray();
         $data['roleList'] = array('0' => 'Select Role') + $roleAcList ;
         return view('backend.access-control.index', $data);
     }

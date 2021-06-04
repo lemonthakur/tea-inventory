@@ -37,7 +37,7 @@
                                 <div class="card-body">
 
                                     <div class="form-group">
-                                        <label for="name">Name</label>
+                                        <label for="name">Name<span class="text-danger">*</span></label>
                                         <input type="text" class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name" name="name" placeholder="Enter Role Name" value="{{old('name',$role->name)}}">
                                         <span class="text-danger"> {{$errors->has("name") ? $errors->first("name") : ""}} </span>
                                     </div>

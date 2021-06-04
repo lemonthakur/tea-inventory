@@ -175,6 +175,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         \App\Providers\AclServiceProvider::class,
+        \App\Providers\CommonDataProvider::class,
+        
+        App\Providers\BackendViewComposerServiceProvider::class,
 
     ],
 

@@ -1,4 +1,9 @@
 <IfModule mod_rewrite.c>
+    #Header always set X-Frame-Options "ALLOW-FROM https://duckbd.com"
+    #Header set X-Frame-Options: "ALLOW-FROM http://duckbd.com/" 
+    #Header append X-Frame-Options: "ALLOW-FROM http://duckbd.com/"
+    Header always unset X-Frame-Options
+    
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>

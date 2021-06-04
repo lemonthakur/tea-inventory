@@ -2,9 +2,9 @@
     <!-- Brand Logo -->
     <a href="{{route('dashboard')}}" class="brand-link">
         @if(!$siteSetting->logo)
-            <img src="{{asset("/public/admin-lte/dist/img/AdminLTELogo.png")}}" alt="Company Logo"
-                 class="brand-image img-circle elevation-3"
-                 style="opacity: .8">
+        <img src="{{asset("/public/admin-lte/dist/img/AdminLTELogo.png")}}" alt="Company Logo"
+             class="brand-image img-circle elevation-3"
+             style="opacity: .8">
         @else
             <img src="{{asset($siteSetting->logo)}}" alt="Company Logo"
                  class="brand-image img-circle elevation-3"
@@ -76,7 +76,7 @@
                 @if(!empty($aclList[1][1]) || !empty($aclList[2][1]) || !empty($aclList[3][1]))
                 <li class="nav-item has-treeview {{ ($routeName == 'role.index' || $routeName == 'role.create' || $routeName == 'role.edit' || $routeName == 'role.access' || $routeName == 'user.access') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
+                        <i class="nav-icon fas fa-universal-access"></i>
                         <p>
                             Access Control
                             <i class="right fas fa-angle-left"></i>
@@ -135,7 +135,7 @@
                             </a>
                         </li>
                         @endif
-                            @if(!empty($aclList[5][1]))
+                        @if(!empty($aclList[5][1]))
                         <li class="nav-item">
                             <a href="{{route("activity.index")}}"
                                class="nav-link {{ ($routeName == 'activity.index' || $routeName == 'activity.create'|| $routeName == 'activity.edit') ? 'active' : '' }}">
@@ -143,14 +143,14 @@
                                 <p>Activity Management</p>
                             </a>
                         </li>
-                                @endif
-                            <li class="nav-item">
-                                <a href="{{route("site.setting.edit")}}"
-                                   class="nav-link {{ ($routeName == 'site.setting.edit') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Site Setting</p>
-                                </a>
-                            </li>
+                        @endif
+                        <li class="nav-item">
+                            <a href="{{route("site.setting.edit")}}"
+                               class="nav-link {{ ($routeName == 'site.setting.edit') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Site Setting</p>
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 @endif
