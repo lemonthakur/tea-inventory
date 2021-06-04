@@ -115,6 +115,58 @@
                 </li>
                 @endif
 
+                <li class="nav-item has-treeview {{ ($routeName == 'suppliers.index' || $routeName == 'suppliers.create' || $routeName == 'suppliers.edit') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Supplier
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{route("suppliers.index")}}"
+                                   class="nav-link {{ ($routeName == 'suppliers.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Supplier List</p>
+                                </a>
+                            </li>
+                        <li class="nav-item">
+                            <a href="{{route("suppliers.create")}}"
+                               class="nav-link {{ ($routeName == 'suppliers.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Supplier Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create' || $routeName == 'categories.edit') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Product
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{route("categories.index")}}"
+                                   class="nav-link {{ ($routeName == 'categories.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Category List</p>
+                                </a>
+                            </li>
+                        <li class="nav-item">
+                            <a href="{{route("categories.create")}}"
+                               class="nav-link {{ ($routeName == 'categories.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Category Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 @if(!empty($aclList[4][1]) || !empty($aclList[5][1]))
                 <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create' || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'|| $routeName == 'module.edit' || $routeName == 'site.setting.edit') ? 'menu-open' : '' }}">
                     <a href="#"

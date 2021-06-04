@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\FormController;
-use App\Http\Controllers\FormFieldController;
-use App\Http\Controllers\FormSubmitController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserAccessController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
@@ -12,7 +11,6 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\ActivityController;
-use App\Http\Controllers\Frontend\FormHandleController;
 use App\Http\Controllers\SiteSettingController;
 /*
 |--------------------------------------------------------------------------
@@ -39,8 +37,10 @@ Route::group(['middleware'=>'authCheck'],function (){
         'module' => ModuleController::class,
         'role' => RoleController::class,
         'user' => UserController::class,
+        'categories' => CategoryController::class,
+        'suppliers' => SupplierController::class,
     ]);
-    
+
     Route::get('site-setting',[SiteSettingController::class,'edit'])->name('site.setting.edit');
     Route::put('site-setting', [SiteSettingController::class,'update'])->name('site.setting.update');
 

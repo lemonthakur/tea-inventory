@@ -176,7 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         \App\Providers\AclServiceProvider::class,
         \App\Providers\CommonDataProvider::class,
-        
+
         App\Providers\BackendViewComposerServiceProvider::class,
 
     ],
@@ -231,7 +231,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
     ],
 
 ];
