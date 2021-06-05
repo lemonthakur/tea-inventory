@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SiteSettingController extends Controller
 {
-    private $moduleId = 10;
+    private $moduleId = 1;
 
     public function edit(){
         $setting = SiteSetting::find(1);

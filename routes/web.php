@@ -12,6 +12,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\SiteSettingController;
+use App\Http\Controllers\WarehouseController;
+use App\Http\Controllers\UnitController;
+use App\Http\Controllers\BrandController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -51,4 +54,9 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::get('user-access', [UserAccessController::class,'index'])->name('user.access');
     Route::post('userAclSetup', [UserAccessController::class,'userAclSetup']);
     Route::post('useracl', [UserAccessController::class,'save']);
+
+    # Warehouse
+    Route::resource("/warehouse",WarehouseController::class);
+    Route::resource("/unit",UnitController::class);
+    Route::resource("/brand",BrandController::class);
 });

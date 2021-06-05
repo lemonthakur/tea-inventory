@@ -167,8 +167,38 @@
                     </ul>
                 </li>
 
-                @if(!empty($aclList[4][1]) || !empty($aclList[5][1]))
-                <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create' || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'|| $routeName == 'module.edit' || $routeName == 'site.setting.edit') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Brand
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("brand.index")}}"
+                               class="nav-link {{ ($routeName == 'brand.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>brand List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("brand.create")}}"
+                               class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>brand Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]))
+                <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create'
+                || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'
+                || $routeName == 'module.edit' || $routeName == 'site.setting.edit' || $routeName == 'warehouse.index' || $routeName == 'warehouse.create'
+                || $routeName == 'warehouse.edit' || $routeName == 'unit.index' || $routeName == 'unit.create'
+                || $routeName == 'unit.edit') ? 'menu-open' : '' }}">
                     <a href="#"
                        class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
@@ -178,6 +208,20 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("warehouse.index")}}"
+                               class="nav-link {{ ($routeName == 'warehouse.index' || $routeName == 'warehouse.create'|| $routeName == 'warehouse.edit') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Warehouse</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("unit.index")}}"
+                               class="nav-link {{ ($routeName == 'unit.index' || $routeName == 'unit.create'|| $routeName == 'unit.edit') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Unit</p>
+                            </a>
+                        </li>
                         @if(!empty($aclList[4][1]))
                         <li class="nav-item">
                             <a href="{{route("module.index")}}"

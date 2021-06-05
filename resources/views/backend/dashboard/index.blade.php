@@ -28,13 +28,13 @@
                         <!-- small box -->
                         <div class="small-box bg-gradient-warning">
                             <div class="inner">
-                                <h3>{{$formCount}}</h3>
+                                <h3>{{'text'}}</h3>
                                 <p>Number Of Form</p>
                             </div>
                             <div class="icon">
                                 <i class="fas fa-envelope"></i>
                             </div>
-                            <a target="_blank" href="{{route('forms.index')}}" class="small-box-footer">View All <i class="fas fa-arrow-circle-right"></i></a>
+                            <a target="_blank" href="" class="small-box-footer">View All <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -42,13 +42,13 @@
                         <!-- small box -->
                         <div class="small-box bg-primary">
                             <div class="inner">
-                                <h3>{{$formSubmitCount}}</h3>
+                                <h3>{{'text'}}</h3>
                                 <p>Form Sunmission</p>
                             </div>
                             <div class="icon">
                                 <i class="fas fa-list-alt"></i>
                             </div>
-                            <a target="_blank" href="{{route('form-submit.index')}}" class="small-box-footer">View All <i class="fas fa-arrow-circle-right"></i></a>
+                            <a target="_blank" href="" class="small-box-footer">View All <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                     </div>
                     <!-- ./col -->
@@ -76,29 +76,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        @forelse($formSubmits as $formSubmit)
-                                            <tr>
-                                                <td>{{$loop->iteration}}</td>
-                                                <td>{{ucwords($formSubmit->form->form_title)}}</td>
-                                                <td>{{ucwords($formSubmit->first_name)}} {{ucwords($formSubmit->last_name)}}</td>
-                                                <td>{{ucwords($formSubmit->email)}}</td>
-                                                <td>{{$formSubmit->phone_number}}</td>
-                                                <td>{{$formSubmit->postal_code}}</td>
-                                                <td>
-                                                    <p><strong>Name</strong>: {{$formSubmit->receiver_name ?? ''}}</p>
-                                                    <p><strong>Email</strong>: {{$formSubmit->receiver_email ?? ''}}</p>
-                                                </td>
-                                                <td class="text-center">
-                                                    <a href="{{route('form-submit.show',$formSubmit->id)}}" class="btn btn-info btn-xs">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="8" class="text-center">Nothing Found</td>
-                                            </tr>
-                                        @endforelse
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -106,7 +84,7 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix">
-                                <a href="{{route('form-submit.index')}}" class="btn btn-sm btn-secondary float-right">View All</a>
+                                <a href="" class="btn btn-sm btn-secondary float-right">View All</a>
                             </div>
                             <!-- /.card-footer -->
                         </div>
