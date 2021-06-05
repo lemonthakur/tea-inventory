@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminLoginController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\SiteSettingController;
+use App\Http\Controllers\EmployeeController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -39,6 +40,7 @@ Route::group(['middleware'=>'authCheck'],function (){
         'user' => UserController::class,
         'categories' => CategoryController::class,
         'suppliers' => SupplierController::class,
+        'employees' => EmployeeController::class,
     ]);
 
     Route::get('site-setting',[SiteSettingController::class,'edit'])->name('site.setting.edit');

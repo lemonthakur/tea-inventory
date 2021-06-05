@@ -51,7 +51,7 @@
                 </li>
 
                 @if(!empty($aclList[6][1]))
-                    <li class="nav-item has-treeview {{ ($routeName == 'user.index' || $routeName == 'user.create' || $routeName == 'user.edit') ? 'menu-open' : '' }}">
+                    <li class="nav-item has-treeview {{ ($routeName == 'user.index' || $routeName == 'user.create' || $routeName == 'user.edit' || $routeName == 'employees.index' || $routeName == 'employees.create' || $routeName == 'employees.edit') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-user"></i>
                             <p>
@@ -69,6 +69,20 @@
                                 </a>
                             </li>
                             @endif
+                            <li class="nav-item">
+                                <a href="{{route("employees.index")}}"
+                                   class="nav-link {{ ($routeName == 'employees.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Employee List</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{route("employees.create")}}"
+                                   class="nav-link {{ ($routeName == 'employees.create') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Employee Create</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
                 @endif
