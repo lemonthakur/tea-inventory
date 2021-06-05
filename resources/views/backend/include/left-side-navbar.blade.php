@@ -194,14 +194,14 @@
                             <a href="{{route("brand.index")}}"
                                class="nav-link {{ ($routeName == 'brand.index') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>brand List</p>
+                                <p>Brand List</p>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="{{route("brand.create")}}"
                                class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>brand Create</p>
+                                <p>Brand Create</p>
                             </a>
                         </li>
                     </ul>
