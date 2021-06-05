@@ -20,7 +20,11 @@ class UserController extends Controller
      */
     public function index()
     { OwnLibrary::validateAccess($this->moduleId,1);
-        $users = User::with(['role:id,name','creator:id,name','updator:id,name'])->where('id','!=', 1)->orderBy('name')->paginate(20);
+        $users = User::with(['role:id,name','creator:id,name','updator:id,name'])
+            ->where('id','!=', 1)
+            ->where('isEmployee','=', 0)
+            ->orderBy('name')
+            ->paginate(20);
         return view('backend.user.index',compact('users'));
     }
 
@@ -71,6 +75,7 @@ class UserController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->contact_no = $request->contact_no;
+            $user->isEmployee = 0;
             $user->password = Hash::make($request->password);
 
            $image = $request->file('photo');
