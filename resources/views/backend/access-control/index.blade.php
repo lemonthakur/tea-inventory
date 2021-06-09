@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0 text-dark">Role Access</h1>
+                        <h1 class="m-0 text-dark">Designation Access</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -27,7 +27,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Role Access Control</h3>
+                                <h3 class="card-title">Designation Access Control</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body table-responsive">
@@ -37,7 +37,7 @@
 
                                         <div class="col-md-4">
                                             <div class="form-group select2-parent">
-                                                <label>Select Role</label>
+                                                <label>Select Designation</label>
                                                 <select name="role_id" id="role_id" class="form-control js-source-states single-select2" style="width: 100%;" data-select2-id="1" tabindex="-1" aria-hidden="true">
                                                     @foreach($roleList as $key => $name)
                                                         <option value="{{$key}}">{{$name}}</option>

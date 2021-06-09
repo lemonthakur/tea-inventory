@@ -63,7 +63,7 @@
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $user->email }}</td>
                                             <td>{{$user->contact_no}}</td>
-                                            <td>{{$user->designation ?? ''}}</td>
+                                            <td>{{$user->role->name ?? ''}}</td>
                                             <td>{{$user->creator->name ?? ''}}</td>
                                             <td>{{$user->updator->name ?? ''}}</td>
                                             <td class="text-center">

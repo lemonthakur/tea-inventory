@@ -61,10 +61,42 @@
                                         </div>
 
                                         <div class="col-md-6">
+                                            <div class="form-group select2-parent">
+                                                <label for="role_id">Designation<span class="text-danger">*</span></label>
+                                                <select name="role_id" class="form-control single-select2" id="role_id" style="width: 100%;"
+                                                        data-placeholder="Select Designation">
+                                                    <option></option>
+                                                    @foreach($roles as $role)
+                                                        <option value="{{ $role->id }}" {{($employee->role_id == $role->id) ? 'selected' : ''}}>{{$role->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger"> {{$errors->has("role_id") ? $errors->first("role_id") : ""}} </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6 d-none">
                                             <div class="form-group">
                                                 <label for="designation">Designation<span class="text-danger">*</span></label>
                                                 <input type="text" class="form-control {{$errors->has("designation") ? "is-invalid":""}}" id="designation" name="designation" placeholder="Enter Employee Designation" value="{{old("designation",$employee->designation)}}">
                                                 <span class="text-danger"> {{$errors->has("designation") ? $errors->first("designation") : ""}} </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group select2-parent">
+                                                <label for="warehouse">Warehouse</label>
+                                                <select
+                                                    class="form-control single-select2 {{$errors->has("warehouse_id") ? "is-invalid":""}}"
+                                                    data-placeholder="Select Warehouse" data-allow-clear="true"
+                                                    id="warehouse" name="warehouse_id[]" multiple>
+                                                    <option></option>
+                                                    @foreach($warehouses as $warehouse)
+                                                        <option {{ in_array($warehouse->id,old('warehouse_id',$employeeWarehouses)) ? 'selected' : ''}} value="{{$warehouse->id}}">{{ucwords($warehouse->name)}}</option>
+                                                    @endforeach
+                                                </select>
+
+                                                <span
+                                                    class="text-danger"> {{$errors->has("warehouse_id") ? $errors->first("warehouse_id") : ""}} </span>
                                             </div>
                                         </div>
 

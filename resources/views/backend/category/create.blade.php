@@ -44,7 +44,7 @@
                                     </div>
                                     <div class="form-group select2-parent">
                                         <label for="name">Parent Category</label>
-                                        <select type="text"
+                                        <select
                                                 class="form-control single-select2 {{$errors->has("category_id") ? "is-invalid":""}}"
                                                 data-placeholder="Select parent category" data-allow-clear="true"
                                                 id="name" name="category_id">

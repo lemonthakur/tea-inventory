@@ -28,8 +28,8 @@
                         <!-- small box -->
                         <div class="small-box bg-gradient-warning">
                             <div class="inner">
-                                <h3>{{'text'}}</h3>
-                                <p>Number Of Form</p>
+                                <h3>10</h3>
+                                <p>Number Of Employee</p>
                             </div>
                             <div class="icon">
                                 <i class="fas fa-envelope"></i>
@@ -42,8 +42,8 @@
                         <!-- small box -->
                         <div class="small-box bg-primary">
                             <div class="inner">
-                                <h3>{{'text'}}</h3>
-                                <p>Form Sunmission</p>
+                                <h3>05</h3>
+                                <p>Number of Warehouse</p>
                             </div>
                             <div class="icon">
                                 <i class="fas fa-list-alt"></i>
@@ -57,7 +57,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header border-transparent">
-                                <h3 class="card-title text-center w-100 font-weight-bold">Latest Form Submission</h3>
+                                <h3 class="card-title text-center w-100 font-weight-bold">Latest Stock Entry</h3>
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body p-0">
@@ -66,13 +66,10 @@
                                         <thead>
                                         <tr>
                                             <th>SL</th>
-                                            <th>Form Name</th>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Phone Number</th>
-                                            <th>Zip Code</th>
-                                            <th>Receiver</th>
-                                            <th>Action</th>
+                                            <th>Date</th>
+                                            <th>Product Name</th>
+                                            <th>Amount</th>
+                                            <th>Waste</th>
                                         </tr>
                                         </thead>
                                         <tbody>

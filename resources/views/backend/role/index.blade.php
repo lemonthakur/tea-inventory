@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Role")
+@section("page-title","Designation")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0 text-dark">Role</h1>
+                        <h1 class="m-0 text-dark">Designation</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -27,7 +27,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Role List</h3>
+                                <h3 class="card-title">Designation List</h3>
                                 <a href="{{route('role.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New

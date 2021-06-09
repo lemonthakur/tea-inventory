@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\CustomClass\OwnLibrary;
+use App\Models\EmployeeWarhouse;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -16,8 +18,8 @@ class EmployeeController extends Controller
     public function index(){
         $users = User::with(['role:id,name','creator:id,name','updator:id,name'])
             ->where('id','!=', 1)
-            ->where('isEmployee','=', 1)
-            ->orderBy('id','desc')
+//            ->where('isEmployee','=', 0)
+            ->orderBy('name')
             ->paginate(20);
 
         $paginate = OwnLibrary::paginationSerial($users);
@@ -26,20 +28,24 @@ class EmployeeController extends Controller
     }
 
     public function create(){
-        return view('backend.employee.create');
+        $warehouses = Warehouse::select('id','name')->where('status','=',1)->orderBy('name')->get();
+        $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
+        return view('backend.employee.create',compact('roles','warehouses'));
     }
     public function store(Request $request){
         $rules = [
             'name' => 'required|max:190',
             'email' => 'required|email|unique:users|max:100',
             'contact_no' => 'required|unique:users|max:15',
-            'designation' => 'required|max:100',
+            'role_id' => 'required',
             'password' => 'required|min:5',
             'confirm_password' => 'required|same:password|min:5',
             'photo' => 'image'
         ];
 
-        $message = [];
+        $message = [
+            'role_id.required' => 'Designation is required',
+        ];
 
         $validation = Validator::make($request->all(),$rules,$message);
 
@@ -49,7 +55,7 @@ class EmployeeController extends Controller
                 ->withErrors($validation);
         }else{
             $user = new User();
-            $user->role_id = 0;
+            $user->role_id = $request->role_id;
             $user->name = $request->name;
             $user->email = $request->email;
             $user->contact_no = $request->contact_no;
@@ -71,6 +77,15 @@ class EmployeeController extends Controller
 
 
             if ($user->save()){
+                $eid = $user->id;
+                if (!empty($request->warehouse_id)){
+                    foreach ($request->warehouse_id as $key => $value){
+                        $warehouse = new EmployeeWarhouse();
+                        $warehouse->user_id = $eid;
+                        $warehouse->warehouse_id = $value;
+                        $warehouse->save();
+                    }
+                }
                 session()->flash("success","Data Added");
                 return redirect()->route("employees.index");
             }else{
@@ -86,7 +101,11 @@ class EmployeeController extends Controller
     }
 
     public function edit(User $employee){
-        return view('backend.employee.edit',compact('employee'));
+        $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
+        $warehouses = Warehouse::select('id','name')->where('status','=',1)->orderBy('name')->get();
+        $employeeWarehouses = EmployeeWarhouse::select('warehouse_id')->where('user_id','=',$employee->id)->get()->toArray();
+        $employeeWarehouses = array_column($employeeWarehouses,'warehouse_id');
+        return view('backend.employee.edit',compact('employee','roles','warehouses','employeeWarehouses'));
     }
 
     public function update(Request $request, User $employee){
@@ -94,11 +113,13 @@ class EmployeeController extends Controller
             'name' => 'required|max:190',
             'email' => 'required|email|max:190|unique:users,email,' . $employee->id,
             'contact_no' => 'required||max:15|unique:users,contact_no,' . $employee->id,
-            'designation' => 'required|max:100',
+            'role_id' => 'required',
             'photo' => 'image'
         ];
 
-        $message = [];
+        $message = [
+            'role_id.required' => 'Designation is required',
+        ];
 
         if (!empty($request->password)){
             $rules['password'] = 'required|min:5';
@@ -112,6 +133,7 @@ class EmployeeController extends Controller
                 ->withInput()
                 ->withErrors($validation);
         }else{
+            $employee->role_id = $request->role_id;
             $employee->name = $request->name;
             $employee->email = $request->email;
             $employee->contact_no = $request->contact_no;
@@ -135,6 +157,16 @@ class EmployeeController extends Controller
                 $employee->photo = $image_url;
             }
 
+                $warehouseDelete = EmployeeWarhouse::where('user_id',$employee->id)->delete();
+
+            if (!empty(($request->warehouse_id)) && !empty(($request->warehouse_id[0])) ){
+                foreach ($request->warehouse_id as $key => $value){
+                    $warehouse = new EmployeeWarhouse();
+                    $warehouse->user_id = $employee->id;
+                    $warehouse->warehouse_id = $value;
+                    $warehouse->save();
+                }
+            }
 
             if ($employee->save()){
                 session()->flash("success","Data Updated");

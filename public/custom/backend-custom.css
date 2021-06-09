@@ -18,3 +18,11 @@ table.table thead th{
 .nav-sidebar>.nav-item.menu-open>.nav-link {
     /*background-color: #007bff !important;*/
 }
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #007bff;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #fff;
+}

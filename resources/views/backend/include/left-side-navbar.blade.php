@@ -61,13 +61,13 @@
                         </a>
                         <ul class="nav nav-treeview">
                             @if(!empty($aclList[6][1]))
-                            <li class="nav-item">
-                                <a href="{{route("user.index")}}"
-                                   class="nav-link {{ ($routeName == 'user.index' || $routeName == 'user.create'|| $routeName == 'user.edit') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Admin Panel User</p>
-                                </a>
-                            </li>
+{{--                            <li class="nav-item">--}}
+{{--                                <a href="{{route("user.index")}}"--}}
+{{--                                   class="nav-link {{ ($routeName == 'user.index' || $routeName == 'user.create'|| $routeName == 'user.edit') ? 'active' : '' }}">--}}
+{{--                                    <i class="far fa-circle nav-icon"></i>--}}
+{{--                                    <p>Admin Panel User</p>--}}
+{{--                                </a>--}}
+{{--                            </li>--}}
                             @endif
                             <li class="nav-item">
                                 <a href="{{route("employees.index")}}"
@@ -102,7 +102,7 @@
                             <a href="{{route("role.index")}}"
                                class="nav-link {{ ($routeName == 'role.index' || $routeName == 'role.create'|| $routeName == 'role.edit') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Role Management</p>
+                                <p>Designation Management</p>
                             </a>
                         </li>
                         @endif
@@ -111,7 +111,7 @@
                             <a href="{{route("role.access")}}"
                                class="nav-link {{ ($routeName == 'role.access') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Role Access Control</p>
+                                <p>Designation Access Control</p>
                             </a>
                         </li>
                             @endif

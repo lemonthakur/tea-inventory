@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Role-Create")
+@section("page-title","Designation Create")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
@@ -7,7 +7,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0 text-dark">Role</h1>
+                        <h1 class="m-0 text-dark">Designation</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -27,7 +27,7 @@
                     <div class="col-md-6 offset-md-3">
                         <div class="card card-dark">
                             <div class="card-header">
-                                <h3 class="card-title">Create Role</h3>
+                                <h3 class="card-title">Create Designation</h3>
                             </div>
                             <!-- /.card-header -->
                             <!-- form start -->
@@ -36,7 +36,7 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="name">Name<span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name" name="name" placeholder="Enter Activity Name" value="{{old("name")}}">
+                                        <input type="text" class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name" name="name" placeholder="Enter Designation Name" value="{{old("name")}}">
                                         <span class="text-danger"> {{$errors->has("name") ? $errors->first("name") : ""}} </span>
                                     </div>
                                     <div class="form-group">
