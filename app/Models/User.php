@@ -66,4 +66,8 @@ class User extends Authenticatable
     public function updator() {
         return $this->belongsTo(User::class,'updated_by');
     }
+
+    public function warehouses(){
+        return $this->hasMany(EmployeeWarhouse::class,'user_id','id');
+    }
 }

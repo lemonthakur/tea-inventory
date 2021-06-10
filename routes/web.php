@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserAccessController;
 use Illuminate\Support\Facades\Route;
@@ -67,4 +68,8 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/product",ProductController::class);
     Route::get('/gencode', [ProductController::class,'generateCode']);
     Route::get('peodut-file-download/{id}', [ProductController::class,'peodutFileDownload'])->name('peodutFile.download');
+
+    Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
+    Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
 });
+

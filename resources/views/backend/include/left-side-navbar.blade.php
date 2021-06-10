@@ -155,7 +155,9 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create' || $routeName == 'categories.edit') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create'
+                 || $routeName == 'categories.edit' || $routeName == 'product.create' || $routeName == 'product.create'
+                || $routeName == 'product.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
@@ -176,6 +178,20 @@
                                class="nav-link {{ ($routeName == 'categories.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Category Create</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("product.index")}}"
+                               class="nav-link {{ ($routeName == 'product.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Product List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("product.create")}}"
+                               class="nav-link {{ ($routeName == 'product.create' || $routeName == 'product.edit') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Product Create</p>
                             </a>
                         </li>
                     </ul>
@@ -202,6 +218,25 @@
                                class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Brand Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview {{ ($routeName == 'purchase.create') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                           Purchase
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("purchase.create")}}"
+                               class="nav-link {{ ($routeName == 'purchase.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Purchase</p>
                             </a>
                         </li>
                     </ul>
