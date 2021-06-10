@@ -157,7 +157,7 @@ class EmployeeController extends Controller
                 $employee->photo = $image_url;
             }
 
-                $warehouseDelete = EmployeeWarhouse::where('user_id',$employee->id)->delete();
+           $warehouseDelete = EmployeeWarhouse::where('user_id',$employee->id)->delete();
 
             if (!empty(($request->warehouse_id)) && !empty(($request->warehouse_id[0])) ){
                 foreach ($request->warehouse_id as $key => $value){
@@ -185,5 +185,11 @@ class EmployeeController extends Controller
             session()->flash('error','Data Delated');
         }
         return redirect()->back();
+    }
+
+    public function getEmployee(Request $request){
+        $search = $request->search;
+        $employee = User::select('id','name as text')->where('name','LIKE',"$search%")->limit(10)->get();
+        return response()->json($employee);
     }
 }

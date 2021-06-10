@@ -61,4 +61,7 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/warehouse",WarehouseController::class);
     Route::resource("/unit",UnitController::class);
     Route::resource("/brand",BrandController::class);
+
+    Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
 });
+
