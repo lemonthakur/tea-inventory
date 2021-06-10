@@ -48,6 +48,15 @@
 
                                         <div class="col-md-12">
                                             <div class="form-group">
+                                                <label for="name">Value in (grams)<span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control {{$errors->has("value") ? "is-invalid":""}}"
+                                                       id="value" name="value" placeholder="Enter name" value="{{old("value",$unit->value)}}" required>
+                                                <span class="text-danger"> {{$errors->has("value") ? $errors->first("value") : ""}} </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <label for="meta_description">Description</label>
                                                 <textarea class="form-control {{$errors->has("description") ? "is-invalid":""}}" id="description" name="description"
                                                           placeholder="Enter description">{{old("description",$unit->description)}}</textarea>

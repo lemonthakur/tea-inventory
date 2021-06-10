@@ -52,6 +52,7 @@ class UnitController extends Controller
         OwnLibrary::validateAccess($this->moduleId,2);
         $rules = [
             'name' => 'required|max:250',
+            'value' => 'required',
             'description' => 'max:500',
             'status' => 'integer|max:2',
         ];
@@ -69,6 +70,7 @@ class UnitController extends Controller
             try {
                 $unit = new Unit();
                 $unit->name         = $request->name;
+                $unit->value         = $request->value;
                 $unit->description  = $request->description;
                 $unit->status       = $request->status;
                 $unit->save();
@@ -124,6 +126,7 @@ class UnitController extends Controller
         OwnLibrary::validateAccess($this->moduleId,3);
         $rules = [
             'name' => 'required|max:250',
+            'value' => 'required',
             'description' => 'max:500',
             'status' => 'integer|max:2',
         ];
@@ -141,6 +144,7 @@ class UnitController extends Controller
 
             try {
                 $unit->name         = $request->name;
+                $unit->value         = $request->value;
                 $unit->description  = $request->description;
                 $unit->status       = $request->status;
                 $unit->save();

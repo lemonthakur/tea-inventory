@@ -16,6 +16,7 @@ use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ProductController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -61,4 +62,9 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/warehouse",WarehouseController::class);
     Route::resource("/unit",UnitController::class);
     Route::resource("/brand",BrandController::class);
+
+    #product
+    Route::resource("/product",ProductController::class);
+    Route::get('/gencode', [ProductController::class,'generateCode']);
+    Route::get('peodut-file-download/{id}', [ProductController::class,'peodutFileDownload'])->name('peodutFile.download');
 });

@@ -12,6 +12,8 @@ namespace App\CustomClass;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use App\Models\EmployeeWarhouse;
+use DNS1D;
 
 class OwnLibrary {
 
@@ -71,5 +73,15 @@ class OwnLibrary {
         $image_url = $upload_path . $image_full_name;
         $image->move($upload_path, $image_full_name);
         return $image_url;
+    }
+
+    public static function user_warehosue (){
+        $ret = array_map('current', EmployeeWarhouse::select('warehouse_id')->where('user_id', \Auth::user()->id)->get()->toArray());
+        return $ret;
+    }
+
+    public static function barcode_generator($code, $bs){
+        $bar = DNS1D::getBarcodePNG($code, $bs,1.2,25);
+        return $bar;
     }
 }

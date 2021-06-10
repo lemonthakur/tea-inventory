@@ -48,6 +48,7 @@
                                     <tr>
                                         <th>SL</th>
                                         <th>Name</th>
+                                        <th>Value in (grams)</th>
                                         <th>Description</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -58,6 +59,7 @@
                                         <tr>
                                             <td>{{ ++$sl }}</td>
                                             <td>{{ $unit->name }}</td>
+                                            <td class="text-right">{{ $unit->value }}</td>
                                             <td>{{ $unit->description }}</td>
                                             <td class="text-center">
                                                 @if($unit->status == 1)

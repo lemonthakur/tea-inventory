@@ -69,3 +69,28 @@ $(document).ready(function() {
         type: "text"
     });
 });
+
+function tinymceInitial(){
+    tinymce.init({
+        selector: '.txt-editor',
+        menubar: true,
+        plugins: [
+            "link image code fullscreen",
+            'advlist autolink lists link charmap print preview hr anchor pagebreak',
+            'searchreplace wordcount visualblocks visualchars code fullscreen',
+            'insertdatetime media nonbreaking save table directionality',
+            'emoticons template paste textpattern imagetools codesample toc'
+        ],
+        toolbar1: 'insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify |forecolor backcolor|bullist numlist outdent indent | link image',
+
+        images_upload_url: 'postAcceptor.php',
+        automatic_uploads: false,
+        file_picker_types: 'file image media',
+        image_caption: true,
+        min_height: 300,
+        max_height: 350,
+        lineheight_formats: "8pt 9pt 10pt 11pt 12pt 14pt 16pt 18pt 20pt 22pt 24pt 26pt 36pt",
+        importcss_append: true,
+        fullpage_hide_in_source_view: true
+    });
+}

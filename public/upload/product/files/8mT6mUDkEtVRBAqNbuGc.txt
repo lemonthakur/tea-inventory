@@ -1,0 +1,4 @@
+1. set permission for distribution house
+2. bkash payment permission to customer
+3. database changes
+4. bkash configure change
