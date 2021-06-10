@@ -26,3 +26,10 @@ table.table thead th{
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
     color: #fff;
 }
+
+.card-body table.table,
+.form-group label,
+.form-group input,
+.form-group select{
+    font-size: 0.875rem;
+}

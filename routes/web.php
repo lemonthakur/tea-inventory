@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserAccessController;
 use Illuminate\Support\Facades\Route;
@@ -63,5 +64,6 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/brand",BrandController::class);
 
     Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
+    Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
 });
 
