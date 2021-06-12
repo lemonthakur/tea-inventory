@@ -68,8 +68,13 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/product",ProductController::class);
     Route::get('/gencode', [ProductController::class,'generateCode']);
     Route::get('peodut-file-download/{id}', [ProductController::class,'peodutFileDownload'])->name('peodutFile.download');
+    Route::post('/ser-product-get', [ProductController::class,'search'])->name('ser-product.get');
+    Route::post('/product-wise-row-get', [ProductController::class,'product_wise_row_get'])->name('product-wise-row.get');
+    Route::post('/product-warehouse-qty-get', [ProductController::class,'product_warehouse_qty_get'])->name('product-warehouse-qty.get');
 
-    Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
-    Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
+    //Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
+    Route::resource("/purchase",PurchaseController::class);
+    Route::post('/purchase-details-get', [PurchaseController::class,'purchase_details_get'])->name('purchase-details.get');
+    Route::get('purchase-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('purchaseFile.download');
 });
 

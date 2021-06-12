@@ -53,6 +53,7 @@
                                         <th>Brand</th>
                                         <th>Category</th>
                                         <th>Quantity</th>
+                                        <th>Waste</th>
                                         <th>Unit</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -61,6 +62,7 @@
                                     <tbody>
                                     @forelse($products as $product)
                                         <?php
+                                            $array = array();
                                             $array [] = $product->id;
                                             $array [] = $product->name;
                                             $array [] = $product->code;
@@ -79,6 +81,8 @@
                                             $array [] = $product->product_details;
                                             $array [] = implode(',', json_decode($product->image));
                                             if($product->file) $array [] = route('peodutFile.download', $product->id);
+                                            else $array [] = '';
+                                            $array [] = $product->waste_qty;
 
                                             $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($product->code, $product->barcode_symbology);
                                         ?>
@@ -100,6 +104,7 @@
                                             <td>{{ $product->brand->name }}</td>
                                             <td>{{ $product->category->name }}</td>
                                             <td>{{ $product->qty }}</td>
+                                            <td>{{ $product->waste_qty }}</td>
                                             <td>{{ $product->unit->name }}</td>
                                             <td class="text-center">
                                                 @if($product->status == 1)
@@ -173,21 +178,9 @@
                         <div class="col-md-5" id="slider-content"></div>
                         <div class="col-md-5 offset-1" id="product-content"></div>
                         <div class="col-md-5 mt-2" id="product-warehouse-section">
-                            <h5>{{trans('file.Warehouse Quantity')}}</h5>
+                            <h5>Warehouse Quantity</h5>
                             <table class="table table-bordered table-hover product-warehouse-list">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="col-md-7 mt-2" id="product-variant-warehouse-section">
-                            <h5>{{trans('file.Warehouse quantity of product variants')}}</h5>
-                            <table class="table table-bordered table-hover product-variant-warehouse-list">
-                                <thead>
-                                </thead>
-                                <tbody>
-                                </tbody>
+
                             </table>
                         </div>
                     </div>
@@ -227,7 +220,7 @@
                 htmltext = '<p><strong>{{"Name"}}: </strong>'+product[1]+'</p><p><strong>{{"Code"}}: </strong>'+product[2]+ '</p>' +
                     '<strong>{{"Barcode"}}: </strong><img src="data:image/png;base64,'+imagedata+'" alt="barcode" /></p>' +
                     '<p><strong>{{"Brand"}}: </strong>'+product[5]+'</p><p><strong>{{"category"}}: </strong>'+product[7]+'</p>' +
-                    '<p><strong>{{"Quantity"}}: </strong>'+product[11]+'</p><p><strong>{{"Unit"}}: </strong>'+product[9]+'</p>' +
+                    '<p><strong>{{"Quantity"}}: </strong>'+product[11]+'</p><p><strong>{{"Waste"}}: </strong>'+product[18]+'</p><p><strong>{{"Unit"}}: </strong>'+product[9]+'</p>' +
                     '<p><strong>{{"Price"}}: </strong>'+ product[10]+'</p>' +
                     '<p><strong>{{"Alert Quantity"}} : </strong>'+product[13]+'</p>' +
                     '<p><strong>{{"File"}} : </strong><a href="'+ product[17]+'">'+fil+'</a></p>' +
@@ -253,8 +246,8 @@
                 $("#combo-header").text('');
                 $("table.item-list thead").remove();
                 $("table.item-list tbody").remove();
-                $("table.product-warehouse-list thead").remove();
-                $("table.product-warehouse-list tbody").remove();
+                //$("table.product-warehouse-list thead").remove();
+                //$("table.product-warehouse-list tbody").remove();
                 $(".product-variant-warehouse-list thead").remove();
                 $(".product-variant-warehouse-list tbody").remove();
                 $("#product-warehouse-section").addClass('d-none');
@@ -264,6 +257,21 @@
                 $('#slider-content').html(slidertext);
                 $('#product-details').modal('show');
                 $('#product-img-slider').carousel(0);
+
+                $('.product-warehouse-list').html('');
+                $.ajax({
+                    type: "POST",
+                    url: "{!! route('product-warehouse-qty.get') !!}",
+                    data: {product_id: product[0], _token: "{{csrf_token()}}" },
+                    //dataType : 'HTML',
+                    success: function (result) {
+                        $('.product-warehouse-list').html(result);
+                    },
+                    complete: function (e) {
+                        $("#product-warehouse-section").removeClass('d-none');
+                    }
+                });
+
             }
 
         });

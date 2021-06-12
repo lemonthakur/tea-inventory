@@ -135,124 +135,6 @@ class ProductController extends Controller
         }
     }
 
-    public function productData(Request $request)
-    {
-        $columns = array( 
-            2 => 'name', 
-            3 => 'code',
-            4 => 'brand_id',
-            5 => 'category_id',
-            6 => 'qty',
-            7 => 'unit_id',
-            8 => 'price' 
-        );
-        
-        $totalData = Product::where('is_active', true)->count();
-        $totalFiltered = $totalData; 
-
-        $limit = $request->input('length');
-        $start = $request->input('start');
-        $order = $columns[$request->input('order.0.column')];
-        $dir = $request->input('order.0.dir');
-        if(empty($request->input('search.value'))){
-            $products = Product::with('category', 'brand', 'unit')->offset($start)
-                        ->where('is_active', true)
-                        ->limit($limit)
-                        ->orderBy($order,$dir)
-                        ->get();
-        }
-        else
-        {
-            $search = $request->input('search.value'); 
-            $products =  Product::with('category', 'brand', 'unit')->where([
-                            ['name', 'LIKE', "%{$search}%"],
-                            ['is_active', true]
-                        ])->orWhere([
-                            ['code', 'LIKE', "%{$search}%"],
-                            ['is_active', true]
-                        ])
-                        ->offset($start)
-                        ->limit($limit)
-                        ->orderBy($order,$dir)->get();
-
-            $totalFiltered = Product::where([
-                            ['name','LIKE',"%{$search}%"],
-                            ['is_active', true]
-                        ])->orWhere([
-                            ['code', 'LIKE', "%{$search}%"],
-                            ['is_active', true]
-                        ])->count();
-        }
-        $data = array();
-        if(!empty($products))
-        {
-            foreach ($products as $key=>$product)
-            {
-                $nestedData['id'] = $product->id;
-                $nestedData['key'] = $key;
-                $product_image = explode(",", $product->image);
-                $nestedData['image'] = '<img src="'.url('public/images/product', $product_image[0]).'" height="80" width="80">';
-                $nestedData['name'] = $product->name;
-                $nestedData['code'] = $product->code;
-                if($product->brand_id)
-                    $nestedData['brand'] = $product->brand->title;
-                else
-                    $nestedData['brand'] = "N/A";
-                $nestedData['category'] = $product->category->name;
-                $nestedData['qty'] = $product->qty;
-                if($product->unit_id)
-                    $nestedData['unit'] = $product->unit->unit_name;
-                else
-                    $nestedData['unit'] = 'N/A';
-                
-                $nestedData['price'] = $product->price;
-                $nestedData['options'] = '<div class="btn-group">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">'.trans("file.action").'
-                              <span class="caret"></span>
-                              <span class="sr-only">Toggle Dropdown</span>
-                            </button>
-                            <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
-                            <li>
-                                <button="type" class="btn btn-link view"><i class="fa fa-eye"></i> '.trans('file.View').'</button>
-                            </li>';
-                if(in_array("products-edit", $request['all_permission']))
-                    $nestedData['options'] .= '<li>
-                            <a href="'.route('products.edit', ['id' => $product->id]).'" class="btn btn-link"><i class="fa fa-edit"></i> '.trans('file.edit').'</a>
-                        </li>';
-                if(in_array("products-delete", $request['all_permission']))
-                    $nestedData['options'] .= \Form::open(["route" => ["products.destroy", $product->id], "method" => "DELETE"] ).'
-                            <li>
-                              <button type="submit" class="btn btn-link" onclick="return confirmDelete()"><i class="fa fa-trash"></i> '.trans("file.delete").'</button> 
-                            </li>'.\Form::close().'
-                        </ul>
-                    </div>';
-                // data for product details by one click
-                if($product->tax_id)
-                    $tax = Tax::find($product->tax_id)->name;
-                else
-                    $tax = "N/A";
-
-                if($product->tax_method == 1)
-                    $tax_method = trans('file.Exclusive');
-                else
-                    $tax_method = trans('file.Inclusive');
-
-                $nestedData['product'] = array( '[ "'.$product->type.'"', ' "'.$product->name.'"', ' "'.$product->code.'"', ' "'.$nestedData['brand'].'"', ' "'.$nestedData['category'].'"', ' "'.$nestedData['unit'].'"', ' "'.$product->cost.'"', ' "'.$product->price.'"', ' "'.$tax.'"', ' "'.$tax_method.'"', ' "'.$product->alert_quantity.'"', ' "'.$product->product_details.'"', ' "'.$product->id.'"', ' "'.$product->product_list.'"', ' "'.$product->qty_list.'"', ' "'.$product->price_list.'"', ' "'.$product->qty.'"', ' "'.$product->image.'"]'
-                );
-                $nestedData['imagedata'] = DNS1D::getBarcodePNG($product->code, $product->barcode_symbology);
-                $data[] = $nestedData;
-            }
-        }
-        $json_data = array(
-            "draw"            => intval($request->input('draw')),  
-            "recordsTotal"    => intval($totalData),  
-            "recordsFiltered" => intval($totalFiltered), 
-            "data"            => $data   
-        );
-            
-        echo json_encode($json_data);
-    }
-
     public function edit(Product $product)
     {
         OwnLibrary::validateAccess($this->moduleId,3);
@@ -360,6 +242,33 @@ class ProductController extends Controller
         }
     }
 
+    public function product_warehouse_qty_get(Request $request){
+        $product_id = $request->product_id;
+
+        $lims_product_data = Product::Find($product_id);
+        $lims_product_warehouse_data = \App\Models\Product_Warehouse::where('product_id', $product_id)->get();
+
+        $html = '';
+        $html .= '<thead>';
+            $html .= '<tr>';
+                $html .= '<th>Warehouse</th>';
+                $html .= '<th>Quantity</th>';
+            $html .= '</tr>';
+        $html .= '</thead>';
+        $html .= '<tbody>';
+        foreach ($lims_product_warehouse_data as $key => $product_warehouse_data) {
+            $lims_warehouse_data = Warehouse::find($product_warehouse_data->warehouse_id);
+
+            $html .= '<tr>';
+                $html .= '<td class="text-center">'.$lims_warehouse_data->name.'</td>';
+                $html .= '<td class="text-right">'.$product_warehouse_data->qty.'</td>';
+            $html .= '</tr>';
+        }
+        $html .= '</tbody>';
+
+        return $html;
+    }
+
     public function peodutFileDownload($id){
         $id = $id;
         if($id){
@@ -387,7 +296,7 @@ class ProductController extends Controller
 
     public function search(Request $request)
     {
-        $product_code = explode(" ", $request['data']);
+        /*$product_code = explode(" ", $request['data']);
         $lims_product_data = Product::where('code', $product_code[0])->first();
 
         $product[] = $lims_product_data->name;
@@ -395,7 +304,14 @@ class ProductController extends Controller
         $product[] = $lims_product_data->qty;
         $product[] = $lims_product_data->price;
         $product[] = $lims_product_data->id;
-        return $product;
+        return $product;*/
+
+        $search = $request->search;
+        $products = Product::select('id', DB::raw("CONCAT(code,' ','(',name,')') AS text"))
+            ->where('name','LIKE',"$search%")
+            ->orWhere('code','LIKE',"$search%")
+            ->limit(10)->get();
+        return response()->json($products);
     }
 
     public function saleUnit($id)
@@ -465,79 +381,6 @@ class ProductController extends Controller
         return $product;
     }
 
-    public function importProduct(Request $request)
-    {   
-        //get file
-        $upload=$request->file('file');
-        $ext = pathinfo($upload->getClientOriginalName(), PATHINFO_EXTENSION);
-        if($ext != 'csv')
-            return redirect()->back()->with('message', 'Please upload a CSV file');
-
-        $filePath=$upload->getRealPath();
-        //open and read
-        $file=fopen($filePath, 'r');
-        $header= fgetcsv($file);
-        $escapedHeader=[];
-        //validate
-        foreach ($header as $key => $value) {
-            $lheader=strtolower($value);
-            $escapedItem=preg_replace('/[^a-z]/', '', $lheader);
-            array_push($escapedHeader, $escapedItem);
-        }
-        //looping through other columns
-        while($columns=fgetcsv($file))
-        {
-            if($columns[0]=="")
-                continue;
-            foreach ($columns as $key => $value) {
-                $value=preg_replace('/\D/','',$value);
-            }
-           $data= array_combine($escapedHeader, $columns);
-           
-           if($data['brand'] != 'N/A' && $data['brand'] != ''){
-                $lims_brand_data = Brand::firstOrCreate(['title' => $data['brand'], 'is_active' => true]);
-                $brand_id = $lims_brand_data->id;
-           }
-            else
-                $brand_id = null;
-
-           $lims_category_data = Category::firstOrCreate(['name' => $data['category'], 'is_active' => true]);
-
-           $lims_unit_data = Unit::where('unit_code', $data['unitcode'])->first();
-
-           $product = Product::firstOrNew([ 'name'=>$data['name'], 'is_active'=>true ]);
-           $product->image = $data['image'];
-           $product->name = $data['name'];
-           $product->code = $data['code'];
-           $product->type = strtolower($data['type']);
-           $product->barcode_symbology = 'C128';
-           $product->brand_id = $brand_id;
-           $product->category_id = $lims_category_data->id;
-           $product->unit_id = $lims_unit_data->id;
-           $product->purchase_unit_id = $lims_unit_data->id;
-           $product->sale_unit_id = $lims_unit_data->id;
-           $product->cost = $data['cost'];
-           $product->price = $data['price'];
-           $product->tax_method = 1;
-           $product->qty = 0;
-           $product->product_details = $data['productdetails'];
-           $product->is_active = true;
-           $product->save();
-         }
-         return redirect('products')->with('import_message', 'Product imported successfully');
-    }
-
-    public function deleteBySelection(Request $request)
-    {
-        $product_id = $request['productIdArray'];
-        foreach ($product_id as $id) {
-            $lims_product_data = Product::findOrFail($id);
-            $lims_product_data->is_active = false;
-            $lims_product_data->save();
-        }
-        return 'Product deleted successfully!';
-    }
-
     public function destroy(Product $product)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
@@ -560,5 +403,39 @@ class ProductController extends Controller
             session()->flash("error","Product not Deleted");
             return redirect()->back();
         }
+    }
+
+    public function product_wise_row_get(Request $request){
+        $product_id = $request->product_id;
+        $product = Product::find($product_id);
+
+        $row = '';
+
+        $row .= '<tr>';
+            $row .= '<td>'.$product->name.'</td>';
+            $row .= '<td>'.$product->code.'</td>';
+            $row .= '<td>
+                <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
+                <input type="number" class="form-control qty" name="qty[]" value="1" step="any" min="1" autocomplete="off">
+            </td>';
+            $row .= '<td>
+                <input type="number" class="form-control waste" name="waste[]" value="1" step="any">
+            </td>';
+            $row .= '<td class="net_unit_cost">'.$product->product_price.'
+                <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
+                <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
+            </td>';
+            $row .= '<td class="sub-total">'.$product->product_price.'</td>';
+            $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="1">';
+            $row .= '<td>
+               <div>
+                   <button type="button" class="btn btn-danger btn-xs btn-delete" title="delete">
+                       <i class="far fa-trash-alt"></i>
+                   </button>
+               </div>
+            </td>';
+        $row .= '</tr>';
+
+        return $row;
     }
 }
