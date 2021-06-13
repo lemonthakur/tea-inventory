@@ -71,6 +71,8 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('/ser-product-get', [ProductController::class,'search'])->name('ser-product.get');
     Route::post('/product-wise-row-get', [ProductController::class,'product_wise_row_get'])->name('product-wise-row.get');
     Route::post('/product-warehouse-qty-get', [ProductController::class,'product_warehouse_qty_get'])->name('product-warehouse-qty.get');
+    Route::get('/products/print-barcode',[ProductController::class, 'printBarcode'])->name('product.printBarcode');
+    Route::post('/products/produc-wise-row-short-get',[ProductController::class, 'product_wise_row_short_get'])->name('produc-wise-row-short.get');
 
     //Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
     Route::resource("/purchase",PurchaseController::class);

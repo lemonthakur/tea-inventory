@@ -157,7 +157,7 @@
 
                 <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create'
                  || $routeName == 'categories.edit' || $routeName == 'product.index' || $routeName == 'product.create'
-                || $routeName == 'product.edit') ? 'menu-open' : '' }}">
+                || $routeName == 'product.edit' || $routeName == 'product.printBarcode') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
@@ -192,6 +192,13 @@
                                class="nav-link {{ ($routeName == 'product.create' || $routeName == 'product.edit') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Product Create</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("product.printBarcode")}}"
+                               class="nav-link {{ ($routeName == 'product.printBarcode') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Print Barcode List</p>
                             </a>
                         </li>
                     </ul>

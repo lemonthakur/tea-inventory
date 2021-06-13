@@ -364,8 +364,7 @@ class ProductController extends Controller
 
     public function printBarcode()
     {
-        $lims_product_list = Product::where('is_active', true)->get();
-        return view('product.print_barcode', compact('lims_product_list'));
+        return view('backend.product.print_barcode');
     }
 
     public function limsProductSearch(Request $request)
@@ -427,6 +426,28 @@ class ProductController extends Controller
             </td>';
             $row .= '<td class="sub-total">'.$product->product_price.'</td>';
             $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="1">';
+            $row .= '<td>
+               <div>
+                   <button type="button" class="btn btn-danger btn-xs btn-delete" title="delete">
+                       <i class="far fa-trash-alt"></i>
+                   </button>
+               </div>
+            </td>';
+        $row .= '</tr>';
+
+        return $row;
+    }
+
+    public function product_wise_row_short_get(Request $request){
+        $product_id = $request->product_id;
+        $product = Product::find($product_id);
+        $barcode_image = OwnLibrary::barcode_generator($product->code, $product->barcode_symbology);
+
+        $row = '';
+        $row .= '<tr data-imagedata="'.$barcode_image.'" data-price="'.$product->product_price.'">';
+            $row .= '<td>'.$product->name.'</td>';
+            $row .= '<td class="product-code">'.$product->code.'</td>';
+            $row .= '<td><input type="number" class="form-control qty" name="qty[]" value="1" /></td>';
             $row .= '<td>
                <div>
                    <button type="button" class="btn btn-danger btn-xs btn-delete" title="delete">
