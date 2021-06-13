@@ -672,60 +672,42 @@ class PurchaseController extends Controller
         return 'Purchase deleted successfully!';
     }
 
-    public function destroy($id)
+    public function destroy(Purchase $purchase)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('purchases-delete')){
-            $lims_purchase_data = Purchase::find($id);
-            $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
-            $lims_payment_data = Payment::where('purchase_id', $id)->get();
-            foreach ($lims_product_purchase_data as $product_purchase_data) {
-                $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-                if ($lims_purchase_unit_data->operator == '*')
-                    $recieved_qty = $product_purchase_data->recieved * $lims_purchase_unit_data->operation_value;
-                else
-                    $recieved_qty = $product_purchase_data->recieved / $lims_purchase_unit_data->operation_value;
+        OwnLibrary::validateAccess($this->moduleId,4);
+        
+        $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
+        
+        foreach ($lims_product_purchase_data as $product_purchase_data) {
+            $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
+            
+            $old_qty_value   = $product_purchase_data->qty;
+            $old_waste_value = $product_purchase_data->waste_qty;
 
-                $lims_product_data = Product::find($product_purchase_data->product_id);
-                if($product_purchase_data->variant_id) {
-                    $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($lims_product_data->id, $product_purchase_data->variant_id)->first();
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_purchase_data->product_id, $product_purchase_data->variant_id, $lims_purchase_data->warehouse_id)
-                        ->first();
-                    $lims_product_variant_data->qty -= $recieved_qty;
-                    $lims_product_variant_data->save();
-                }
-                else {
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_purchase_data->product_id, $lims_purchase_data->warehouse_id)
-                        ->first();
-                }
+            $lims_product_data = Product::find($product_purchase_data->product_id);
 
-                $lims_product_data->qty -= $recieved_qty;
-                $lims_product_warehouse_data->qty -= $recieved_qty;
+            $lims_product_warehouse_data = Product_Warehouse::where([
+                ['product_id', $product_purchase_data->product_id],
+                ['warehouse_id', $purchase->warehouse_id],
+            ])->first();
 
-                $lims_product_warehouse_data->save();
-                $lims_product_data->save();
-                $product_purchase_data->delete();
-            }
-            foreach ($lims_payment_data as $payment_data) {
-                if($payment_data->paying_method == "Cheque"){
-                    $payment_with_cheque_data = PaymentWithCheque::where('payment_id', $payment_data->id)->first();
-                    $payment_with_cheque_data->delete();
-                }
-                elseif($payment_data->paying_method == "Credit Card"){
-                    $payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $payment_data->id)->first();
-                    $lims_pos_setting_data = PosSetting::latest()->first();
-                    \Stripe\Stripe::setApiKey($lims_pos_setting_data->stripe_secret_key);
-                    \Stripe\Refund::create(array(
-                        "charge" => $payment_with_credit_card_data->charge_id,
-                    ));
+            $lims_product_data->qty -= $old_qty_value;
+            $lims_product_data->waste_qty -= $old_waste_value;
 
-                    $payment_with_credit_card_data->delete();
-                }
-                $payment_data->delete();
-            }
+            $lims_product_warehouse_data->qty -= $old_qty_value;
+            $lims_product_warehouse_data->waste_qty -= $old_waste_value;
+            $lims_product_warehouse_data->save();
 
-            $lims_purchase_data->delete();
-            return redirect('purchases')->with('not_permitted', 'Purchase deleted successfully');;
+            $lims_product_data->save();
+            $product_purchase_data->delete();
+        }
+
+        if ($purchase->delete()){
+            session()->flash("success","Product deleted successfully");
+            return redirect()->back();
+        }else{
+            session()->flash("error","Product not deleted");
+            return redirect()->back();
         }
 
     }
