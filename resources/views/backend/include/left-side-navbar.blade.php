@@ -256,6 +256,32 @@
                     </ul>
                 </li>
 
+                <li class="nav-item has-treeview {{ ($routeName == 'transfer.index' || $routeName == 'transfer.create') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Transfer
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("transfer.index")}}"
+                               class="nav-link {{ ($routeName == 'transfer.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Transfer List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("transfer.create")}}"
+                               class="nav-link {{ ($routeName == 'transfer.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Add Transfer</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]))
                 <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create'
                 || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'

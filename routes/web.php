@@ -18,6 +18,7 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransferController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -78,5 +79,8 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/purchase",PurchaseController::class);
     Route::post('/purchase-details-get', [PurchaseController::class,'purchase_details_get'])->name('purchase-details.get');
     Route::get('purchase-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('purchaseFile.download');
+
+    // Transfer
+    Route::resource("/transfer",TransferController::class);
 });
 
