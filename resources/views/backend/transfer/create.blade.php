@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Add Purchase")
+@section("page-title","Add Transfer")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -10,58 +10,43 @@
                         Add Purchase
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route('purchase.store')}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route('transfer.store')}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
-                                    <label for="warehouse">Warehouse<span class="text-red">*</span></label>
+                                    <label for="warehouse">From Warehouse<span class="text-red">*</span></label>
                                     <select
-                                        class="form-control single-select2"
-                                        data-placeholder="Select Warehouse" data-allow-clear="true"
-                                        id="warehouse" name="warehouse">
+                                            class="form-control single-select2"
+                                            data-placeholder="Select Warehouse" data-allow-clear="true"
+                                            id="from_warehouse_id" name="from_warehouse_id">
                                         <option></option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('warehouse') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                            <option value="{{$warehouse->id}}" @if(old('from_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
 
-                                    <span class="text-danger"> {{$errors->has("warehouse") ? $errors->first("warehouse") : ""}} </span>
+                                    <span class="text-danger"> {{$errors->has("from_warehouse_id") ? $errors->first("from_warehouse_id") : ""}} </span>
                                 </div>
                             </div>
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
-                                    <label for="supplier">Supplier</label>
+                                    <label for="warehouse">To Warehouse<span class="text-red">*</span></label>
                                     <select
-                                        class="form-control single-select2"
-                                        data-placeholder="Select Supplier" data-allow-clear="true"
-                                        id="supplier" name="supplier">
+                                            class="form-control single-select2"
+                                            data-placeholder="Select Warehouse" data-allow-clear="true"
+                                            id="to_warehouse_id" name="to_warehouse_id">
                                         <option></option>
-                                        @foreach($suppliers as $supplier)
-                                            <option value="{{$supplier->id}}" @if(old('supplier') == $supplier->id) selected @endif>{{ucwords($supplier->name)}}</option>
+                                        @foreach($warehouses as $warehouse)
+                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
+
+                                    <span class="text-danger"> {{$errors->has("to_warehouse_id") ? $errors->first("to_warehouse_id") : ""}} </span>
                                 </div>
                             </div>
-
-                            {{--<div class="col-md-6">
-                                <div class="form-group select2-parent">
-                                    <label for="status">Purchase Status</label>
-                                    <select
-                                        class="form-control single-select2"
-                                        data-placeholder="Select Status" data-allow-clear="true"
-                                        id="status" name="status" data-minimum-results-for-search="Infinity">
-                                        <option></option>
-                                        <option value="1">Received</option>
-                                        <option value="2">Partial</option>
-                                        <option value="3">Pending</option>
-                                        <option value="4">Ordered</option>
-                                    </select>
-                                    <span class="text-danger"></span>
-                                </div>
-                            </div>--}}
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
@@ -106,7 +91,6 @@
                                             <?php $trows = COUNT(old("product_id")); ?>
                                             @for($i=0; $trows>$i; $i++)
                                                 <?php
-                                                        //dd($errors);
                                                     $row = '';
                                                     $product = \App\Models\Product::find(old("product_id.$i"));
                                                     $unit = App\Models\Unit::find($product->unit_id);
@@ -127,7 +111,7 @@
                                                                 <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
                                                                 <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
-                                                    $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
+                                                    $row .= '<td class="net_unit_cost">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
                                                         </td>';
@@ -195,12 +179,13 @@
 
             $('#live-search').select2({
                 ajax: {
-                    url: "{{route('ser-product.get')}}",
+                    url: "{{route('transfer.get-product')}}",
                     type:"POST",
                     dataType:"JSON",
                     data: function (params) {
                         return  query = {
                             search: params.term,
+                            warehouse_id: $("#from_warehouse_id").val(),
                             _token: "{{csrf_token()}}"
                         }
                     },
@@ -210,10 +195,22 @@
                             results: response
                         };
                     },
+
                 },
                 placeholder: 'Search by product name or product code',
                 minimumInputLength: 2,
             });
+
+            $(document).on('select2:open', 'select.live-search', function (e) {
+                var warehouse_id = $('select[name="from_warehouse_id"]').val();
+                if(!warehouse_id){
+                    $('#live-search').val(null).trigger('change.select2');
+                    alert('Please select Warehouse!');
+                    $(this).select2('close');
+                }
+
+            });
+
         });
         
         $(document).on('click','.btn-delete',function () {
@@ -229,6 +226,8 @@
             $("#total_price_input").val(total_price());
         });
 
+        var availabeQty = 0;
+        var availabeWasteQty = 0;
         var _token = $('input[name="_token"]').val();
         $(document).on("change", ".live-search-pro", function(){
             var product_id = $(this).val();
@@ -249,7 +248,7 @@
                     },
                     complete: function (e) {
                         $('#live-search').val(null).trigger('change.select2');
-                        $(".qty").trigger('input');
+                        get_avl_qty(product_id, $("#from_warehouse_id").val());
                     }
                 });
             }else{
@@ -257,9 +256,46 @@
             }
         });
 
+        function get_avl_qty(product_id, warehouse_id, notrigger=null){
+            $.ajax({
+                type: "POST",
+                url: "{!! route('transfer.get-available-qty') !!}",
+                data: {product_id: product_id, warehouse_id: warehouse_id, _token: _token},
+                //dataType : 'HTML',
+                success: function (ret) {
+                    obj = JSON.parse(ret);
+                    availabeQty = obj.qty;
+                    availabeWasteQty = obj.waste_qty;
+                },
+                complete: function (e) {
+                    if(!notrigger)
+                        $(".qty").trigger('input');
+                }
+            });
+
+        }
+
         $(document).on("input", ".qty", function(){
             var qty           = $(this).val();
             var net_unit_cost = $.trim($(this).closest('tr').find('.net_unit_cost').text());
+
+            var product_id = $.trim($(this).closest('tr').find('.product_id').val());
+            get_avl_qty(product_id, $("#from_warehouse_id").val(), 1);
+
+            var waste_to_cal = availabeWasteQty / availabeQty;
+            var to_show_in_waste = qty*waste_to_cal;
+            $(this).closest('tr').find('.waste').val(to_show_in_waste);
+
+            if(qty>availabeQty) {
+                qty = qty.substring(0, qty.length - 1);
+                to_show_in_waste = qty*waste_to_cal;
+
+                $(this).val(qty);
+                $(this).closest('tr').find('.waste').val(to_show_in_waste);
+
+                alert('Quantity exceeds stock quantity!. Available stock: '+availabeQty);
+                return false;
+            }
 
             var subtotal = parseFloat(qty*net_unit_cost).toFixed(2);
             $(this).closest('tr').find('.sub-total').text(subtotal);
@@ -275,6 +311,13 @@
         });
 
         $(document).on("input", ".waste", function(){
+            var waste_qty = $(this).val();
+            if(waste_qty > availabeWasteQty) {
+                waste_qty = waste_qty.substring(0, waste_qty.length - 1);
+                $(this).val(waste_qty);
+                alert('Waste exceeds stock quantity!. Available stock: '+availabeWasteQty);
+                return false;
+            }
             $(".qty").trigger('input');
         });
 
@@ -303,7 +346,8 @@
             });
             if(isNaN(total)) return 0;
             return total;
-
         }
+
+
     </script>
 @endsection

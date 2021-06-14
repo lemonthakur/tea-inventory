@@ -77,13 +77,14 @@
                                     <table id="order-table" class="table table-hover order-list" style="width: 100%;">
                                         <thead>
                                         <tr>
-                                            <th style="width: 15%;">Name</th>
-                                            <th style="width: 15%;">Code</th>
+                                            <th style="width: 15%; text-align: left;">Name</th>
+                                            <th style="width: 10%; text-align: left;">Code</th>
+                                            <th style="width: 10%; text-align: left;">Unit</th>
                                             <th style="width: 19%;">Quantity</th>
                                             <th style="width: 19%">Waste</th>
-                                            <th style="width: 15%">Net Unit Cost</th>
-                                            <th style="width: 10%">SubTotal</th>
-                                            <th style="width: 7%">Action</th>
+                                            <th style="width: 10%; text-align: left;">Unit Cost</th>
+                                            <th style="width: 10%; text-align: left;">SubTotal</th>
+                                            <th style="width: 7%; text-align: center;">Action</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -99,9 +100,13 @@
                                                         //dd($errors);
                                                     $row = '';
                                                     $product = \App\Models\Product::find(old("product_id.$i"));
+                                                    $unit = App\Models\Unit::find($product->unit_id);
+
                                                     $row .= '<tr>';
                                                     $row .= '<td>'.$product->name.'</td>';
                                                     $row .= '<td>'.$product->code.'</td>';
+                                                    $row .= '<td>'.$unit->name.'</td>';
+
                                                     $qty_errom_msg = $errors->has("qty.$i") ? $errors->first("qty.$i") : '';
                                                     $waste_errom_msg = $errors->has("waste.$i") ? $errors->first("waste.$i") : '';
                                                     $row .= '<td>
@@ -113,11 +118,11 @@
                                                                 <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
                                                                 <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
-                                                    $row .= '<td class="net_unit_cost">'.$product->product_price.'
+                                                    $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
                                                         </td>';
-                                                    $row .= '<td class="sub-total">'.old("subtotal_input.$i").'</td>';
+                                                    $row .= '<td class="sub-total text-center">'.number_format(old("subtotal_input.$i"), 2).'</td>';
                                                     $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.old("subtotal_input.$i").'">';
                                                     $row .= '<td>
                                                                <div>
@@ -141,6 +146,7 @@
                                                 $row .= '<tr>';
                                                 $row .= '<td>'.$product->name.'</td>';
                                                 $row .= '<td>'.$product->code.'</td>';
+                                                $row .= '<td>'.$unit->name.'</td>';
                                                 $row .= '<td>
                                                             <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                             <input type="number" class="form-control qty" name="qty[]" value="'.$product_purchas->qty/$unit->value.'" step="any" min="1" autocomplete="off">
@@ -148,11 +154,11 @@
                                                 $row .= '<td>
                                                             <input type="number" class="form-control waste" name="waste[]" value="'.$product_purchas->waste_qty/$unit->value.'" step="any">
                                                         </td>';
-                                                $row .= '<td class="net_unit_cost">'.$product->product_price.'
+                                                $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product_purchas->purchase_unit_id.'">
                                                         </td>';
-                                                $row .= '<td class="sub-total">'.$product_purchas->total.'</td>';
+                                                $row .= '<td class="sub-total text-center">'.number_format($product_purchas->total, 2).'</td>';
                                                 $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.$product_purchas->total.'">';
                                                 $row .= '<td>
                                                                <div>
@@ -174,10 +180,12 @@
                                         </tbody>
                                         <tfoot class="tfoot active">
                                         <tr>
-                                            <th colspan="2">Total</th>
-                                            <th id="total-qty">{{ number_format(old("total_qty_input",$total_qty_input), 2)}}</th>
-                                            <th colspan="2" id="total-waste">{{ number_format(old("total_waste_input",$total_waste_input),2 ) }}</th>
-                                            <th colspan="2" id="total">{{ number_format(old("total_price_input",$purchase->grand_total), 2) }}</th>
+                                            <th colspan="3">Total</th>
+                                            <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input",$total_qty_input), 2)}}</th>
+                                            <th class="text-center" id="total-waste">{{ number_format(old("total_waste_input",$total_waste_input),2 ) }}</th>
+                                            <th></th>
+                                            <th id="total" class="text-center">{{ number_format(old("total_price_input",$purchase->grand_total), 2) }}</th>
+                                            <th></th>
                                         </tr>
                                         </tfoot>
                                     </table>
@@ -276,9 +284,12 @@
                         //$('#live-search').val(''); // Select the option with a value of '1'
                         //$('#live-search').trigger('change'); // Notify any JS components that the value changed
                         //spinnerB.hide();
+                        $('#live-search').val(null).trigger('change.select2');
                         $(".qty").trigger('input');
                     }
                 });
+            }else{
+                $('#live-search').val(null).trigger('change.select2');
             }
         });
 

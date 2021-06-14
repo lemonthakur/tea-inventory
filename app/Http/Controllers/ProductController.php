@@ -407,24 +407,26 @@ class ProductController extends Controller
     public function product_wise_row_get(Request $request){
         $product_id = $request->product_id;
         $product = Product::find($product_id);
+        $unit = Unit::find($product->unit_id);
 
         $row = '';
 
         $row .= '<tr>';
             $row .= '<td>'.$product->name.'</td>';
             $row .= '<td>'.$product->code.'</td>';
+            $row .= '<td>'.$unit->name.'</td>';
             $row .= '<td>
                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
-                <input type="number" class="form-control qty" name="qty[]" value="1" step="any" min="1" autocomplete="off">
+                <input type="number" class="form-control qty" name="qty[]" data-avaiableQty="'.$product->qty/$unit->value.'" value="1" step="any" min="1" autocomplete="off">
             </td>';
             $row .= '<td>
-                <input type="number" class="form-control waste" name="waste[]" value="1" step="any">
+                <input type="number" class="form-control waste" name="waste[]" data-avaiableWasteQty="'.$product->waste_qty/$unit->value.'" value="1" step="any">
             </td>';
-            $row .= '<td class="net_unit_cost">'.$product->product_price.'
+            $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                 <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                 <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
             </td>';
-            $row .= '<td class="sub-total">'.$product->product_price.'</td>';
+            $row .= '<td class="sub-total text-center">'.$product->product_price.'</td>';
             $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="1">';
             $row .= '<td>
                <div>
