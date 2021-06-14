@@ -129,35 +129,9 @@
                 </li>
                 @endif
 
-                <li class="nav-item has-treeview {{ ($routeName == 'suppliers.index' || $routeName == 'suppliers.create' || $routeName == 'suppliers.edit') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>
-                            Supplier
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                            <li class="nav-item">
-                                <a href="{{route("suppliers.index")}}"
-                                   class="nav-link {{ ($routeName == 'suppliers.index') ? 'active' : '' }}">
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Supplier List</p>
-                                </a>
-                            </li>
-                        <li class="nav-item">
-                            <a href="{{route("suppliers.create")}}"
-                               class="nav-link {{ ($routeName == 'suppliers.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Supplier Create</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
                 <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create'
                  || $routeName == 'categories.edit' || $routeName == 'product.index' || $routeName == 'product.create'
-                || $routeName == 'product.edit' || $routeName == 'product.printBarcode') ? 'menu-open' : '' }}">
+                || $routeName == 'product.edit' || $routeName == 'product.printBarcode' || $routeName == 'qty_adjustment.index' || $routeName == 'qty_adjustment.create' || $routeName == 'qty_adjustment.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
@@ -195,36 +169,24 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="{{route("qty_adjustment.index")}}"
+                               class="nav-link {{ ($routeName == 'qty_adjustment.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Adjustment List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("qty_adjustment.create")}}"
+                               class="nav-link {{ ($routeName == 'qty_adjustment.create' || $routeName == 'qty_adjustment.edit') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Adjustment Create</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="{{route("product.printBarcode")}}"
                                class="nav-link {{ ($routeName == 'product.printBarcode') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Print Barcode List</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link">
-                        <i class="nav-icon fas fa-user"></i>
-                        <p>
-                            Brand
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                        <li class="nav-item">
-                            <a href="{{route("brand.index")}}"
-                               class="nav-link {{ ($routeName == 'brand.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Brand List</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{route("brand.create")}}"
-                               class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Brand Create</p>
+                                <p>Print Barcode</p>
                             </a>
                         </li>
                     </ul>
@@ -277,6 +239,58 @@
                                class="nav-link {{ ($routeName == 'transfer.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Transfer</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Brand
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("brand.index")}}"
+                               class="nav-link {{ ($routeName == 'brand.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Brand List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("brand.create")}}"
+                               class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Brand Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item has-treeview {{ ($routeName == 'suppliers.index' || $routeName == 'suppliers.create' || $routeName == 'suppliers.edit') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Supplier
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a href="{{route("suppliers.index")}}"
+                                   class="nav-link {{ ($routeName == 'suppliers.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Supplier List</p>
+                                </a>
+                            </li>
+                        <li class="nav-item">
+                            <a href="{{route("suppliers.create")}}"
+                               class="nav-link {{ ($routeName == 'suppliers.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Supplier Create</p>
                             </a>
                         </li>
                     </ul>

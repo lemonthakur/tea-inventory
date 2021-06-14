@@ -19,6 +19,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\AdjustmentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -86,5 +87,11 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post("/transfer/get-available-qty",[TransferController::class,'getProductQty'])->name('transfer.get-available-qty');
     Route::post('/transfer-details-get', [TransferController::class,'transfer_details_get'])->name('transfer-details.get');
     Route::get('transfer-document-download/{id}', [TransferController::class,'transferFileDownload'])->name('transfer-purchaseFile.download');
+
+    // Adjustment
+    Route::resource("/qty_adjustment",AdjustmentController::class);
+    Route::post('adjustment/product-warehouse-qty-get', [AdjustmentController::class,'adjustment_product_warehouse_qty_get'])->name('adjustment-product-warehouse-qty.get');
+    Route::post("/adjustment/get-product",[AdjustmentController::class,'getProduct'])->name('adjustment.get-product');
+    Route::get('adjustment-document-download/{id}', [AdjustmentController::class,'adjustmentFileDownload'])->name('adjustmentFile.download');
 });
 
