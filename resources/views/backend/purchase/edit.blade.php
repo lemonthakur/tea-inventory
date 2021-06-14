@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Update Purchase")
+@section("page-title","Update Stock")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -7,10 +7,10 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Update Purchase
+                        Update Stock
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route("purchase.update",$purchase->id)}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route("stock-in.update",$purchase->id)}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
                             @method('put')
@@ -57,7 +57,7 @@
                                     <input id="file" type="file" class="form-control" name="document" />
                                     <span class="text-danger"> {{$errors->has("document") ? $errors->first("document") : ""}} </span>
                                     @if($purchase->document)
-                                        <a href="{{route('purchaseFile.download',$purchase->id)}}">Download File</a>
+                                        <a href="{{route('stockinFile.download',$purchase->id)}}">Download File</a>
                                     @endif
                                 </div>
                             </div>

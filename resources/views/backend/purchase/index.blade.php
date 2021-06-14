@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Purchase List")
+@section("page-title","Stock In List")
 @section("main-content")
 
     <div class="content-wrapper">
@@ -8,7 +8,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1 class="m-0 text-dark">Purchase</h1>
+                        <h1 class="m-0 text-dark">Stock In</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -28,8 +28,8 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Purchase List</h3>
-                                <a href="{{route('purchase.create')}}" class="btn btn-primary float-right text-white">
+                                <h3 class="card-title">Stock In List</h3>
+                                <a href="{{route('stock-in.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
@@ -42,7 +42,7 @@
                                 $l = 1;
                             ?>
                             <div class="card-body table-responsive">
-                                <span>Displaying purchase from {{ ($purchases->total()) ? $sl+1 : 0 }} to {{ $sl+$purchases->count() }} out of total {{ $purchases->total() }}</span>
+                                <span>Displaying Stock In from {{ ($purchases->total()) ? $sl+1 : 0 }} to {{ $sl+$purchases->count() }} out of total {{ $purchases->total() }}</span>
                                 <table class="table table-bordered table-hover table-striped">
                                     <thead>
                                     <tr>
@@ -74,11 +74,11 @@
                                                             </button>
                                                         </li>
                                                         <li>
-                                                            <a class="btn btn-link" href="{{route('purchase.edit',$purchase->id)}}" title="Edit">
+                                                            <a class="btn btn-link" href="{{route('stock-in.edit',$purchase->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </a>
                                                         </li>
-                                                        <form method="post" action="{{ route('purchase.destroy',$purchase->id) }}">
+                                                        <form method="post" action="{{ route('stock-in.destroy',$purchase->id) }}">
                                                             @method('delete')
                                                             @csrf
                                                             <li>
@@ -118,7 +118,7 @@
         <div role="document" class="modal-dialog modal-lg">
             <div class="modal-content">
                 {{--<div class="modal-header">
-                    <h5 id="exampleModalLabel" class="modal-title">{{'Purchase Details'}}</h5>
+                    <h5 id="exampleModalLabel" class="modal-title">{{'Stock In Details'}}</h5>
                     <button id="print-btn" type="button" class="btn btn-default btn-sm ml-3"><i class="fa fa-print"></i> {{'Print'}}</button>
                     <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
                 </div>--}}
@@ -135,7 +135,7 @@
                             <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close d-print-none"><span aria-hidden="true">×</span></button>
                         </div>
                         <div class="col-md-12 text-center">
-                            <i style="font-size: 15px;">Purchase Details</i>
+                            <i style="font-size: 15px;">Stock In Details</i>
                         </div>
                     </div>
                 </div>
@@ -166,7 +166,7 @@
                 if(purchase_id){
                     $.ajax({
                         type: "POST",
-                        url: "{!! route('purchase-details.get') !!}",
+                        url: "{!! route('stock-in-details.get') !!}",
                         data: {purchase_id: purchase_id, _token: _token},
                         //dataType : 'HTML',
                         success: function (result) {

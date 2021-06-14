@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Add Purchase")
+@section("page-title","Add Stock")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -7,10 +7,10 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Add Purchase
+                        Add Stock
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route('purchase.store')}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route('stock-in.store')}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
 
@@ -48,7 +48,7 @@
 
                             {{--<div class="col-md-6">
                                 <div class="form-group select2-parent">
-                                    <label for="status">Purchase Status</label>
+                                    <label for="status">Stock Status</label>
                                     <select
                                         class="form-control single-select2"
                                         data-placeholder="Select Status" data-allow-clear="true"

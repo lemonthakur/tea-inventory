@@ -323,7 +323,7 @@ class PurchaseController extends Controller
                     DB::commit();
                 } catch (ValidationException $e) {
                     DB::rollback();
-                    return Redirect::to('purchase')
+                    return Redirect::to('stock-in')
                         ->withErrors($e->getErrors())
                         ->withInput();
                 } catch (\Exception $e) {
@@ -333,16 +333,18 @@ class PurchaseController extends Controller
             }
 
             session()->flash("success", 'Purchase created successfully.');
-            return redirect()->route("purchase.index");
+            return redirect()->route("stock-in.index");
         }
         // End of new store process===========================================
         //====================================================================
 
     }
 
-    public function edit(Purchase $purchase)
+    public function edit(Request $request, $id)
     {
         OwnLibrary::validateAccess($this->moduleId,3);
+
+        $purchase = Purchase::find($id);
         $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
         $suppliers = Supplier::select('id','name')->orderBy('name')->get();
 
@@ -351,8 +353,9 @@ class PurchaseController extends Controller
         return view('backend.purchase.edit',compact('purchase', 'warehouses', 'suppliers', 'product_purchase_data'));
     }
 
-    public function update(Request $request, Purchase $purchase)
+    public function update(Request $request, $id)
     {
+        $purchase = Purchase::find($id);
         $rules = [
             "warehouse" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
@@ -492,7 +495,7 @@ class PurchaseController extends Controller
                     DB::commit();
                 } catch (ValidationException $e) {
                     DB::rollback();
-                    return Redirect::to('purchase')
+                    return Redirect::to('stock-in')
                         ->withErrors($e->getErrors())
                         ->withInput();
                 } catch (\Exception $e) {
@@ -502,7 +505,7 @@ class PurchaseController extends Controller
             }
 
             session()->flash("success", 'Purchase updated successfully.');
-            return redirect()->route("purchase.index");
+            return redirect()->route("stock-in.index");
         }
         // End of new store process===========================================
         //====================================================================
@@ -646,10 +649,11 @@ class PurchaseController extends Controller
         return 'Purchase deleted successfully!';
     }
 
-    public function destroy(Purchase $purchase)
+    public function destroy(Request $request, $id)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
         
+        $purchase = Purchase::find($id);
         $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
         DB::beginTransaction();
         try { 
@@ -679,7 +683,7 @@ class PurchaseController extends Controller
             DB::commit();
         } catch (ValidationException $e) {
             DB::rollback();
-            return Redirect::to('purchase')
+            return Redirect::to('stock-in')
                 ->withErrors($e->getErrors())
                 ->withInput();
         } catch (\Exception $e) {

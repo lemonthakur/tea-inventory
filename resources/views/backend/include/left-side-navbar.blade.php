@@ -230,27 +230,27 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview {{ ($routeName == 'purchase.index' || $routeName == 'purchase.create') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ ($routeName == 'stock-in.index' || $routeName == 'stock-in.create' || $routeName == 'stock-in.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
-                           Purchase
+                           Stock In
                             <i class="right fas fa-angle-left"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{route("purchase.index")}}"
-                               class="nav-link {{ ($routeName == 'purchase.index') ? 'active' : '' }}">
+                            <a href="{{route("stock-in.index")}}"
+                               class="nav-link {{ ($routeName == 'stock-in.index' || $routeName == 'stock-in.edit') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Purchase List</p>
+                                <p>Stock In List</p>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{route("purchase.create")}}"
-                               class="nav-link {{ ($routeName == 'purchase.create') ? 'active' : '' }}">
+                            <a href="{{route("stock-in.create")}}"
+                               class="nav-link {{ ($routeName == 'stock-in.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Add Purchase</p>
+                                <p>Add Stock In</p>
                             </a>
                         </li>
                     </ul>
