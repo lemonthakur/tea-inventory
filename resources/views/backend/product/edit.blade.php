@@ -183,8 +183,8 @@
                                             <div class="form-group select2-parent">
                                                 <label for="status">Status<span class="text-danger">*</span></label>
                                                 <select name="status" class="form-control" id="status">
-                                                    <option value="1">Active</option>
-                                                    <option value="2">Inactive</option>
+                                                    <option value="1" {{(old("status",$product->status) == 1) ? "selected" : "" }}>Active</option>
+                                                    <option value="2" {{(old("status",$product->status) == 2) ? "selected" : "" }}>Inactive</option>
                                                 </select>
                                                 <span class="text-danger"> {{$errors->has("status") ? $errors->first("status") : ""}} </span>
                                             </div>

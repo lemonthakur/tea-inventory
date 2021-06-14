@@ -237,229 +237,36 @@ class PurchaseController extends Controller
         }else{
             if(count($request->product_id) > 0){
                 DB::beginTransaction();
-                $purchase = new Purchase();
+                try {
+                    $purchase = new Purchase();
 
-                $reference_no = 'pr-' . date("Ymd") . '-'. date("his");
+                    $reference_no = 'pr-' . date("Ymd") . '-'. date("his");
 
-                $purchase->reference_no         = $reference_no;
-                $purchase->user_id              = Auth::user()->id;
-                $purchase->warehouse_id         = $request->warehouse;
-                $purchase->supplier_id          = $request->supplier;
-                $purchase->item                 = count($request->product_id);
+                    $purchase->reference_no         = $reference_no;
+                    $purchase->user_id              = Auth::user()->id;
+                    $purchase->warehouse_id         = $request->warehouse;
+                    $purchase->supplier_id          = $request->supplier;
+                    $purchase->item                 = count($request->product_id);
 
-                $purchase->total_qty            = 0;
-                $purchase->total_waste_qty      = 0;
+                    $purchase->total_qty            = 0;
+                    $purchase->total_waste_qty      = 0;
 
-                $purchase->total_cost           = $request->total_price_input;
-                $purchase->grand_total          = $request->total_price_input;
-                $purchase->grand_total_waste    = 0;
-                $purchase->status  = 1;
-                $purchase->note  = $request->note;
+                    $purchase->total_cost           = $request->total_price_input;
+                    $purchase->grand_total          = $request->total_price_input;
+                    $purchase->grand_total_waste    = 0;
+                    $purchase->status  = 1;
+                    $purchase->note  = $request->note;
 
-                if ($request->hasFile('document')){
-                    $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
-                    $purchase->document = $purchase_document;
-                }
-                $purchase->save();
-
-                try {}catch(ValidationException $e) {
-                    DB::rollback();
-                    return Redirect::to('/purchase')
-                        ->withErrors( $e->getErrors() )
-                        ->withInput();
-                }catch(\Exception $e)
-                {
-                    DB::rollback();
-                    throw $e;
-                }
-
-                $grand_total_waste = 0;
-                $total_qty_input = 0;
-                $total_waste_input = 0;
-                for ($i = 0; count($request->product_id) > $i; $i++) {
-                    try {
-                        $product_data = Product::find($request->product_id[$i]);
-                        $unit_data    = Unit::find($request->unit_id[$i]);
-                        $quantity     = $request->qty[$i] * $unit_data->value;
-                        $waste_qty    = $request->waste[$i] * $unit_data->value;
-
-                        $product_data->qty = $product_data->qty + $quantity;
-                        $product_data->waste_qty = $product_data->waste_qty + $waste_qty;
-
-                        $product_data->save();
-
-                        $product_warehouse_data = Product_Warehouse::where([
-                            ['product_id', $request->product_id[$i]],
-                            ['warehouse_id', $request->warehouse ],
-                        ])->first();
-
-                        //add quantity to warehouse
-                        if ($product_warehouse_data) {
-                            $product_warehouse_data->qty = $product_warehouse_data->qty + $quantity;
-                            $product_warehouse_data->waste_qty = $product_warehouse_data->waste_qty + $waste_qty;
-                        }
-                        else {
-                            $product_warehouse_data = new Product_Warehouse();
-                            $product_warehouse_data->product_id = $request->product_id[$i];
-                            $product_warehouse_data->warehouse_id = $request->warehouse;
-                            $product_warehouse_data->qty = $quantity;
-                            $product_warehouse_data->waste_qty = $waste_qty;
-                        }
-                        $product_warehouse_data->save();
-
-                            // Add to product purchase
-                            $product_purchase = new ProductPurchase();
-                            $product_purchase->purchase_id = $purchase->id ;
-                            $product_purchase->product_id = $request->product_id[$i];
-                            $product_purchase->qty = $request->qty[$i] * $unit_data->value;
-                            $product_purchase->waste_qty = $request->waste[$i] * $unit_data->value;
-                            $product_purchase->purchase_unit_id = $request->unit_id[$i];
-                            $product_purchase->net_unit_cost = $request->unit_price[$i];
-                            $product_purchase->total = $request->subtotal_input[$i];
-                            $product_purchase->waste_total = $request->waste[$i]*$request->unit_price[$i];
-                            $product_purchase->save();
-
-                    } catch (ValidationException $e) {
-                        DB::rollback();
-                        return Redirect::to('/purchase')
-                            ->withErrors($e->getErrors())
-                            ->withInput();
-                    } catch (\Exception $e) {
-                        DB::rollback();
-                        throw $e;
+                    if ($request->hasFile('document')){
+                        $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
+                        $purchase->document = $purchase_document;
                     }
+                    $purchase->save();
 
-                    $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
-                    $total_qty_input += $request->qty[$i] * $unit_data->value;
-                    $total_waste_input += $request->waste[$i] * $unit_data->value;
-                }
-            }
-
-            $up_purchase = Purchase::find($purchase->id);
-            $up_purchase->grand_total_waste = $grand_total_waste;
-
-            $up_purchase->total_qty        = $total_qty_input;
-            $up_purchase->total_waste_qty  = $total_waste_input;
-
-            $up_purchase->save();
-
-            DB::commit();
-
-            session()->flash("success", 'Purchase created successfully.');
-            return redirect()->route("purchase.index");
-        }
-        // End of new store process===========================================
-        //====================================================================
-
-    }
-
-    public function edit(Purchase $purchase)
-    {
-        OwnLibrary::validateAccess($this->moduleId,3);
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
-        $suppliers = Supplier::select('id','name')->orderBy('name')->get();
-
-        $product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
-
-        return view('backend.purchase.edit',compact('purchase', 'warehouses', 'suppliers', 'product_purchase_data'));
-    }
-
-    public function update(Request $request, Purchase $purchase)
-    {
-        $rules = [
-            "warehouse" => "required|integer",
-            "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
-            "product_id.*" => "required|integer",
-            "qty.*" => "required",
-            "waste.*" => "required",
-            "subtotal_input.*" => "required",
-
-            "total_qty_input" => "required",
-            "total_price_input" => "required",
-            "total_waste_input" => "required",
-        ];
-
-        $message = [
-            "product_id.*.required" => "Product is required",
-            "qty.*.required" => "Quantity is required",
-            "waste.*.required" => "Waste is required",
-
-            "subtotal_input.required" => "Subtotal is required",
-            "total_qty_input.required" => "Total quantity is required",
-            "total_price_input.required" => "Total price is required",
-            "total_waste_input.required" => "Total waste is required",
-        ];
-
-        $validation =  Validator::make($request->all(),$rules,$message);
-        if ($validation->fails()){
-            return redirect()->back()->withInput()->withErrors($validation);
-        }else{
-            if(count($request->product_id) > 0){
-                DB::beginTransaction();
-
-                $lims_purchase_data = Purchase::find($purchase->id);
-                $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                foreach ($lims_product_purchase_data as $product_purchase_data) {
-
-                    $old_qty_value   = $product_purchase_data->qty;
-                    $old_waste_value = $product_purchase_data->waste_qty;
-
-                    $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-                    $lims_product_data = Product::find($product_purchase_data->product_id);
-
-                    $lims_product_warehouse_data = Product_Warehouse::where([
-                        ['product_id', $product_purchase_data->product_id],
-                        ['warehouse_id', $lims_purchase_data->warehouse_id],
-                    ])->first();
-
-                    $lims_product_data->qty -= $old_qty_value;
-                    $lims_product_data->waste_qty -= $old_waste_value;
-
-                    $lims_product_warehouse_data->qty -= $old_qty_value;
-                    $lims_product_warehouse_data->waste_qty -= $old_waste_value;
-                    $lims_product_warehouse_data->save();
-
-                    $lims_product_data->save();
-                    $product_purchase_data->delete();
-                }
-
-
-                $purchase->warehouse_id         = $request->warehouse;
-                $purchase->supplier_id          = $request->supplier;
-                $purchase->item                 = count($request->product_id);
-
-                $purchase->total_qty            = 0;
-                $purchase->total_waste_qty      = 0;
-
-                $purchase->total_cost           = $request->total_price_input;
-                $purchase->grand_total          = $request->total_price_input;
-                $purchase->grand_total_waste    = 0;
-                $purchase->status  = 1;
-                $purchase->note  = $request->note;
-
-                if ($request->hasFile('document')){
-                    if($purchase->file) @unlink($purchase->document);
-                    $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
-                    $purchase->document = $purchase_document;
-                }
-                $purchase->save();
-
-                try {}catch(ValidationException $e) {
-                    DB::rollback();
-                    return Redirect::to('/purchase')
-                        ->withErrors( $e->getErrors() )
-                        ->withInput();
-                }catch(\Exception $e)
-                {
-                    DB::rollback();
-                    throw $e;
-                }
-
-                $grand_total_waste = 0;
-                $total_qty_input = 0;
-                $total_waste_input = 0;
-                for ($i = 0; count($request->product_id) > $i; $i++) {
-                    try {
+                    $grand_total_waste = 0;
+                    $total_qty_input = 0;
+                    $total_waste_input = 0;
+                    for ($i = 0; count($request->product_id) > $i; $i++) {
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
@@ -501,34 +308,204 @@ class PurchaseController extends Controller
                         $product_purchase->waste_total = $request->waste[$i]*$request->unit_price[$i];
                         $product_purchase->save();
 
-                    } catch (ValidationException $e) {
-                        DB::rollback();
-                        return Redirect::to('/purchase')
-                            ->withErrors($e->getErrors())
-                            ->withInput();
-                    } catch (\Exception $e) {
-                        DB::rollback();
-                        throw $e;
+                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
+                        $total_qty_input += $request->qty[$i] * $unit_data->value;
+                        $total_waste_input += $request->waste[$i] * $unit_data->value;
                     }
 
-                    $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
-                    $total_qty_input += $request->qty[$i] * $unit_data->value;
-                    $total_waste_input += $request->waste[$i] * $unit_data->value;
+                    $up_purchase = Purchase::find($purchase->id);
+                    $up_purchase->grand_total_waste = $grand_total_waste;
+
+                    $up_purchase->total_qty        = $total_qty_input;
+                    $up_purchase->total_waste_qty  = $total_waste_input;
+
+                    $up_purchase->save();
+                    DB::commit();
+                } catch (ValidationException $e) {
+                    DB::rollback();
+                    return Redirect::to('stock-in')
+                        ->withErrors($e->getErrors())
+                        ->withInput();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    throw $e;
                 }
             }
 
-            $up_purchase = Purchase::find($purchase->id);
-            $up_purchase->grand_total_waste = $grand_total_waste;
+            session()->flash("success", 'Purchase created successfully.');
+            return redirect()->route("stock-in.index");
+        }
+        // End of new store process===========================================
+        //====================================================================
 
-            $up_purchase->total_qty        = $total_qty_input;
-            $up_purchase->total_waste_qty  = $total_waste_input;
+    }
 
-            $up_purchase->save();
+    public function edit(Request $request, $id)
+    {
+        OwnLibrary::validateAccess($this->moduleId,3);
 
-            DB::commit();
+        $purchase = Purchase::find($id);
+        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $suppliers = Supplier::select('id','name')->orderBy('name')->get();
+
+        $product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
+
+        return view('backend.purchase.edit',compact('purchase', 'warehouses', 'suppliers', 'product_purchase_data'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $purchase = Purchase::find($id);
+        $rules = [
+            "warehouse" => "required|integer",
+            "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id.*" => "required|integer",
+            "qty.*" => "required",
+            "waste.*" => "required",
+            "subtotal_input.*" => "required",
+
+            "total_qty_input" => "required",
+            "total_price_input" => "required",
+            "total_waste_input" => "required",
+        ];
+
+        $message = [
+            "product_id.*.required" => "Product is required",
+            "qty.*.required" => "Quantity is required",
+            "waste.*.required" => "Waste is required",
+
+            "subtotal_input.required" => "Subtotal is required",
+            "total_qty_input.required" => "Total quantity is required",
+            "total_price_input.required" => "Total price is required",
+            "total_waste_input.required" => "Total waste is required",
+        ];
+
+        $validation =  Validator::make($request->all(),$rules,$message);
+        if ($validation->fails()){
+            return redirect()->back()->withInput()->withErrors($validation);
+        }else{
+            if(count($request->product_id) > 0){
+                DB::beginTransaction();
+                try {
+
+                    $lims_purchase_data = Purchase::find($purchase->id);
+                    $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
+                    foreach ($lims_product_purchase_data as $product_purchase_data) {
+
+                        $old_qty_value   = $product_purchase_data->qty;
+                        $old_waste_value = $product_purchase_data->waste_qty;
+
+                        $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
+                        $lims_product_data = Product::find($product_purchase_data->product_id);
+
+                        $lims_product_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $product_purchase_data->product_id],
+                            ['warehouse_id', $lims_purchase_data->warehouse_id],
+                        ])->first();
+
+                        $lims_product_data->qty -= $old_qty_value;
+                        $lims_product_data->waste_qty -= $old_waste_value;
+
+                        $lims_product_warehouse_data->qty -= $old_qty_value;
+                        $lims_product_warehouse_data->waste_qty -= $old_waste_value;
+                        $lims_product_warehouse_data->save();
+
+                        $lims_product_data->save();
+                        $product_purchase_data->delete();
+                    }
+
+
+                    $purchase->warehouse_id         = $request->warehouse;
+                    $purchase->supplier_id          = $request->supplier;
+                    $purchase->item                 = count($request->product_id);
+
+                    $purchase->total_qty            = 0;
+                    $purchase->total_waste_qty      = 0;
+
+                    $purchase->total_cost           = $request->total_price_input;
+                    $purchase->grand_total          = $request->total_price_input;
+                    $purchase->grand_total_waste    = 0;
+                    $purchase->status  = 1;
+                    $purchase->note  = $request->note;
+
+                    if ($request->hasFile('document')){
+                        if($purchase->file) @unlink($purchase->document);
+                        $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
+                        $purchase->document = $purchase_document;
+                    }
+                    $purchase->save();
+
+                    $grand_total_waste = 0;
+                    $total_qty_input = 0;
+                    $total_waste_input = 0;
+                    for ($i = 0; count($request->product_id) > $i; $i++) {
+                    
+                        $product_data = Product::find($request->product_id[$i]);
+                        $unit_data    = Unit::find($request->unit_id[$i]);
+                        $quantity     = $request->qty[$i] * $unit_data->value;
+                        $waste_qty    = $request->waste[$i] * $unit_data->value;
+
+                        $product_data->qty = $product_data->qty + $quantity;
+                        $product_data->waste_qty = $product_data->waste_qty + $waste_qty;
+
+                        $product_data->save();
+
+                        $product_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $request->product_id[$i]],
+                            ['warehouse_id', $request->warehouse ],
+                        ])->first();
+
+                        //add quantity to warehouse
+                        if ($product_warehouse_data) {
+                            $product_warehouse_data->qty = $product_warehouse_data->qty + $quantity;
+                            $product_warehouse_data->waste_qty = $product_warehouse_data->waste_qty + $waste_qty;
+                        }
+                        else {
+                            $product_warehouse_data = new Product_Warehouse();
+                            $product_warehouse_data->product_id = $request->product_id[$i];
+                            $product_warehouse_data->warehouse_id = $request->warehouse;
+                            $product_warehouse_data->qty = $quantity;
+                            $product_warehouse_data->waste_qty = $waste_qty;
+                        }
+                        $product_warehouse_data->save();
+
+                        // Add to product purchase
+                        $product_purchase = new ProductPurchase();
+                        $product_purchase->purchase_id = $purchase->id ;
+                        $product_purchase->product_id = $request->product_id[$i];
+                        $product_purchase->qty = $request->qty[$i] * $unit_data->value;
+                        $product_purchase->waste_qty = $request->waste[$i] * $unit_data->value;
+                        $product_purchase->purchase_unit_id = $request->unit_id[$i];
+                        $product_purchase->net_unit_cost = $request->unit_price[$i];
+                        $product_purchase->total = $request->subtotal_input[$i];
+                        $product_purchase->waste_total = $request->waste[$i]*$request->unit_price[$i];
+                        $product_purchase->save();
+
+                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
+                        $total_qty_input += $request->qty[$i] * $unit_data->value;
+                        $total_waste_input += $request->waste[$i] * $unit_data->value;
+                    }
+                
+                    $up_purchase = Purchase::find($purchase->id);
+                    $up_purchase->grand_total_waste = $grand_total_waste;
+
+                    $up_purchase->total_qty        = $total_qty_input;
+                    $up_purchase->total_waste_qty  = $total_waste_input;
+                    $up_purchase->save();
+                    DB::commit();
+                } catch (ValidationException $e) {
+                    DB::rollback();
+                    return Redirect::to('stock-in')
+                        ->withErrors($e->getErrors())
+                        ->withInput();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    throw $e;
+                }
+            }
 
             session()->flash("success", 'Purchase updated successfully.');
-            return redirect()->route("purchase.index");
+            return redirect()->route("stock-in.index");
         }
         // End of new store process===========================================
         //====================================================================
@@ -672,41 +649,53 @@ class PurchaseController extends Controller
         return 'Purchase deleted successfully!';
     }
 
-    public function destroy(Purchase $purchase)
+    public function destroy(Request $request, $id)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
         
+        $purchase = Purchase::find($id);
         $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
-        
-        foreach ($lims_product_purchase_data as $product_purchase_data) {
-            $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-            
-            $old_qty_value   = $product_purchase_data->qty;
-            $old_waste_value = $product_purchase_data->waste_qty;
+        DB::beginTransaction();
+        try { 
+            foreach ($lims_product_purchase_data as $product_purchase_data) {
+                $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
+                
+                $old_qty_value   = $product_purchase_data->qty;
+                $old_waste_value = $product_purchase_data->waste_qty;
 
-            $lims_product_data = Product::find($product_purchase_data->product_id);
+                $lims_product_data = Product::find($product_purchase_data->product_id);
 
-            $lims_product_warehouse_data = Product_Warehouse::where([
-                ['product_id', $product_purchase_data->product_id],
-                ['warehouse_id', $purchase->warehouse_id],
-            ])->first();
+                $lims_product_warehouse_data = Product_Warehouse::where([
+                    ['product_id', $product_purchase_data->product_id],
+                    ['warehouse_id', $purchase->warehouse_id],
+                ])->first();
 
-            $lims_product_data->qty -= $old_qty_value;
-            $lims_product_data->waste_qty -= $old_waste_value;
+                $lims_product_data->qty -= $old_qty_value;
+                $lims_product_data->waste_qty -= $old_waste_value;
 
-            $lims_product_warehouse_data->qty -= $old_qty_value;
-            $lims_product_warehouse_data->waste_qty -= $old_waste_value;
-            $lims_product_warehouse_data->save();
+                $lims_product_warehouse_data->qty -= $old_qty_value;
+                $lims_product_warehouse_data->waste_qty -= $old_waste_value;
+                $lims_product_warehouse_data->save();
 
-            $lims_product_data->save();
-            $product_purchase_data->delete();
+                $lims_product_data->save();
+                $product_purchase_data->delete();
+            }
+            DB::commit();
+        } catch (ValidationException $e) {
+            DB::rollback();
+            return Redirect::to('stock-in')
+                ->withErrors($e->getErrors())
+                ->withInput();
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
         }
 
         if ($purchase->delete()){
-            session()->flash("success","Product deleted successfully");
+            session()->flash("success","Purchase deleted successfully");
             return redirect()->back();
         }else{
-            session()->flash("error","Product not deleted");
+            session()->flash("error","Purchase not deleted");
             return redirect()->back();
         }
 

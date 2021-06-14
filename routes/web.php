@@ -76,11 +76,15 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('/products/produc-wise-row-short-get',[ProductController::class, 'product_wise_row_short_get'])->name('produc-wise-row-short.get');
 
     //Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
-    Route::resource("/purchase",PurchaseController::class);
-    Route::post('/purchase-details-get', [PurchaseController::class,'purchase_details_get'])->name('purchase-details.get');
-    Route::get('purchase-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('purchaseFile.download');
+    Route::resource("/stock-in",PurchaseController::class);
+    Route::post('/stock-in-details-get', [PurchaseController::class,'purchase_details_get'])->name('stock-in-details.get');
+    Route::get('stock-in-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('stockinFile.download');
 
     // Transfer
     Route::resource("/transfer",TransferController::class);
+    Route::post("/transfer/get-product",[TransferController::class,'getProduct'])->name('transfer.get-product');
+    Route::post("/transfer/get-available-qty",[TransferController::class,'getProductQty'])->name('transfer.get-available-qty');
+    Route::post('/transfer-details-get', [TransferController::class,'transfer_details_get'])->name('transfer-details.get');
+    Route::get('transfer-document-download/{id}', [TransferController::class,'transferFileDownload'])->name('transfer-purchaseFile.download');
 });
 
