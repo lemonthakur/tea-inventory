@@ -84,5 +84,7 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/transfer",TransferController::class);
     Route::post("/transfer/get-product",[TransferController::class,'getProduct'])->name('transfer.get-product');
     Route::post("/transfer/get-available-qty",[TransferController::class,'getProductQty'])->name('transfer.get-available-qty');
+    Route::post('/transfer-details-get', [TransferController::class,'transfer_details_get'])->name('transfer-details.get');
+    Route::get('transfer-document-download/{id}', [TransferController::class,'transferFileDownload'])->name('transfer-purchaseFile.download');
 });
 

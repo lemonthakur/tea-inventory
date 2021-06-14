@@ -105,13 +105,15 @@
                                                     $row .= '<td>
                                                                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                                 <input type="number" class="form-control qty" name="qty[]" value="'.old("qty.$i").'" step="any" min="1" autocomplete="off">
+                                                                <input type="hidden" class="avaiableQty" name="avaiableQty" value="'.old("avaiableQty.$i").'">
                                                                 <span class="text-danger">'.$qty_errom_msg.'</span>
                                                             </td>';
                                                     $row .= '<td>
                                                                 <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
+                                                                <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty" value="'.old("avaiableWasteQty.$i").'">
                                                                 <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
-                                                    $row .= '<td class="net_unit_cost">'.$product->product_price.'
+                                                    $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
                                                         </td>';
@@ -228,6 +230,7 @@
 
         var availabeQty = 0;
         var availabeWasteQty = 0;
+        var row_count = 1;
         var _token = $('input[name="_token"]').val();
         $(document).on("change", ".live-search-pro", function(){
             var product_id = $(this).val();
@@ -244,49 +247,58 @@
                     data: {product_id: product_id, _token: _token},
                     //dataType : 'HTML',
                     success: function (result) {
-                        $('#order-table tbody').prepend(result);
+                        //alert($(result).closest('tr').find('.rows').text());
+                        var mod = result.replace('id=""', 'id="'+row_count+'"');
+                        $('#order-table tbody').prepend(mod);
                     },
                     complete: function (e) {
                         $('#live-search').val(null).trigger('change.select2');
-                        get_avl_qty(product_id, $("#from_warehouse_id").val());
+
+                        // Ajax
+                         $.ajax({
+                            type: "POST",
+                            url: "{!! route('transfer.get-available-qty') !!}",
+                            data: {product_id: product_id, warehouse_id: $("#from_warehouse_id").val(), _token: _token},
+                            //dataType : 'HTML',
+                            success: function (ret) {
+                                obj = JSON.parse(ret);
+                                availabeQty = obj.qty;
+                                availabeWasteQty = obj.waste_qty;
+
+                                $("#"+row_count).closest('tr').find('.avaiableQty').val(availabeQty);
+                                $("#"+row_count).closest('tr').find('.avaiableWasteQty').val(availabeWasteQty);
+
+                            },
+                            complete: function (e) {
+                                //if(!notrigger)
+                                $(".qty").trigger('input');
+                            }
+                        });
+                         // End ajax
+
                     }
                 });
             }else{
                 $('#live-search').val(null).trigger('change.select2');
             }
+
+            row_count++;
         });
-
-        function get_avl_qty(product_id, warehouse_id, notrigger=null){
-            $.ajax({
-                type: "POST",
-                url: "{!! route('transfer.get-available-qty') !!}",
-                data: {product_id: product_id, warehouse_id: warehouse_id, _token: _token},
-                //dataType : 'HTML',
-                success: function (ret) {
-                    obj = JSON.parse(ret);
-                    availabeQty = obj.qty;
-                    availabeWasteQty = obj.waste_qty;
-                },
-                complete: function (e) {
-                    if(!notrigger)
-                        $(".qty").trigger('input');
-                }
-            });
-
-        }
 
         $(document).on("input", ".qty", function(){
             var qty           = $(this).val();
             var net_unit_cost = $.trim($(this).closest('tr').find('.net_unit_cost').text());
 
             var product_id = $.trim($(this).closest('tr').find('.product_id').val());
-            get_avl_qty(product_id, $("#from_warehouse_id").val(), 1);
+
+            availabeQty = $(this).closest('tr').find('.avaiableQty').val();
+            availabeWasteQty = $(this).closest('tr').find('.avaiableWasteQty').val();
 
             var waste_to_cal = availabeWasteQty / availabeQty;
             var to_show_in_waste = qty*waste_to_cal;
             $(this).closest('tr').find('.waste').val(to_show_in_waste);
 
-            if(qty>availabeQty) {
+            if(parseFloat(qty)>parseFloat(availabeQty)) {
                 qty = qty.substring(0, qty.length - 1);
                 to_show_in_waste = qty*waste_to_cal;
 
@@ -312,7 +324,7 @@
 
         $(document).on("input", ".waste", function(){
             var waste_qty = $(this).val();
-            if(waste_qty > availabeWasteQty) {
+            if(parseFloat(waste_qty) > (availabeWasteQty)) {
                 waste_qty = waste_qty.substring(0, waste_qty.length - 1);
                 $(this).val(waste_qty);
                 alert('Waste exceeds stock quantity!. Available stock: '+availabeWasteQty);

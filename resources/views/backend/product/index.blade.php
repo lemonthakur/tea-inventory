@@ -74,7 +74,7 @@
                                             $array [] = $product->unit_id;
                                             $array [] = $product->unit->name;
                                             $array [] = $product->product_price;
-                                            $array [] = $product->qty;
+                                            $array [] = $product->qty/$product->unit->value;
                                             $array [] = $product->status;
                                             $array [] = $product->alert_quantity;
                                             $array [] = $product->file;
@@ -82,7 +82,7 @@
                                             $array [] = implode(',', json_decode($product->image));
                                             if($product->file) $array [] = route('peodutFile.download', $product->id);
                                             else $array [] = '';
-                                            $array [] = $product->waste_qty;
+                                            $array [] = $product->waste_qty/$product->unit->value;
 
                                             $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($product->code, $product->barcode_symbology);
                                         ?>
@@ -103,8 +103,8 @@
                                             <td>{{ $product->code }}</td>
                                             <td>{{ $product->brand->name }}</td>
                                             <td>{{ $product->category->name }}</td>
-                                            <td>{{ $product->qty }}</td>
-                                            <td>{{ $product->waste_qty }}</td>
+                                            <td>{{ $product->qty/$product->unit->value }}</td>
+                                            <td>{{ $product->waste_qty/$product->unit->value  }}</td>
                                             <td>{{ $product->unit->name }}</td>
                                             <td class="text-center">
                                                 @if($product->status == 1)

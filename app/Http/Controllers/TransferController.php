@@ -16,6 +16,7 @@ use App\Models\ProductPurchase;
 use App\Models\Product_Warehouse;
 use App\Models\User;
 use App\Models\Transfer;
+use App\Models\ProductTransfer;
 use DB;
 use Auth;
 
@@ -32,14 +33,14 @@ class TransferController extends Controller
 
         $user_ware_house = OwnLibrary::user_warehosue();
 
-        $purchases = Purchase::whereNotNull('id');
+        $transfers = Transfer::whereNotNull('id');
         if($user_ware_house){
 
         }
-        $purchases->orderBy('id','DESC');
-        $purchases = $purchases->paginate(20);
+        $transfers->orderBy('id','DESC');
+        $transfers = $transfers->paginate(20);
 
-        return view('backend.purchase.index', compact('purchases'));
+        return view('backend.transfer.index', compact('transfers'));
     }
 
     public function create()
@@ -86,137 +87,129 @@ class TransferController extends Controller
         }else{
             if(count($request->product_id) > 0){
                 DB::beginTransaction();
-                $purchase = new Purchase();
+                try {
+                    $transfer = new Transfer();
 
-                $reference_no = 'pr-' . date("Ymd") . '-'. date("his");
+                    $reference_no = 'tr-' . date("Ymd") . '-'. date("his");
 
-                $purchase->reference_no         = $reference_no;
-                $purchase->user_id              = Auth::user()->id;
-                $purchase->warehouse_id         = $request->warehouse;
-                $purchase->supplier_id          = $request->supplier;
-                $purchase->item                 = count($request->product_id);
+                    $transfer->reference_no         = $reference_no;
+                    $transfer->user_id              = Auth::user()->id;
+                    $transfer->from_warehouse_id    = $request->from_warehouse_id;
+                    $transfer->to_warehouse_id      = $request->to_warehouse_id;
+                    $transfer->item                 = count($request->product_id);
 
-                $purchase->total_qty            = 0;
-                $purchase->total_waste_qty      = 0;
+                    $transfer->total_qty            = 0;
+                    $transfer->total_waste_qty      = 0;
 
-                $purchase->total_cost           = $request->total_price_input;
-                $purchase->grand_total          = $request->total_price_input;
-                $purchase->grand_total_waste    = 0;
-                $purchase->status  = 1;
-                $purchase->note  = $request->note;
+                    $transfer->total_cost           = $request->total_price_input;
+                    $transfer->grand_total          = $request->total_price_input;
+                    $transfer->grand_total_waste    = 0;
+                    $transfer->note  = $request->note;
 
-                if ($request->hasFile('document')){
-                    $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
-                    $purchase->document = $purchase_document;
-                }
-                $purchase->save();
+                    if ($request->hasFile('document')){
+                        $transfer_document = OwnLibrary::uploadImage($request->document, "transfer/document");
+                        $transfer->document = $transfer_document;
+                    }
+                    $transfer->save();
 
-                try {}catch(ValidationException $e) {
-                    DB::rollback();
-                    return Redirect::to('/purchase')
-                        ->withErrors( $e->getErrors() )
-                        ->withInput();
-                }catch(\Exception $e)
-                {
-                    DB::rollback();
-                    throw $e;
-                }
 
-                $grand_total_waste = 0;
-                $total_qty_input = 0;
-                $total_waste_input = 0;
-                for ($i = 0; count($request->product_id) > $i; $i++) {
-                    try {
+                    $grand_total_waste = 0;
+                    $total_qty_input = 0;
+                    $total_waste_input = 0;
+                    for ($i = 0; count($request->product_id) > $i; $i++) {
+                        
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
                         $waste_qty    = $request->waste[$i] * $unit_data->value;
 
-                        $product_data->qty = $product_data->qty + $quantity;
-                        $product_data->waste_qty = $product_data->waste_qty + $waste_qty;
-
-                        $product_data->save();
-
-                        $product_warehouse_data = Product_Warehouse::where([
+                        $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
-                            ['warehouse_id', $request->warehouse ],
+                            ['warehouse_id', $request->from_warehouse_id ],
                         ])->first();
 
-                        //add quantity to warehouse
-                        if ($product_warehouse_data) {
-                            $product_warehouse_data->qty = $product_warehouse_data->qty + $quantity;
-                            $product_warehouse_data->waste_qty = $product_warehouse_data->waste_qty + $waste_qty;
-                        }
-                        else {
-                            $product_warehouse_data = new Product_Warehouse();
-                            $product_warehouse_data->product_id = $request->product_id[$i];
-                            $product_warehouse_data->warehouse_id = $request->warehouse;
-                            $product_warehouse_data->qty = $quantity;
-                            $product_warehouse_data->waste_qty = $waste_qty;
-                        }
-                        $product_warehouse_data->save();
+                        $lims_product_warehouse_data->qty -= $quantity;
+                        $lims_product_warehouse_data->waste_qty -= $waste_qty;
+                        $lims_product_warehouse_data->save();
+                    
 
-                            // Add to product purchase
-                            $product_purchase = new ProductPurchase();
-                            $product_purchase->purchase_id = $purchase->id ;
-                            $product_purchase->product_id = $request->product_id[$i];
-                            $product_purchase->qty = $request->qty[$i] * $unit_data->value;
-                            $product_purchase->waste_qty = $request->waste[$i] * $unit_data->value;
-                            $product_purchase->purchase_unit_id = $request->unit_id[$i];
-                            $product_purchase->net_unit_cost = $request->unit_price[$i];
-                            $product_purchase->total = $request->subtotal_input[$i];
-                            $product_purchase->waste_total = $request->waste[$i]*$request->unit_price[$i];
-                            $product_purchase->save();
+                        $lims_product_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $request->product_id[$i]],
+                            ['warehouse_id', $request->to_warehouse_id ],
+                        ])->first();
 
-                    } catch (ValidationException $e) {
-                        DB::rollback();
-                        return Redirect::to('/purchase')
-                            ->withErrors($e->getErrors())
-                            ->withInput();
-                    } catch (\Exception $e) {
-                        DB::rollback();
-                        throw $e;
+                        //add quantity to destination warehouse
+                        if ($lims_product_warehouse_data){
+                            $lims_product_warehouse_data->qty += $quantity;
+                            $lims_product_warehouse_data->waste_qty = $lims_product_warehouse_data->waste_qty + $waste_qty;
+                        } else {
+                            $lims_product_warehouse_data = new Product_Warehouse();
+                            $lims_product_warehouse_data->product_id = $request->product_id[$i];
+                            $lims_product_warehouse_data->warehouse_id = $request->to_warehouse_id;
+                            $lims_product_warehouse_data->qty = $quantity;
+                            $lims_product_warehouse_data->waste_qty = $waste_qty;
+                        }
+                        $lims_product_warehouse_data->save();
+    
+                        // Add to product transfer
+                        $product_transfer = new ProductTransfer();
+                        $product_transfer->transfer_id = $transfer->id ;
+                        $product_transfer->product_id = $request->product_id[$i];
+                        $product_transfer->qty = $request->qty[$i] * $unit_data->value;
+                        $product_transfer->waste_qty = $request->waste[$i] * $unit_data->value;
+                        $product_transfer->purchase_unit_id = $request->unit_id[$i];
+                        $product_transfer->net_unit_cost = $request->unit_price[$i];
+                        $product_transfer->total = $request->subtotal_input[$i];
+                        $product_transfer->waste_total = $request->waste[$i]*$request->unit_price[$i];
+                        $product_transfer->save();
+
+
+                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
+                        $total_qty_input += $request->qty[$i] * $unit_data->value;
+                        $total_waste_input += $request->waste[$i] * $unit_data->value;
+                
+                        $up_transfer = Transfer::find($transfer->id);
+                        $up_transfer->grand_total_waste = $grand_total_waste;
+
+                        $up_transfer->total_qty        = $total_qty_input;
+                        $up_transfer->total_waste_qty  = $total_waste_input;
+                        $up_transfer->save();
                     }
 
-                    $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
-                    $total_qty_input += $request->qty[$i] * $unit_data->value;
-                    $total_waste_input += $request->waste[$i] * $unit_data->value;
+                    DB::commit();
+
+                } catch (ValidationException $e) {
+                    DB::rollback();
+                    return Redirect::to('/transfer')
+                        ->withErrors($e->getErrors())
+                        ->withInput();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    throw $e;
                 }
             }
 
-            $up_purchase = Purchase::find($purchase->id);
-            $up_purchase->grand_total_waste = $grand_total_waste;
-
-            $up_purchase->total_qty        = $total_qty_input;
-            $up_purchase->total_waste_qty  = $total_waste_input;
-
-            $up_purchase->save();
-
-            DB::commit();
-
-            session()->flash("success", 'Purchase created successfully.');
-            return redirect()->route("purchase.index");
+            session()->flash("success", 'Transfer created successfully.');
+            return redirect()->route("transfer.index");
         }
-        // End of new store process===========================================
-        //====================================================================
 
     }
 
-    public function edit(Purchase $purchase)
+    public function edit(Transfer $transfer)
     {
         OwnLibrary::validateAccess($this->moduleId,3);
         $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
-        $suppliers = Supplier::select('id','name')->orderBy('name')->get();
 
-        $product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
+        $product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
 
-        return view('backend.purchase.edit',compact('purchase', 'warehouses', 'suppliers', 'product_purchase_data'));
+        return view('backend.transfer.edit',compact('transfer', 'warehouses', 'product_transfer_data'));
     }
 
-    public function update(Request $request, Purchase $purchase)
+    public function update(Request $request, Transfer $transfer)
     {
         $rules = [
-            "warehouse" => "required|integer",
+            "from_warehouse_id" => "required|integer",
+            "to_warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
             "qty.*" => "required",
@@ -229,6 +222,9 @@ class TransferController extends Controller
         ];
 
         $message = [
+            "from_warehouse_id.required" => "From Warehouse is required",
+            "to_warehouse_id.required" => "To Warehouse is required",
+
             "product_id.*.required" => "Product is required",
             "qty.*.required" => "Quantity is required",
             "waste.*.required" => "Waste is required",
@@ -245,163 +241,167 @@ class TransferController extends Controller
         }else{
             if(count($request->product_id) > 0){
                 DB::beginTransaction();
+                try {
 
-                $lims_purchase_data = Purchase::find($purchase->id);
-                $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
-                foreach ($lims_product_purchase_data as $product_purchase_data) {
+                    $lims_transfer_data = Transfer::find($transfer->id);
+                    $lims_product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
 
-                    $old_qty_value   = $product_purchase_data->qty;
-                    $old_waste_value = $product_purchase_data->waste_qty;
+                    foreach ($lims_product_transfer_data as $product_transfer_data) {
 
-                    $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-                    $lims_product_data = Product::find($product_purchase_data->product_id);
+                        $old_qty_value   = $product_transfer_data->qty;
+                        $old_waste_value = $product_transfer_data->waste_qty;
 
-                    $lims_product_warehouse_data = Product_Warehouse::where([
-                        ['product_id', $product_purchase_data->product_id],
-                        ['warehouse_id', $lims_purchase_data->warehouse_id],
-                    ])->first();
+                        $lims_purchase_unit_data = Unit::find($product_transfer_data->purchase_unit_id);
+                        $lims_product_data = Product::find($product_transfer_data->product_id);
 
-                    $lims_product_data->qty -= $old_qty_value;
-                    $lims_product_data->waste_qty -= $old_waste_value;
+                        $lims_product_from_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $product_transfer_data->product_id],
+                            ['warehouse_id', $lims_transfer_data->from_warehouse_id],
+                        ])->first();
 
-                    $lims_product_warehouse_data->qty -= $old_qty_value;
-                    $lims_product_warehouse_data->waste_qty -= $old_waste_value;
-                    $lims_product_warehouse_data->save();
+                        $lims_product_from_warehouse_data->qty += $old_qty_value;
+                        $lims_product_from_warehouse_data->waste_qty += $old_waste_value;
+                        $lims_product_from_warehouse_data->save();
 
-                    $lims_product_data->save();
-                    $product_purchase_data->delete();
-                }
+                        $lims_product_to_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $product_transfer_data->product_id],
+                            ['warehouse_id', $lims_transfer_data->to_warehouse_id],
+                        ])->first();
+
+                        $lims_product_to_warehouse_data->qty -= $old_qty_value;
+                        $lims_product_to_warehouse_data->waste_qty -= $old_waste_value;
+                        $lims_product_to_warehouse_data->save();
+
+                        $product_transfer_data->delete();
+                    }
 
 
-                $purchase->warehouse_id         = $request->warehouse;
-                $purchase->supplier_id          = $request->supplier;
-                $purchase->item                 = count($request->product_id);
+                    $lims_transfer_data->from_warehouse_id    = $request->from_warehouse_id;
+                    $lims_transfer_data->to_warehouse_id      = $request->to_warehouse_id;
+                    $lims_transfer_data->item                 = count($request->product_id);
 
-                $purchase->total_qty            = 0;
-                $purchase->total_waste_qty      = 0;
+                    $lims_transfer_data->total_qty            = 0;
+                    $lims_transfer_data->total_waste_qty      = 0;
 
-                $purchase->total_cost           = $request->total_price_input;
-                $purchase->grand_total          = $request->total_price_input;
-                $purchase->grand_total_waste    = 0;
-                $purchase->status  = 1;
-                $purchase->note  = $request->note;
+                    $lims_transfer_data->total_cost           = $request->total_price_input;
+                    $lims_transfer_data->grand_total          = $request->total_price_input;
+                    $lims_transfer_data->grand_total_waste    = 0;
+                    $lims_transfer_data->note  = $request->note;
 
-                if ($request->hasFile('document')){
-                    if($purchase->file) @unlink($purchase->document);
-                    $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
-                    $purchase->document = $purchase_document;
-                }
-                $purchase->save();
+                    if ($request->hasFile('document')){
+                        if($lims_transfer_data->file) @unlink($lims_transfer_data->document);
+                        $transfer_document = OwnLibrary::uploadImage($request->document, "transfer/document");
+                        $lims_transfer_data->document = $transfer_document;
+                    }
+                    $lims_transfer_data->save();
 
-                try {}catch(ValidationException $e) {
-                    DB::rollback();
-                    return Redirect::to('/purchase')
-                        ->withErrors( $e->getErrors() )
-                        ->withInput();
-                }catch(\Exception $e)
-                {
-                    DB::rollback();
-                    throw $e;
-                }
-
-                $grand_total_waste = 0;
-                $total_qty_input = 0;
-                $total_waste_input = 0;
-                for ($i = 0; count($request->product_id) > $i; $i++) {
-                    try {
+                
+                    $grand_total_waste = 0;
+                    $total_qty_input = 0;
+                    $total_waste_input = 0;
+                    for ($i = 0; count($request->product_id) > $i; $i++) {
+                    
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
                         $waste_qty    = $request->waste[$i] * $unit_data->value;
 
-                        $product_data->qty = $product_data->qty + $quantity;
-                        $product_data->waste_qty = $product_data->waste_qty + $waste_qty;
-
-                        $product_data->save();
-
-                        $product_warehouse_data = Product_Warehouse::where([
+                        $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
-                            ['warehouse_id', $request->warehouse ],
+                            ['warehouse_id', $request->from_warehouse_id ],
                         ])->first();
 
-                        //add quantity to warehouse
-                        if ($product_warehouse_data) {
-                            $product_warehouse_data->qty = $product_warehouse_data->qty + $quantity;
-                            $product_warehouse_data->waste_qty = $product_warehouse_data->waste_qty + $waste_qty;
-                        }
-                        else {
-                            $product_warehouse_data = new Product_Warehouse();
-                            $product_warehouse_data->product_id = $request->product_id[$i];
-                            $product_warehouse_data->warehouse_id = $request->warehouse;
-                            $product_warehouse_data->qty = $quantity;
-                            $product_warehouse_data->waste_qty = $waste_qty;
-                        }
-                        $product_warehouse_data->save();
+                        $lims_product_warehouse_data->qty -= $quantity;
+                        $lims_product_warehouse_data->waste_qty -= $waste_qty;
+                        $lims_product_warehouse_data->save();
+                       
 
-                        // Add to product purchase
-                        $product_purchase = new ProductPurchase();
-                        $product_purchase->purchase_id = $purchase->id ;
-                        $product_purchase->product_id = $request->product_id[$i];
-                        $product_purchase->qty = $request->qty[$i] * $unit_data->value;
-                        $product_purchase->waste_qty = $request->waste[$i] * $unit_data->value;
-                        $product_purchase->purchase_unit_id = $request->unit_id[$i];
-                        $product_purchase->net_unit_cost = $request->unit_price[$i];
-                        $product_purchase->total = $request->subtotal_input[$i];
-                        $product_purchase->waste_total = $request->waste[$i]*$request->unit_price[$i];
-                        $product_purchase->save();
+                    
+                        $lims_product_warehouse_data = Product_Warehouse::where([
+                            ['product_id', $request->product_id[$i]],
+                            ['warehouse_id', $request->to_warehouse_id ],
+                        ])->first();
 
-                    } catch (ValidationException $e) {
-                        DB::rollback();
-                        return Redirect::to('/purchase')
-                            ->withErrors($e->getErrors())
-                            ->withInput();
-                    } catch (\Exception $e) {
-                        DB::rollback();
-                        throw $e;
+                        //add quantity to destination warehouse
+                        if ($lims_product_warehouse_data){
+                            $lims_product_warehouse_data->qty += $quantity;
+                            $lims_product_warehouse_data->waste_qty = $lims_product_warehouse_data->waste_qty + $waste_qty;
+                        } else {
+                            $lims_product_warehouse_data = new Product_Warehouse();
+                            $lims_product_warehouse_data->product_id = $request->product_id[$i];
+                            $lims_product_warehouse_data->warehouse_id = $request->to_warehouse_id;
+                            $lims_product_warehouse_data->qty = $quantity;
+                            $lims_product_warehouse_data->waste_qty = $waste_qty;
+                        }
+                        $lims_product_warehouse_data->save();
+  
+                        // Add to product transfer
+                        $product_transfer = new ProductTransfer();
+                        $product_transfer->transfer_id = $transfer->id ;
+                        $product_transfer->product_id = $request->product_id[$i];
+                        $product_transfer->qty = $request->qty[$i] * $unit_data->value;
+                        $product_transfer->waste_qty = $request->waste[$i] * $unit_data->value;
+                        $product_transfer->purchase_unit_id = $request->unit_id[$i];
+                        $product_transfer->net_unit_cost = $request->unit_price[$i];
+                        $product_transfer->total = $request->subtotal_input[$i];
+                        $product_transfer->waste_total = $request->waste[$i]*$request->unit_price[$i];
+                        $product_transfer->save();
+
+                    
+
+                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
+                        $total_qty_input += $request->qty[$i] * $unit_data->value;
+                        $total_waste_input += $request->waste[$i] * $unit_data->value;
                     }
+            
+                    $up_transfer = Transfer::find($transfer->id);
+                    $up_transfer->grand_total_waste = $grand_total_waste;
 
-                    $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
-                    $total_qty_input += $request->qty[$i] * $unit_data->value;
-                    $total_waste_input += $request->waste[$i] * $unit_data->value;
+                    $up_transfer->total_qty        = $total_qty_input;
+                    $up_transfer->total_waste_qty  = $total_waste_input;
+                    $up_transfer->save();
+
+                    DB::commit();
+                } catch (ValidationException $e) {
+                    DB::rollback();
+                    return Redirect::to('/transfer')
+                        ->withErrors($e->getErrors())
+                        ->withInput();
+                } catch (\Exception $e) {
+                    DB::rollback();
+                    throw $e;
                 }
+
             }
 
-            $up_purchase = Purchase::find($purchase->id);
-            $up_purchase->grand_total_waste = $grand_total_waste;
-
-            $up_purchase->total_qty        = $total_qty_input;
-            $up_purchase->total_waste_qty  = $total_waste_input;
-
-            $up_purchase->save();
-
-            DB::commit();
-
-            session()->flash("success", 'Purchase updated successfully.');
-            return redirect()->route("purchase.index");
+            session()->flash("success", 'Transfer updated successfully.');
+            return redirect()->route("transfer.index");
         }
         // End of new store process===========================================
         //====================================================================
     }
 
-    public function purchase_details_get(Request $request){
-        $purchase_id = $request->purchase_id;
-        if($purchase_id){
-            $purchase = Purchase::find($purchase_id);
+    public function transfer_details_get(Request $request){
+        $transfer_id = $request->transfer_id;
+        if($transfer_id){
+            $transfer = Transfer::find($transfer_id);
 
             $html = '';
-            $html .= '<strong>Date: </strong>'.date("d/m/Y", strtotime($purchase->created_at));
-            $html .= '<br><strong>Reference: </strong>'.$purchase->reference_no;
+            $html .= '<strong>Date: </strong>'.date("d/m/Y", strtotime($transfer->created_at));
+            $html .= '<br><strong>Reference: </strong>'.$transfer->reference_no;
             $html .= '<br><br><div class="row"><div class="col-md-6"><strong>From</strong>';
-            $html .= '<br>'.$purchase->warehouse->name;
-            $html .= '<br>'.$purchase->warehouse->contact_no;
-            $html .= '<br>'.$purchase->warehouse->address;
+            $html .= '<br>'.$transfer->fromWarehouse->name;
+            $html .= '<br>'.$transfer->fromWarehouse->contact_no;
+            $html .= '<br>'.$transfer->fromWarehouse->address;
             $html .= '</div><div class="col-md-6"><div class="float-right"><strong>To:</strong>';
-            $html .= '<br><br><br>';
+            $html .= '<br>'.$transfer->toWarehouse->name;
+            $html .= '<br>'.$transfer->toWarehouse->contact_no;
+            $html .= '<br>'.$transfer->toWarehouse->address;
             $html .= '</div></div></div>';
 
-            $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase_id)->get();
+            $lims_product_transfer_data = ProductTransfer::where('transfer_id', $transfer_id)->get();
             $html .= '<br><br><br>
-                <table class="table table-bordered product-purchase-list">
+                <table class="table table-bordered product-transfer-list">
                     <thead>
                         <th>#</th>
                         <th>product</th>
@@ -413,49 +413,49 @@ class TransferController extends Controller
                     <tbody>';
 
                     $sl = 1;
-                    foreach ($lims_product_purchase_data as $key => $product_purchase_data) {
-                        $product = Product::find($product_purchase_data->product_id);
-                        $unit = Unit::find($product_purchase_data->purchase_unit_id);
+                    foreach ($lims_product_transfer_data as $key => $product_transfer_data) {
+                        $product = Product::find($product_transfer_data->product_id);
+                        $unit = Unit::find($product_transfer_data->purchase_unit_id);
 
                         $html .='<tr>';
                             $html .='<td><strong>'.$sl++.'</strong></td>';
                             $html .='<td>'.$product->name.' ('.$product->code.')</td>';
-                            $html .='<td class="text-right">'.$product_purchase_data->qty/$unit->value.' '.$unit->name.'</td>';
-                            $html .='<td class="text-right">'.$product_purchase_data->waste_qty/$unit->value.' '.$unit->name.'</td>';
-                            $html .='<td class="text-right">'.$product_purchase_data->net_unit_cost.'</td>';
-                            $html .='<td class="text-right">'.$product_purchase_data->total.'</td>';
+                            $html .='<td class="text-right">'.$product_transfer_data->qty/$unit->value.' '.$unit->name.'</td>';
+                            $html .='<td class="text-right">'.$product_transfer_data->waste_qty/$unit->value.' '.$unit->name.'</td>';
+                            $html .='<td class="text-right">'.$product_transfer_data->net_unit_cost.'</td>';
+                            $html .='<td class="text-right">'.$product_transfer_data->total.'</td>';
                         $html .='</tr>';
                     }
 
             $html .='<tr>';
                 $html .='<td colspan="5"><strong>Total</strong></td>';
-                $html .='<td class="text-right"><strong>'.number_format($purchase->grand_total, 2).'</strong></td>';
+                $html .='<td class="text-right"><strong>'.number_format($transfer->grand_total, 2).'</strong></td>';
             $html .='</tr>';
 
             $html .= '</tbody>
                     </table>';
-            $html .= '<div id="purchase-footer" class="modal-body">';
-                $html .= 'Note: '.$purchase->note;
+            $html .= '<div id="transfer-footer" class="modal-body">';
+                $html .= 'Note: '.$transfer->note;
                 $html .= '<br><br><strong>Created By:</strong>';
-                $html .= '<br>'.$purchase->userinfo->name;
-                $html .= '<br>'.$purchase->userinfo->email;
+                $html .= '<br>'.$transfer->user->name;
+                $html .= '<br>'.$transfer->user->email;
             $html .= '</div>';
 
             return $html;
         }
     }
 
-    public function purchaseFileDownload($id){
+    public function transferFileDownload ($id){
         $id = $id;
         if($id){
-            $purchase = Purchase::find($id);
-            if($purchase->document){
+            $transfer = Transfer::find($id);
+            if($transfer->document){
                 $headers = ['Content-Type: application/pdf'];
 
-                $a = str_replace('public/', '', $purchase->document);
+                $a = str_replace('public/', '', $transfer->document);
                 $file= public_path().'/'. $a;
 
-                $my_url = $purchase->document;
+                $my_url = $transfer->document;
                 $fileName = substr($my_url, strrpos($my_url, '/' )+1);
                 return response()->download($file, $fileName, $headers);
             }
@@ -464,60 +464,56 @@ class TransferController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Transfer $transfer)
     {
-        $role = Role::find(Auth::user()->role_id);
-        if($role->hasPermissionTo('purchases-delete')){
-            $lims_purchase_data = Purchase::find($id);
-            $lims_product_purchase_data = ProductPurchase::where('purchase_id', $id)->get();
-            $lims_payment_data = Payment::where('purchase_id', $id)->get();
-            foreach ($lims_product_purchase_data as $product_purchase_data) {
-                $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-                if ($lims_purchase_unit_data->operator == '*')
-                    $recieved_qty = $product_purchase_data->recieved * $lims_purchase_unit_data->operation_value;
-                else
-                    $recieved_qty = $product_purchase_data->recieved / $lims_purchase_unit_data->operation_value;
+        OwnLibrary::validateAccess($this->moduleId,4);
+        $lims_product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
+        DB::beginTransaction();
+        try {        
+            foreach ($lims_product_transfer_data as $product_transfer_data) {
+                $lims_purchase_unit_data = Unit::find($product_transfer_data->purchase_unit_id);
+                
+                $old_qty_value   = $product_transfer_data->qty;
+                $old_waste_value = $product_transfer_data->waste_qty;
 
-                $lims_product_data = Product::find($product_purchase_data->product_id);
-                if($product_purchase_data->variant_id) {
-                    $lims_product_variant_data = ProductVariant::select('id', 'qty')->FindExactProduct($lims_product_data->id, $product_purchase_data->variant_id)->first();
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithVariant($product_purchase_data->product_id, $product_purchase_data->variant_id, $lims_purchase_data->warehouse_id)
-                        ->first();
-                    $lims_product_variant_data->qty -= $recieved_qty;
-                    $lims_product_variant_data->save();
-                }
-                else {
-                    $lims_product_warehouse_data = Product_Warehouse::FindProductWithoutVariant($product_purchase_data->product_id, $lims_purchase_data->warehouse_id)
-                        ->first();
-                }
+                
+                $lims_product_from_warehouse_data = Product_Warehouse::where([
+                    ['product_id', $product_transfer_data->product_id],
+                    ['warehouse_id', $transfer->from_warehouse_id],
+                ])->first();
 
-                $lims_product_data->qty -= $recieved_qty;
-                $lims_product_warehouse_data->qty -= $recieved_qty;
+                $lims_product_from_warehouse_data->qty += $old_qty_value;
+                $lims_product_from_warehouse_data->waste_qty += $old_waste_value;
+                $lims_product_from_warehouse_data->save();
 
-                $lims_product_warehouse_data->save();
-                $lims_product_data->save();
-                $product_purchase_data->delete();
+                $lims_product_to_warehouse_data = Product_Warehouse::where([
+                    ['product_id', $product_transfer_data->product_id],
+                    ['warehouse_id', $transfer->to_warehouse_id],
+                ])->first();
+
+                $lims_product_to_warehouse_data->qty -= $old_qty_value;
+                $lims_product_to_warehouse_data->waste_qty -= $old_waste_value;
+                $lims_product_to_warehouse_data->save();
+
+                $product_transfer_data->delete();
             }
-            foreach ($lims_payment_data as $payment_data) {
-                if($payment_data->paying_method == "Cheque"){
-                    $payment_with_cheque_data = PaymentWithCheque::where('payment_id', $payment_data->id)->first();
-                    $payment_with_cheque_data->delete();
-                }
-                elseif($payment_data->paying_method == "Credit Card"){
-                    $payment_with_credit_card_data = PaymentWithCreditCard::where('payment_id', $payment_data->id)->first();
-                    $lims_pos_setting_data = PosSetting::latest()->first();
-                    \Stripe\Stripe::setApiKey($lims_pos_setting_data->stripe_secret_key);
-                    \Stripe\Refund::create(array(
-                        "charge" => $payment_with_credit_card_data->charge_id,
-                    ));
+            DB::commit();
+        } catch (ValidationException $e) {
+            DB::rollback();
+            return Redirect::to('purchase')
+                ->withErrors($e->getErrors())
+                ->withInput();
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
 
-                    $payment_with_credit_card_data->delete();
-                }
-                $payment_data->delete();
-            }
-
-            $lims_purchase_data->delete();
-            return redirect('purchases')->with('not_permitted', 'Purchase deleted successfully');;
+        if ($transfer->delete()){
+            session()->flash("success","Transfer deleted successfully");
+            return redirect()->back();
+        }else{
+            session()->flash("error","Transfer not deleted");
+            return redirect()->back();
         }
 
     }
