@@ -19,6 +19,7 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\AdjustmentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -76,9 +77,11 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('/products/produc-wise-row-short-get',[ProductController::class, 'product_wise_row_short_get'])->name('produc-wise-row-short.get');
 
     //Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
-    Route::resource("/stock-in",PurchaseController::class);
-    Route::post('/stock-in-details-get', [PurchaseController::class,'purchase_details_get'])->name('stock-in-details.get');
-    Route::get('stock-in-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('stockinFile.download');
+    Route::resource("/order",PurchaseController::class);
+    Route::post('/order-details-get', [PurchaseController::class,'purchase_details_get'])->name('order-details.get');
+    Route::get('order-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('orderFile.download');
+    Route::get('order-received/{id}', [PurchaseController::class,'orderReceived'])->name('order.received');
+    Route::get('order-label/{id}', [PurchaseController::class,'orderLabel'])->name('order.label');
 
     // Transfer
     Route::resource("/transfer",TransferController::class);
@@ -86,5 +89,11 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post("/transfer/get-available-qty",[TransferController::class,'getProductQty'])->name('transfer.get-available-qty');
     Route::post('/transfer-details-get', [TransferController::class,'transfer_details_get'])->name('transfer-details.get');
     Route::get('transfer-document-download/{id}', [TransferController::class,'transferFileDownload'])->name('transfer-purchaseFile.download');
+
+    // Adjustment
+    Route::resource("/qty_adjustment",AdjustmentController::class);
+    Route::post('adjustment/product-warehouse-qty-get', [AdjustmentController::class,'adjustment_product_warehouse_qty_get'])->name('adjustment-product-warehouse-qty.get');
+    Route::post("/adjustment/get-product",[AdjustmentController::class,'getProduct'])->name('adjustment.get-product');
+    Route::get('adjustment-document-download/{id}', [AdjustmentController::class,'adjustmentFileDownload'])->name('adjustmentFile.download');
 });
 

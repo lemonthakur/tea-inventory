@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class Purchase extends Model
+class Adjustment extends Model
 {
     use SoftDeletes;
     public static function boot()
@@ -25,29 +25,14 @@ class Purchase extends Model
         });
     }
 
-    public function supplier()
-    {
-    	return $this->belongsTo('App\Models\Supplier');
-    }
-
     public function warehouse()
     {
-    	return $this->belongsTo('App\Models\Warehouse');
+        return $this->belongsTo('App\Models\Warehouse', 'warehouse_id');
     }
 
-    public function userinfo(){
-        return $this->belongsTo(User::class,'user_id');
+    public function adjustment_projectst()
+    {
+        return $this->hasMany('App\Models\ProductAdjustment', 'adjustment_id');
     }
 
-    public function createdBy(){
-        return $this->belongsTo(User::class,'created_by');
-    }
-
-    public function updatedBy(){
-        return $this->belongsTo(User::class,'updated_by');
-    }
-
-    public function purchase_details(){
-        return $this->hasMany(ProductPurchase::class,'purchase_id','id');
-    }
 }

@@ -7,13 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class ProductPurchase extends Model
+class ProductAdjustment extends Model
 {
-    protected $table = 'product_purchases';
+    protected $table = 'product_adjustments';
 
     public function product()
     {
-    	return $this->belongsTo('App\Models\Product');
+        return $this->belongsTo('App\Models\Product', 'product_id');
     }
-    
 }

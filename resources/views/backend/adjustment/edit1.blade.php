@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Add Transfer")
+@section("page-title","Update Transfer")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -7,12 +7,13 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Add Transfer
+                        Update Transfer
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route('transfer.store')}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route("transfer.update",$transfer->id)}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
+                            @method('put')
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
@@ -23,7 +24,7 @@
                                             id="from_warehouse_id" name="from_warehouse_id">
                                         <option></option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('from_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                            <option value="{{$warehouse->id}}" @if(old('from_warehouse_id') == $warehouse->id  || $transfer->from_warehouse_id == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
 
@@ -40,7 +41,7 @@
                                             id="to_warehouse_id" name="to_warehouse_id">
                                         <option></option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id || $transfer->from_warehouse_id == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
 
@@ -57,6 +58,9 @@
                                     </label>
                                     <input id="file" type="file" class="form-control" name="document" />
                                     <span class="text-danger"> {{$errors->has("document") ? $errors->first("document") : ""}} </span>
+                                    @if($transfer->document)
+                                        <a href="{{route('transfer-purchaseFile.download',$transfer->id)}}">Download File</a>
+                                    @endif
                                 </div>
                             </div>
 
@@ -87,10 +91,15 @@
                                         </thead>
                                         <tbody>
 
+                                        <?php
+                                            $total_qty_input = 0;
+                                            $total_waste_input = 0;
+                                        ?>
                                         @if(!is_null(old("product_id")) && COUNT(old("product_id"))>0 && COUNT($errors->all())>0)
                                             <?php $trows = COUNT(old("product_id")); ?>
                                             @for($i=0; $trows>$i; $i++)
                                                 <?php
+
                                                     $row = '';
                                                     $product = \App\Models\Product::find(old("product_id.$i"));
                                                     $unit = App\Models\Unit::find($product->unit_id);
@@ -130,16 +139,62 @@
                                                 ?>
                                                 {!! $row !!}
                                             @endfor
+                                        @else
+                                            {{--in edit--}}
+                                            @foreach($product_transfer_data as $product_transfer)
+                                                <?php
+                                                $row = '';
+                                                $product = \App\Models\Product::find($product_transfer->product_id);
+                                                $unit = \App\Models\Unit::find($product_transfer->purchase_unit_id);
+
+                                                $stock_from_db = \App\Models\Product_Warehouse::where('product_id', $product_transfer->product_id)
+                                                                                                ->where('warehouse_id', $transfer->from_warehouse_id)
+                                                                                                ->first();
+
+                                                $row .= '<tr>';
+                                                $row .= '<td>'.$product->name.'</td>';
+                                                $row .= '<td>'.$product->code.'</td>';
+                                                $row .= '<td>'.$unit->name.'</td>';
+                                                $row .= '<td>
+                                                            <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
+                                                            <input type="number" class="form-control qty" name="qty[]" value="'.$product_transfer->qty/$unit->value.'" step="any" min="1" autocomplete="off">
+                                                            <input type="hidden" class="avaiableQty" name="avaiableQty" value="'.$stock_from_db->qty/$unit->value.'">
+                                                        </td>';
+                                                $row .= '<td>
+                                                            <input type="number" class="form-control waste" name="waste[]" value="'.$product_transfer->waste_qty/$unit->value.'" step="any">
+                                                            <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty" value="'.$stock_from_db->waste_qty/$unit->value.'">
+                                                        </td>';
+                                                $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
+                                                            <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
+                                                            <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product_transfer->purchase_unit_id.'">
+                                                        </td>';
+                                                $row .= '<td class="sub-total text-center">'.number_format($product_transfer->total, 2).'</td>';
+                                                $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.$product_transfer->total.'">';
+                                                $row .= '<td>
+                                                               <div>
+                                                                   <button type="button" class="btn btn-danger btn-xs btn-delete" title="delete">
+                                                                       <i class="far fa-trash-alt"></i>
+                                                                   </button>
+                                                               </div>
+                                                            </td>';
+                                                $row .= '</tr>';
+
+                                                $total_qty_input += $product_transfer->qty/$unit->value;
+                                                $total_waste_input += $product_transfer->waste_qty/$unit->value;
+                                                ?>
+                                                {!! $row !!}
+                                            @endforeach
+
                                         @endif
 
                                         </tbody>
                                         <tfoot class="tfoot active">
                                         <tr>
                                             <th colspan="3">Total</th>
-                                            <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input"), 2)}}</th>
-                                            <th id="total-waste" class="text-center">{{ number_format(old("total_waste_input"),2 ) }}</th>
+                                            <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input",$total_qty_input), 2)}}</th>
+                                            <th class="text-center" id="total-waste">{{ number_format(old("total_waste_input",$total_waste_input),2 ) }}</th>
                                             <th></th>
-                                            <th id="total" class="text-center">{{ number_format(old("total_price_input"), 2) }}</th>
+                                            <th id="total" class="text-center">{{ number_format(old("total_price_input",$transfer->grand_total), 2) }}</th>
                                             <th></th>
                                         </tr>
                                         </tfoot>
@@ -150,14 +205,14 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="Note">Note</label>
-                                    <textarea id="Note" class="form-control" name="note">{{ old('note') }}</textarea>
+                                    <textarea id="Note" class="form-control" name="note">{{ old('note',$transfer->note) }}</textarea>
                                     <span class="text-danger"></span>
                                 </div>
                             </div>
 
-                            <input type="hidden" id="total_qty_input" name="total_qty_input" value="{{ old("total_qty_input")}}" />
-                            <input type="hidden" id="total_price_input" name="total_price_input" value="{{ old("total_price_input") }}" />
-                            <input type="hidden" id="total_waste_input" name="total_waste_input" value="{{ old("total_waste_input") }}" />
+                            <input type="hidden" id="total_qty_input" name="total_qty_input" value="{{ old("total_qty_input",$total_qty_input)}}" />
+                            <input type="hidden" id="total_price_input" name="total_price_input" value="{{ old("total_price_input",$transfer->grand_total) }}" />
+                            <input type="hidden" id="total_waste_input" name="total_waste_input" value="{{ old("total_waste_input",$total_waste_input) }}" />
 
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -171,7 +226,6 @@
         </div>
         <!-- /.content -->
     </div>
-
 @endsection
 
 @section('js')

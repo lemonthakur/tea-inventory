@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Add Transfer")
+@section("page-title","Add Adjustment")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -7,44 +7,27 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Add Transfer
+                        Add Adjustment
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route('transfer.store')}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route('qty_adjustment.store')}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
-                                    <label for="warehouse">From Warehouse<span class="text-red">*</span></label>
+                                    <label for="warehouse">Warehouse<span class="text-red">*</span></label>
                                     <select
                                             class="form-control single-select2"
                                             data-placeholder="Select Warehouse" data-allow-clear="true"
-                                            id="from_warehouse_id" name="from_warehouse_id">
+                                            id="warehouse_id" name="warehouse_id">
                                         <option></option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('from_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                            <option value="{{$warehouse->id}}" @if(old('warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
 
-                                    <span class="text-danger"> {{$errors->has("from_warehouse_id") ? $errors->first("from_warehouse_id") : ""}} </span>
-                                </div>
-                            </div>
-
-                            <div class="col-md-4">
-                                <div class="form-group select2-parent">
-                                    <label for="warehouse">To Warehouse<span class="text-red">*</span></label>
-                                    <select
-                                            class="form-control single-select2"
-                                            data-placeholder="Select Warehouse" data-allow-clear="true"
-                                            id="to_warehouse_id" name="to_warehouse_id">
-                                        <option></option>
-                                        @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
-                                        @endforeach
-                                    </select>
-
-                                    <span class="text-danger"> {{$errors->has("to_warehouse_id") ? $errors->first("to_warehouse_id") : ""}} </span>
+                                    <span class="text-danger"> {{$errors->has("warehouse_id") ? $errors->first("warehouse_id") : ""}} </span>
                                 </div>
                             </div>
 
@@ -75,14 +58,13 @@
                                     <table id="order-table" class="table table-hover order-list" style="width: 100%;">
                                         <thead>
                                         <tr>
-                                            <th style="width: 15%; text-align: left;">Name</th>
+                                            <th style="width: 10%; text-align: left;">Name</th>
                                             <th style="width: 10%; text-align: left;">Code</th>
                                             <th style="width: 10%; text-align: left;">Unit</th>
                                             <th style="width: 19%;">Quantity</th>
                                             <th style="width: 19%">Waste</th>
-                                            <th style="width: 10%; text-align: left;">Unit Cost</th>
-                                            <th style="width: 10%; text-align: left;">SubTotal</th>
-                                            <th style="width: 7%; text-align: center;">Action</th>
+                                            <th style="width: 19%; text-align: center;">Action</th>
+                                            <th style="width: 7%; text-align: center;"><i class="far fa-trash-alt"></i></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -105,20 +87,23 @@
                                                     $row .= '<td>
                                                                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                                 <input type="number" class="form-control qty" name="qty[]" value="'.old("qty.$i").'" step="any" min="1" autocomplete="off">
-                                                                <input type="hidden" class="avaiableQty" name="avaiableQty" value="'.old("avaiableQty.$i").'">
                                                                 <span class="text-danger">'.$qty_errom_msg.'</span>
                                                             </td>';
                                                     $row .= '<td>
                                                                 <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
-                                                                <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty" value="'.old("avaiableWasteQty.$i").'">
                                                                 <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
-                                                    $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
-                                                            <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
+                                                    $row .= '<input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
-                                                        </td>';
-                                                    $row .= '<td class="sub-total text-center">'.number_format(old("subtotal_input.$i"), 2).'</td>';
-                                                    $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.old("subtotal_input.$i").'">';
+                                                            <input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.old("subtotal_input.$i").'">';
+
+                                                    $row .= '<td>
+                                                            <select class="form-control" name="action[]">
+                                                                <option value="-" '.((old("action.$i")=='-')?'selected="selected"':"").'>Subtraction</option>
+                                                                <option value="+" '.((old("action.$i")=='+')?'selected="selected"':"").'>Addition</option>
+                                                            </select>
+                                                            </td>';
+
                                                     $row .= '<td>
                                                                <div>
                                                                    <button type="button" class="btn btn-danger btn-xs btn-delete" title="delete">
@@ -139,7 +124,6 @@
                                             <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input"), 2)}}</th>
                                             <th id="total-waste" class="text-center">{{ number_format(old("total_waste_input"),2 ) }}</th>
                                             <th></th>
-                                            <th id="total" class="text-center">{{ number_format(old("total_price_input"), 2) }}</th>
                                             <th></th>
                                         </tr>
                                         </tfoot>
@@ -181,13 +165,13 @@
 
             $('#live-search').select2({
                 ajax: {
-                    url: "{{route('transfer.get-product')}}",
+                    url: "{{route('adjustment.get-product')}}",
                     type:"POST",
                     dataType:"JSON",
                     data: function (params) {
                         return  query = {
                             search: params.term,
-                            warehouse_id: $("#from_warehouse_id").val(),
+                            warehouse_id: $("#warehouse_id").val(),
                             _token: "{{csrf_token()}}"
                         }
                     },
@@ -204,7 +188,7 @@
             });
 
             $(document).on('select2:open', 'select.live-search', function (e) {
-                var warehouse_id = $('select[name="from_warehouse_id"]').val();
+                var warehouse_id = $('select[name="warehouse_id"]').val();
                 if(!warehouse_id){
                     $('#live-search').val(null).trigger('change.select2');
                     alert('Please select Warehouse!');
@@ -243,7 +227,7 @@
             if(meke_req) {
                 $.ajax({
                     type: "POST",
-                    url: "{!! route('product-wise-row.get') !!}",
+                    url: "{!! route('adjustment-product-warehouse-qty.get') !!}",
                     data: {product_id: product_id, _token: _token},
                     //dataType : 'HTML',
                     success: function (result) {
@@ -253,29 +237,6 @@
                     },
                     complete: function (e) {
                         $('#live-search').val(null).trigger('change.select2');
-
-                        // Ajax
-                         $.ajax({
-                            type: "POST",
-                            url: "{!! route('transfer.get-available-qty') !!}",
-                            data: {product_id: product_id, warehouse_id: $("#from_warehouse_id").val(), _token: _token},
-                            //dataType : 'HTML',
-                            success: function (ret) {
-                                obj = JSON.parse(ret);
-                                availabeQty = obj.qty;
-                                availabeWasteQty = obj.waste_qty;
-
-                                $("#"+row_count).closest('tr').find('.avaiableQty').val(availabeQty);
-                                $("#"+row_count).closest('tr').find('.avaiableWasteQty').val(availabeWasteQty);
-
-                            },
-                            complete: function (e) {
-                                //if(!notrigger)
-                                $(".qty").trigger('input');
-                            }
-                        });
-                         // End ajax
-
                     }
                 });
             }else{
@@ -290,24 +251,6 @@
             var net_unit_cost = $.trim($(this).closest('tr').find('.net_unit_cost').text());
 
             var product_id = $.trim($(this).closest('tr').find('.product_id').val());
-
-            availabeQty = $(this).closest('tr').find('.avaiableQty').val();
-            availabeWasteQty = $(this).closest('tr').find('.avaiableWasteQty').val();
-
-            var waste_to_cal = availabeWasteQty / availabeQty;
-            var to_show_in_waste = qty*waste_to_cal;
-            $(this).closest('tr').find('.waste').val(to_show_in_waste);
-
-            if(parseFloat(qty)>parseFloat(availabeQty)) {
-                qty = qty.substring(0, qty.length - 1);
-                to_show_in_waste = qty*waste_to_cal;
-
-                $(this).val(qty);
-                $(this).closest('tr').find('.waste').val(to_show_in_waste);
-
-                alert('Quantity exceeds stock quantity!. Available stock: '+availabeQty);
-                return false;
-            }
 
             var subtotal = parseFloat(qty*net_unit_cost).toFixed(2);
             $(this).closest('tr').find('.sub-total').text(subtotal);
@@ -324,12 +267,6 @@
 
         $(document).on("input", ".waste", function(){
             var waste_qty = $(this).val();
-            if(parseFloat(waste_qty) > (availabeWasteQty)) {
-                waste_qty = waste_qty.substring(0, waste_qty.length - 1);
-                $(this).val(waste_qty);
-                alert('Waste exceeds stock quantity!. Available stock: '+availabeWasteQty);
-                return false;
-            }
             $(".qty").trigger('input');
         });
 

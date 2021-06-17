@@ -422,10 +422,6 @@ class ProductController extends Controller
                 <input type="number" class="form-control qty" name="qty[]" value="1" step="any" min="1" autocomplete="off">
                 <input type="hidden" class="avaiableQty" name="avaiableQty[]" value="">
             </td>';
-            $row .= '<td>
-                <input type="number" class="form-control waste" name="waste[]" value="1" step="any">
-                <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty[]" value="">
-            </td>';
             $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                 <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                 <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
