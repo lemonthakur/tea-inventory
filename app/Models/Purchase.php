@@ -46,4 +46,8 @@ class Purchase extends Model
     public function updatedBy(){
         return $this->belongsTo(User::class,'updated_by');
     }
+
+    public function purchase_details(){
+        return $this->hasMany(ProductPurchase::class,'purchase_id','id');
+    }
 }

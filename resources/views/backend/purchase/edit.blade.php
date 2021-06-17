@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Update Stock")
+@section("page-title","Update Order")
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -7,13 +7,22 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Update Stock
+                        Update Order
                     </div>
                     <div class="card-body">
-                        <form method="post" action="{{route("stock-in.update",$purchase->id)}}" enctype="multipart/form-data" class="form-horizontal">
+                        <form method="post" action="{{route("order.update",$purchase->id)}}" enctype="multipart/form-data" class="form-horizontal">
                             <div class="row">
                             {{ csrf_field() }}
                             @method('put')
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="name">Order no.<span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control {{$errors->has("reference_no") ? "is-invalid":""}}" id="reference_no"
+                                           name="reference_no" placeholder="Enter order no" value="{{old("reference_no", $purchase->reference_no)}}" required>
+                                    <span class="text-danger"> {{$errors->has("reference_no") ? $errors->first("reference_no") : ""}} </span>
+                                </div>
+                            </div>
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
@@ -49,6 +58,15 @@
 
                             <div class="col-md-4">
                                 <div class="form-group select2-parent">
+                                    <label for="product">Select Product</label>
+                                    <select name="product" class="form-control live-search live-search-pro" id="live-search" style="width: 100%;">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group select2-parent">
                                     <label for="file">
                                         Attach Document
                                         <i class="far fa-question-circle" data-toggle="tooltip" data-placement="top"
@@ -57,16 +75,17 @@
                                     <input id="file" type="file" class="form-control" name="document" />
                                     <span class="text-danger"> {{$errors->has("document") ? $errors->first("document") : ""}} </span>
                                     @if($purchase->document)
-                                        <a href="{{route('stockinFile.download',$purchase->id)}}">Download File</a>
+                                        <a href="{{route('orderFile.download',$purchase->id)}}">Download File</a>
                                     @endif
                                 </div>
                             </div>
 
-                            <div class="col-md-12">
+                            <div class="col-md-4">
                                 <div class="form-group select2-parent">
-                                    <label for="product">Select Product</label>
-                                    <select name="product" class="form-control live-search live-search-pro" id="live-search" style="width: 100%;">
-                                        <option></option>
+                                    <label for="product">Status</label>
+                                    <select name="status" class="form-control " style="width: 100%;">
+                                        <option value="2" @if($purchase->status == 2){{'selected'}}@endif>Pending</option>
+                                        <option value="1" @if($purchase->status == 1){{'selected'}}@endif>Received</option>
                                     </select>
                                 </div>
                             </div>
@@ -81,7 +100,6 @@
                                             <th style="width: 10%; text-align: left;">Code</th>
                                             <th style="width: 10%; text-align: left;">Unit</th>
                                             <th style="width: 19%;">Quantity</th>
-                                            <th style="width: 19%">Waste</th>
                                             <th style="width: 10%; text-align: left;">Unit Cost</th>
                                             <th style="width: 10%; text-align: left;">SubTotal</th>
                                             <th style="width: 7%; text-align: center;">Action</th>
@@ -91,7 +109,6 @@
 
                                         <?php
                                             $total_qty_input = 0;
-                                            $total_waste_input = 0;
                                         ?>
                                         @if(!is_null(old("product_id")) && COUNT(old("product_id"))>0 && COUNT($errors->all())>0)
                                             <?php $trows = COUNT(old("product_id")); ?>
@@ -108,15 +125,10 @@
                                                     $row .= '<td>'.$unit->name.'</td>';
 
                                                     $qty_errom_msg = $errors->has("qty.$i") ? $errors->first("qty.$i") : '';
-                                                    $waste_errom_msg = $errors->has("waste.$i") ? $errors->first("waste.$i") : '';
                                                     $row .= '<td>
                                                                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                                 <input type="number" class="form-control qty" name="qty[]" value="'.old("qty.$i").'" step="any" min="1" autocomplete="off">
                                                                 <span class="text-danger">'.$qty_errom_msg.'</span>
-                                                            </td>';
-                                                    $row .= '<td>
-                                                                <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
-                                                                <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
                                                     $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
@@ -151,9 +163,6 @@
                                                             <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                             <input type="number" class="form-control qty" name="qty[]" value="'.$product_purchas->qty/$unit->value.'" step="any" min="1" autocomplete="off">
                                                         </td>';
-                                                $row .= '<td>
-                                                            <input type="number" class="form-control waste" name="waste[]" value="'.$product_purchas->waste_qty/$unit->value.'" step="any">
-                                                        </td>';
                                                 $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product_purchas->purchase_unit_id.'">
@@ -170,7 +179,6 @@
                                                 $row .= '</tr>';
 
                                                 $total_qty_input += $product_purchas->qty/$unit->value;
-                                                $total_waste_input += $product_purchas->waste_qty/$unit->value;
                                                 ?>
                                                 {!! $row !!}
                                             @endforeach
@@ -182,7 +190,6 @@
                                         <tr>
                                             <th colspan="3">Total</th>
                                             <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input",$total_qty_input), 2)}}</th>
-                                            <th class="text-center" id="total-waste">{{ number_format(old("total_waste_input",$total_waste_input),2 ) }}</th>
                                             <th></th>
                                             <th id="total" class="text-center">{{ number_format(old("total_price_input",$purchase->grand_total), 2) }}</th>
                                             <th></th>
@@ -202,7 +209,6 @@
 
                             <input type="hidden" id="total_qty_input" name="total_qty_input" value="{{ old("total_qty_input",$total_qty_input)}}" />
                             <input type="hidden" id="total_price_input" name="total_price_input" value="{{ old("total_price_input",$purchase->grand_total) }}" />
-                            <input type="hidden" id="total_waste_input" name="total_waste_input" value="{{ old("total_waste_input",$total_waste_input) }}" />
 
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -251,11 +257,9 @@
             deleteButton.closest('tr').remove();
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
         });
 
@@ -278,12 +282,6 @@
                         $('#order-table tbody').prepend(result);
                     },
                     complete: function (e) {
-                        //$('#live-search').trigger('select2');
-                        //$("#live-search").val('').select2();
-                        //$('#live-search').select2('data', {id: '', a_key: ''});
-                        //$('#live-search').val(''); // Select the option with a value of '1'
-                        //$('#live-search').trigger('change'); // Notify any JS components that the value changed
-                        //spinnerB.hide();
                         $('#live-search').val(null).trigger('change.select2');
                         $(".qty").trigger('input');
                     }
@@ -302,11 +300,9 @@
             $(this).closest('tr').find('.subtotal-input').val(parseFloat(qty*net_unit_cost));
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
         });
 
@@ -317,15 +313,6 @@
         function total_qty(){
             var total = 0;
             $(".qty").each(function() {
-                total += parseFloat($(this).val());
-            });
-            if(isNaN(total)) return 0;
-            return total;
-        }
-
-        function total_waste(){
-            var total = 0;
-            $(".waste").each(function() {
                 total += parseFloat($(this).val());
             });
             if(isNaN(total)) return 0;

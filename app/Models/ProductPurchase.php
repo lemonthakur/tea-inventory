@@ -10,5 +10,10 @@ use Illuminate\Support\Facades\Auth;
 class ProductPurchase extends Model
 {
     protected $table = 'product_purchases';
+
+    public function product()
+    {
+    	return $this->belongsTo('App\Models\Product');
+    }
     
 }

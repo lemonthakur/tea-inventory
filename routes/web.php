@@ -77,9 +77,11 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('/products/produc-wise-row-short-get',[ProductController::class, 'product_wise_row_short_get'])->name('produc-wise-row-short.get');
 
     //Route::get('/purchase/create', [PurchaseController::class,'create'])->name('purchase.create');
-    Route::resource("/stock-in",PurchaseController::class);
-    Route::post('/stock-in-details-get', [PurchaseController::class,'purchase_details_get'])->name('stock-in-details.get');
-    Route::get('stock-in-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('stockinFile.download');
+    Route::resource("/order",PurchaseController::class);
+    Route::post('/order-details-get', [PurchaseController::class,'purchase_details_get'])->name('order-details.get');
+    Route::get('order-document-download/{id}', [PurchaseController::class,'purchaseFileDownload'])->name('orderFile.download');
+    Route::get('order-received/{id}', [PurchaseController::class,'orderReceived'])->name('order.received');
+    Route::get('order-label/{id}', [PurchaseController::class,'orderLabel'])->name('order.label');
 
     // Transfer
     Route::resource("/transfer",TransferController::class);
