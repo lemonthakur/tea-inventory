@@ -192,7 +192,8 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview {{ ($routeName == 'order.index' || $routeName == 'order.create' || $routeName == 'order.edit') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ ($routeName == 'order.index' || $routeName == 'order.create' ||
+                $routeName == 'order.edit' || $routeName == 'order.label') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
@@ -218,7 +219,8 @@
                     </ul>
                 </li>
 
-                <li class="nav-item has-treeview {{ ($routeName == 'transfer.index' || $routeName == 'transfer.create') ? 'menu-open' : '' }}">
+                <li class="nav-item has-treeview {{ ($routeName == 'transfer.index' || $routeName == 'transfer.create' ||
+                $routeName == 'transfer.edit' || $routeName == 'transfer-received.index') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
                         <p>
@@ -229,7 +231,7 @@
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
                             <a href="{{route("transfer.index")}}"
-                               class="nav-link {{ ($routeName == 'transfer.index') ? 'active' : '' }}">
+                               class="nav-link {{ ($routeName == 'transfer.index' || $routeName == 'transfer.edit') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Transfer List</p>
                             </a>
@@ -239,6 +241,13 @@
                                class="nav-link {{ ($routeName == 'transfer.create') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Add Transfer</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("transfer-received.index")}}"
+                               class="nav-link {{ ($routeName == 'transfer-received.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Received Transfer</p>
                             </a>
                         </li>
                     </ul>
