@@ -209,7 +209,7 @@
                 minimumInputLength: 2,
             });
         });
-        
+
         $(document).on('click','.btn-delete',function () {
             let deleteButton = $(this);
             deleteButton.closest('tr').remove();
@@ -222,6 +222,7 @@
         });
 
         var _token = $('input[name="_token"]').val();
+
         $(document).on("change", ".live-search-pro", function(){
             var product_id = $(this).val();
 

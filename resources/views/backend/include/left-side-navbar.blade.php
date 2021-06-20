@@ -253,6 +253,32 @@
                     </ul>
                 </li>
 
+                <li class="nav-item has-treeview {{ ($routeName == 'production.index' || $routeName == 'production.create') ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link">
+                        <i class="nav-icon fas fa-user"></i>
+                        <p>
+                            Production
+                            <i class="right fas fa-angle-left"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="{{route("production.index")}}"
+                               class="nav-link {{ ($routeName == 'production.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Production List</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{route("production.create")}}"
+                               class="nav-link {{ ($routeName == 'production.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Production Create</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
                 <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
