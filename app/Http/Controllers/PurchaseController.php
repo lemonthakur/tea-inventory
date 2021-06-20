@@ -17,6 +17,7 @@ use App\Models\Product_Warehouse;
 use App\Models\User;
 use DB;
 use Auth;
+use Carbon\Carbon;
 
 class PurchaseController extends Controller
 {
@@ -120,6 +121,14 @@ class PurchaseController extends Controller
                     $purchase->grand_total          = $request->total_price_input;
                     $purchase->status  = $request->status;
                     $purchase->note  = $request->note;
+                    if($request->status == 1){
+                        $purchase->received_date = Carbon::now();
+                        $purchase->received_by = Auth::user()->id;
+                    }
+                    else{
+                        $purchase->received_date = NULL;
+                        $purchase->received_by = NULL;
+                    }
 
                     if ($request->hasFile('document')){
                         $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
@@ -282,7 +291,14 @@ class PurchaseController extends Controller
                     $purchase->grand_total          = $request->total_price_input;
                     $purchase->status  = 1;
                     $purchase->note  = $request->note;
-
+                    if($request->status == 1){
+                        $purchase->received_date = Carbon::now();
+                        $purchase->received_by = Auth::user()->id;
+                    }
+                    else{
+                        $purchase->received_date = NULL;
+                        $purchase->received_by = NULL;
+                    }
 
                     $purchase->save();
 
@@ -383,6 +399,8 @@ class PurchaseController extends Controller
                     $product_warehouse_data->save();
                 }
                 $purchase->status = 1;
+                $purchase->received_date = Carbon::now();
+                $purchase->received_by = Auth::user()->id;
                 $purchase->save();
 
                 DB::commit();
@@ -408,15 +426,24 @@ class PurchaseController extends Controller
         if($purchase_id){
             $purchase = Purchase::find($purchase_id);
 
+            $status = ($purchase->status==1) ? "Received" : "Pending";
+            $received_date = ($purchase->received_date) ? date("d/m/Y", strtotime($purchase->received_date)) : "";
+            $received_by = ($purchase->received_by) ? $purchase->received_by_name->name ?? '' : "";
+
             $html = '';
+            $html .= '<div class="row"><div class="col-md-6">';
             $html .= '<strong>Date: </strong>'.date("d/m/Y", strtotime($purchase->created_at));
             $html .= '<br><strong>Reference: </strong>'.$purchase->reference_no;
-            $html .= '<br><br><div class="row"><div class="col-md-6"><strong>From</strong>';
+            $html .= '<br><strong>Status: </strong>'.$status;
+            $html .= '<br><strong>Received By: </strong>'.$received_by;
+            $html .= '<br><strong>Received Date: </strong>'.$received_date;
+            $html .= '</div>';
+            $html .= '<div class="col-md-6"><div class="float-right"> <strong>Warehouse:</strong>';
             $html .= '<br>'.$purchase->warehouse->name;
             $html .= '<br>'.$purchase->warehouse->contact_no;
             $html .= '<br>'.$purchase->warehouse->address;
-            $html .= '</div><div class="col-md-6"><div class="float-right"><strong>To:</strong>';
-            $html .= '<br><br><br>';
+            //$html .= '</div><div class="col-md-6"><div class="float-right"><strong><!--To:--></strong>';
+            $html .= '<br>';
             $html .= '</div></div></div>';
 
             $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase_id)->get();

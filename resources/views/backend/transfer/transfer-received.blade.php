@@ -180,8 +180,16 @@
                     });
 
                 }
-
             }
+
+            $("#print-btn").on("click", function(){
+                var divToPrint=document.getElementById('transfer-details');
+                var newWin=window.open('','Print-Window');
+                newWin.document.open();
+                newWin.document.write('<link rel="stylesheet" href="<?php echo asset('public/admin-lte/dist/css/adminlte.min.css') ?>" type="text/css"><style type="text/css">@media print {.modal-dialog { max-width: 1000px;} #print-btn, #close-btn {visibility: hidden;} }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
+                newWin.document.close();
+                setTimeout(function(){newWin.close();},10);
+            });
 
         });
     </script>

@@ -50,4 +50,8 @@ class Purchase extends Model
     public function purchase_details(){
         return $this->hasMany(ProductPurchase::class,'purchase_id','id');
     }
+
+    public function received_by_name(){
+        return $this->belongsTo(User::class,'received_by');
+    }
 }
