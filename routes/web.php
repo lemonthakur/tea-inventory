@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserAccessController;
@@ -95,5 +96,17 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('adjustment/product-warehouse-qty-get', [AdjustmentController::class,'adjustment_product_warehouse_qty_get'])->name('adjustment-product-warehouse-qty.get');
     Route::post("/adjustment/get-product",[AdjustmentController::class,'getProduct'])->name('adjustment.get-product');
     Route::get('adjustment-document-download/{id}', [AdjustmentController::class,'adjustmentFileDownload'])->name('adjustmentFile.download');
+
+    Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
+
+    //Production
+    Route::get('productions',[ProductionController::class,'index'])->name('production.index');
+    Route::get('productions/create',[ProductionController::class,'create'])->name('production.create');
+    Route::post('productions',[ProductionController::class,'store'])->name('production.store');
+    Route::get('productions/{id}',[ProductionController::class,'show'])->name('production.show');
+    Route::get('productions/{id}/edit',[ProductionController::class,'edit'])->name('production.edit');
+    Route::put('productions/{id}',[ProductionController::class,'update'])->name('production.update');
+    Route::post('productions/add-to-cart',[ProductionController::class,'cartAdd'])->name('production.add.cart');
+    Route::post('productions/remove-cart',[ProductionController::class,'removeCart'])->name('production.remove.cart');
 });
 
