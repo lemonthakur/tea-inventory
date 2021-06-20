@@ -66,7 +66,6 @@
                                             <th style="width: 10%; text-align: left;">Code</th>
                                             <th style="width: 10%; text-align: left;">Unit</th>
                                             <th style="width: 19%;">Quantity</th>
-                                            <th style="width: 19%">Waste</th>
                                             <th style="width: 19%; text-align: center;">Action</th>
                                             <th style="width: 7%; text-align: center;"><i class="far fa-trash-alt"></i></th>
                                         </tr>
@@ -75,7 +74,6 @@
 
                                         <?php
                                             $total_qty_input = 0;
-                                            $total_waste_input = 0;
                                         ?>
                                         @if(!is_null(old("product_id")) && COUNT(old("product_id"))>0 && COUNT($errors->all())>0)
                                             <?php $trows = COUNT(old("product_id")); ?>
@@ -91,24 +89,20 @@
                                                     $row .= '<td>'.$unit->name.'</td>';
 
                                                     $qty_errom_msg = $errors->has("qty.$i") ? $errors->first("qty.$i") : '';
-                                                    $waste_errom_msg = $errors->has("waste.$i") ? $errors->first("waste.$i") : '';
                                                     $row .= '<td>
                                                                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                                 <input type="number" class="form-control qty" name="qty[]" value="'.old("qty.$i").'" step="any" min="1" autocomplete="off">
                                                                 <span class="text-danger">'.$qty_errom_msg.'</span>
-                                                            </td>';
-                                                    $row .= '<td>
-                                                                <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
-                                                                <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
                                                     $row .= '<input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
                                                             <input type="hidden" class="subtotal-input" name="subtotal_input[]" value="'.old("subtotal_input.$i").'">';
 
                                                     $row .= '<td>
-                                                            <select class="form-control" name="action[]">
-                                                                <option value="-" '.((old("action.$i")=='-')?'selected="selected"':"").'>Subtraction</option>
+                                                            <select class="form-control" name="action[]" required>
+                                                                <option value="">Select</option>
                                                                 <option value="+" '.((old("action.$i")=='+')?'selected="selected"':"").'>Addition</option>
+                                                                <option value="-" '.((old("action.$i")=='-')?'selected="selected"':"").'>Subtraction</option>
                                                             </select>
                                                             </td>';
 
@@ -139,16 +133,14 @@
                                                             <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                             <input type="number" class="form-control qty" name="qty[]" value="'.(($product_adjustment->qty)? $product_adjustment->qty / $unit->value : 0 ) .'" step="any" min="1" autocomplete="off">
                                                         </td>';
-                                                $row .= '<td>
-                                                            <input type="number" class="form-control waste" name="waste[]" value="'. (($product_adjustment->waste_qty)? $product_adjustment->waste_qty / $unit->value : 0 ) .'" step="any">
-                                                        </td>';
                                                 $row .= '<input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                          <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
                                                          <input type="hidden" class="subtotal-input" name="subtotal_input[]" value="">';
                                                 $row .= '<td>
-                                                            <select class="form-control" name="action[]">
-                                                                <option value="-" '.(($product_adjustment->action=='-')?'selected="selected"':"").'>Subtraction</option>
+                                                            <select class="form-control" name="action[]" required>
+                                                                <option value="">Select</option>
                                                                 <option value="+" '.(($product_adjustment->action=='+')?'selected="selected"':"").'>Addition</option>
+                                                                <option value="-" '.(($product_adjustment->action=='-')?'selected="selected"':"").'>Subtraction</option>
                                                             </select>
                                                          </td>';
 
@@ -162,7 +154,6 @@
                                                 $row .= '</tr>';
 
                                                 $total_qty_input += $product_adjustment->qty/$unit->value;
-                                                $total_waste_input += $product_adjustment->waste_qty/$unit->value;
                                                 ?>
                                                 {!! $row !!}
                                             @endforeach
@@ -173,7 +164,6 @@
                                         <tr>
                                             <th colspan="3">Total</th>
                                             <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input", $total_qty_input), 2)}}</th>
-                                            <th id="total-waste" class="text-center">{{ number_format(old("total_waste_input", $total_waste_input),2 ) }}</th>
                                             <th></th>
                                             <th></th>
                                         </tr>
@@ -192,8 +182,6 @@
 
                             <input type="hidden" id="total_qty_input" name="total_qty_input" value="{{ old("total_qty_input")}}" />
                             <input type="hidden" id="total_price_input" name="total_price_input" value="{{ old("total_price_input") }}" />
-                            <input type="hidden" id="total_waste_input" name="total_waste_input" value="{{ old("total_waste_input") }}" />
-
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
                             </div>
@@ -255,16 +243,13 @@
             deleteButton.closest('tr').remove();
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
         });
 
         var availabeQty = 0;
-        var availabeWasteQty = 0;
         var row_count = 1;
         var _token = $('input[name="_token"]').val();
         $(document).on("change", ".live-search-pro", function(){
@@ -308,31 +293,15 @@
             $(this).closest('tr').find('.subtotal-input').val(parseFloat(qty*net_unit_cost));
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
-        });
-
-        $(document).on("input", ".waste", function(){
-            var waste_qty = $(this).val();
-            $(".qty").trigger('input');
         });
 
         function total_qty(){
             var total = 0;
             $(".qty").each(function() {
-                total += parseFloat($(this).val());
-            });
-            if(isNaN(total)) return 0;
-            return total;
-        }
-
-        function total_waste(){
-            var total = 0;
-            $(".waste").each(function() {
                 total += parseFloat($(this).val());
             });
             if(isNaN(total)) return 0;

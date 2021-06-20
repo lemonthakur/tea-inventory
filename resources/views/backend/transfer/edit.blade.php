@@ -23,8 +23,8 @@
                                             data-placeholder="Select Warehouse" data-allow-clear="true"
                                             id="from_warehouse_id" name="from_warehouse_id">
                                         <option></option>
-                                        @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('from_warehouse_id') == $warehouse->id  || $transfer->from_warehouse_id == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                        @foreach($warehouse_from as $warehouse_f)
+                                            <option value="{{$warehouse_f->id}}" @if(old('from_warehouse_id') == $warehouse_f->id  || $transfer->from_warehouse_id == $warehouse_f->id) selected @endif>{{ucwords($warehouse_f->name)}}</option>
                                         @endforeach
                                     </select>
 
@@ -41,7 +41,7 @@
                                             id="to_warehouse_id" name="to_warehouse_id">
                                         <option></option>
                                         @foreach($warehouses as $warehouse)
-                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id || $transfer->from_warehouse_id == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                            <option value="{{$warehouse->id}}" @if(old('to_warehouse_id') == $warehouse->id || $transfer->to_warehouse_id == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
                                         @endforeach
                                     </select>
 
@@ -83,7 +83,6 @@
                                             <th style="width: 10%; text-align: left;">Code</th>
                                             <th style="width: 10%; text-align: left;">Unit</th>
                                             <th style="width: 19%;">Quantity</th>
-                                            <th style="width: 19%">Waste</th>
                                             <th style="width: 10%; text-align: left;">Unit Cost</th>
                                             <th style="width: 10%; text-align: left;">SubTotal</th>
                                             <th style="width: 7%; text-align: center;">Action</th>
@@ -93,7 +92,6 @@
 
                                         <?php
                                             $total_qty_input = 0;
-                                            $total_waste_input = 0;
                                         ?>
                                         @if(!is_null(old("product_id")) && COUNT(old("product_id"))>0 && COUNT($errors->all())>0)
                                             <?php $trows = COUNT(old("product_id")); ?>
@@ -110,17 +108,11 @@
                                                     $row .= '<td>'.$unit->name.'</td>';
 
                                                     $qty_errom_msg = $errors->has("qty.$i") ? $errors->first("qty.$i") : '';
-                                                    $waste_errom_msg = $errors->has("waste.$i") ? $errors->first("waste.$i") : '';
                                                     $row .= '<td>
                                                                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                                                                 <input type="number" class="form-control qty" name="qty[]" value="'.old("qty.$i").'" step="any" min="1" autocomplete="off">
                                                                 <input type="hidden" class="avaiableQty" name="avaiableQty" value="'.old("avaiableQty.$i").'">
                                                                 <span class="text-danger">'.$qty_errom_msg.'</span>
-                                                            </td>';
-                                                    $row .= '<td>
-                                                                <input type="number" class="form-control waste" name="waste[]" value="'.old("waste.$i").'" step="any">
-                                                                <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty" value="'.old("avaiableWasteQty.$i").'">
-                                                                <span class="text-danger">'.$waste_errom_msg.'</span>
                                                             </td>';
                                                     $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
@@ -160,10 +152,6 @@
                                                             <input type="number" class="form-control qty" name="qty[]" value="'.$product_transfer->qty/$unit->value.'" step="any" min="1" autocomplete="off">
                                                             <input type="hidden" class="avaiableQty" name="avaiableQty" value="'.$stock_from_db->qty/$unit->value.'">
                                                         </td>';
-                                                $row .= '<td>
-                                                            <input type="number" class="form-control waste" name="waste[]" value="'.$product_transfer->waste_qty/$unit->value.'" step="any">
-                                                            <input type="hidden" class="avaiableWasteQty" name="avaiableWasteQty" value="'.$stock_from_db->waste_qty/$unit->value.'">
-                                                        </td>';
                                                 $row .= '<td class="net_unit_cost text-center">'.$product->product_price.'
                                                             <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
                                                             <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product_transfer->purchase_unit_id.'">
@@ -180,7 +168,6 @@
                                                 $row .= '</tr>';
 
                                                 $total_qty_input += $product_transfer->qty/$unit->value;
-                                                $total_waste_input += $product_transfer->waste_qty/$unit->value;
                                                 ?>
                                                 {!! $row !!}
                                             @endforeach
@@ -192,7 +179,6 @@
                                         <tr>
                                             <th colspan="3">Total</th>
                                             <th id="total-qty" class="text-center">{{ number_format(old("total_qty_input",$total_qty_input), 2)}}</th>
-                                            <th class="text-center" id="total-waste">{{ number_format(old("total_waste_input",$total_waste_input),2 ) }}</th>
                                             <th></th>
                                             <th id="total" class="text-center">{{ number_format(old("total_price_input",$transfer->grand_total), 2) }}</th>
                                             <th></th>
@@ -212,7 +198,6 @@
 
                             <input type="hidden" id="total_qty_input" name="total_qty_input" value="{{ old("total_qty_input",$total_qty_input)}}" />
                             <input type="hidden" id="total_price_input" name="total_price_input" value="{{ old("total_price_input",$transfer->grand_total) }}" />
-                            <input type="hidden" id="total_waste_input" name="total_waste_input" value="{{ old("total_waste_input",$total_waste_input) }}" />
 
                             <div class="col-md-12 text-right">
                                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -274,16 +259,13 @@
             deleteButton.closest('tr').remove();
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
         });
 
         var availabeQty = 0;
-        var availabeWasteQty = 0;
         var row_count = 1;
         var _token = $('input[name="_token"]').val();
         $(document).on("change", ".live-search-pro", function(){
@@ -317,10 +299,8 @@
                             success: function (ret) {
                                 obj = JSON.parse(ret);
                                 availabeQty = obj.qty;
-                                availabeWasteQty = obj.waste_qty;
 
                                 $("#"+row_count).closest('tr').find('.avaiableQty').val(availabeQty);
-                                $("#"+row_count).closest('tr').find('.avaiableWasteQty').val(availabeWasteQty);
 
                             },
                             complete: function (e) {
@@ -346,18 +326,11 @@
             var product_id = $.trim($(this).closest('tr').find('.product_id').val());
 
             availabeQty = $(this).closest('tr').find('.avaiableQty').val();
-            availabeWasteQty = $(this).closest('tr').find('.avaiableWasteQty').val();
-
-            var waste_to_cal = availabeWasteQty / availabeQty;
-            var to_show_in_waste = qty*waste_to_cal;
-            $(this).closest('tr').find('.waste').val(to_show_in_waste);
 
             if(parseFloat(qty)>parseFloat(availabeQty)) {
                 qty = qty.substring(0, qty.length - 1);
-                to_show_in_waste = qty*waste_to_cal;
 
                 $(this).val(qty);
-                $(this).closest('tr').find('.waste').val(to_show_in_waste);
 
                 alert('Quantity exceeds stock quantity!. Available stock: '+availabeQty);
                 return false;
@@ -368,37 +341,15 @@
             $(this).closest('tr').find('.subtotal-input').val(parseFloat(qty*net_unit_cost));
 
             $("#total-qty").text(parseFloat(total_qty()).toFixed(2));
-            $("#total-waste").text(parseFloat(total_waste()).toFixed(2));
             $("#total").text(parseFloat(total_price()).toFixed(2));
 
             $("#total_qty_input").val(total_qty());
-            $("#total_waste_input").val(total_waste());
             $("#total_price_input").val(total_price());
-        });
-
-        $(document).on("input", ".waste", function(){
-            var waste_qty = $(this).val();
-            if(parseFloat(waste_qty) > (availabeWasteQty)) {
-                waste_qty = waste_qty.substring(0, waste_qty.length - 1);
-                $(this).val(waste_qty);
-                alert('Waste exceeds stock quantity!. Available stock: '+availabeWasteQty);
-                return false;
-            }
-            $(".qty").trigger('input');
         });
 
         function total_qty(){
             var total = 0;
             $(".qty").each(function() {
-                total += parseFloat($(this).val());
-            });
-            if(isNaN(total)) return 0;
-            return total;
-        }
-
-        function total_waste(){
-            var total = 0;
-            $(".waste").each(function() {
                 total += parseFloat($(this).val());
             });
             if(isNaN(total)) return 0;

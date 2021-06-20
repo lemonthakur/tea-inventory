@@ -20,6 +20,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\AdjustmentController;
+use App\Http\Controllers\TransferReceivedController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,6 +50,7 @@ Route::group(['middleware'=>'authCheck'],function (){
         'suppliers' => SupplierController::class,
         'employees' => EmployeeController::class,
     ]);
+    Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
 
     Route::get('site-setting',[SiteSettingController::class,'edit'])->name('site.setting.edit');
     Route::put('site-setting', [SiteSettingController::class,'update'])->name('site.setting.update');
@@ -90,6 +92,7 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('/transfer-details-get', [TransferController::class,'transfer_details_get'])->name('transfer-details.get');
     Route::get('transfer-document-download/{id}', [TransferController::class,'transferFileDownload'])->name('transfer-purchaseFile.download');
 
+    Route::resource("/transfer-received",TransferReceivedController::class);
     // Adjustment
     Route::resource("/qty_adjustment",AdjustmentController::class);
     Route::post('adjustment/product-warehouse-qty-get', [AdjustmentController::class,'adjustment_product_warehouse_qty_get'])->name('adjustment-product-warehouse-qty.get');

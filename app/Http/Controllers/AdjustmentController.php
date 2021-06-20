@@ -25,16 +25,11 @@ class AdjustmentController extends Controller
     public function index()
     {
         OwnLibrary::validateAccess($this->moduleId,2);
-        /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
-            $lims_purchase_list = Purchase::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
-        else
-            $lims_purchase_list = Purchase::orderBy('id', 'desc')->get();*/
 
         $user_ware_house = OwnLibrary::user_warehosue();
-
         $adjustments = Adjustment::whereNotNull('id');
         if($user_ware_house){
-
+            $adjustments->whereIn('warehouse_id', $user_ware_house);
         }
         $adjustments->orderBy('id','DESC');
         $adjustments = $adjustments->paginate(20);
@@ -45,7 +40,12 @@ class AdjustmentController extends Controller
     {
         OwnLibrary::validateAccess($this->moduleId,2);
 
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+        $warehouses = $warehouses->get();
         return view('backend.adjustment.create',compact('warehouses'));
     }
 
@@ -55,20 +55,20 @@ class AdjustmentController extends Controller
             "warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
-            /*"qty.*" => "required",
-            "waste.*" => "required",*/
+            "qty.*" => "required",
 
+            /*"waste.*" => "required",
             "qty.*" => "required_without:waste.*",
-            "waste.*" => "required_without:qty.*",
+            "waste.*" => "required_without:qty.*",*/
         ];
 
         $message = [
             "product_id.*.required" => "Product is required",
-            /*"qty.*.required" => "Quantity is required",
-            "waste.*.required" => "Waste is required",*/
+            "qty.*.required" => "Quantity is required",
 
+            /*"waste.*.required" => "Waste is required",
             "qty.*.required_without" => "The Quantity field is required when Waste is not present.",
-            "waste.*.required_without" => "The Waste field is required when Quantity is not present.",
+            "waste.*.required_without" => "The Waste field is required when Quantity is not present.",*/
         ];
 
         $validation =  Validator::make($request->all(),$rules,$message);
@@ -85,9 +85,7 @@ class AdjustmentController extends Controller
                     $adjustment->warehouse_id         = $request->warehouse_id;
                     $adjustment->item                 = count($request->product_id);
                     $adjustment->note                 = $request->note;
-
                     $adjustment->total_qty            = 0;
-                    $adjustment->total_waste_qty      = 0;
 
                     if ($request->hasFile('document')){
                         $adjustment_document = OwnLibrary::uploadImage($request->document, "adjustment/document");
@@ -96,14 +94,11 @@ class AdjustmentController extends Controller
                     $adjustment->save();
 
                     $total_qty_input = 0;
-                    $total_waste_input = 0;
                     for ($i = 0; count($request->product_id) > $i; $i++) {
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
 
                         $quantity     = $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;
-                        $waste_qty    = $request->waste[$i] ? $request->waste[$i] * $unit_data->value : 0 * $unit_data->value;
-                        //$waste_qty    = $request->waste[$i] * $unit_data->value;
 
                         $product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -112,15 +107,11 @@ class AdjustmentController extends Controller
 
                         if($request->action[$i] == '-'){
                             $product_data->qty -= $quantity;
-                            $product_data->waste_qty -= $waste_qty;
                             $product_warehouse_data->qty -= $quantity;
-                            $product_warehouse_data->waste_qty -= $waste_qty;
                         }
                         elseif($request->action[$i] == '+'){
                             $product_data->qty += $quantity;
-                            $product_data->waste_qty += $waste_qty;
                             $product_warehouse_data->qty += $quantity;
-                            $product_warehouse_data->waste_qty += $waste_qty;
                         }
 
                         $product_data->save();
@@ -131,18 +122,15 @@ class AdjustmentController extends Controller
                         $product_adjustment->adjustment_id = $adjustment->id;
                         $product_adjustment->product_id = $request->product_id[$i];
                         $product_adjustment->qty = $request->qty[$i] * $unit_data->value;
-                        $product_adjustment->waste_qty = $request->waste[$i] * $unit_data->value;
                         $product_adjustment->action = $request->action[$i];
                         $product_adjustment->save();
 
                         $total_qty_input += $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;
-                        $total_waste_input += $request->qty[$i] ? $request->waste[$i] * $unit_data->value : 0 * $unit_data->value;
                     }
 
                         $up_adjustment = Adjustment::find($adjustment->id);
 
                         $up_adjustment->total_qty        = $total_qty_input;
-                        $up_adjustment->total_waste_qty  = $total_waste_input;
                         $up_adjustment->save();
                     DB::commit();
                 } catch (ValidationException $e) {
@@ -169,7 +157,13 @@ class AdjustmentController extends Controller
         OwnLibrary::validateAccess($this->moduleId,3);
 
         $adjustment = Adjustment::find($id);
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+        $warehouses = $warehouses->get();
 
         $product_adjustment_data = ProductAdjustment::where('adjustment_id', $adjustment->id)->get();
 
@@ -183,20 +177,20 @@ class AdjustmentController extends Controller
             "warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
-            /*"qty.*" => "required",
-            "waste.*" => "required",*/
+            "qty.*" => "required",
+            /*"waste.*" => "required",
 
             "qty.*" => "required_without:waste.*",
-            "waste.*" => "required_without:qty.*",
+            "waste.*" => "required_without:qty.*",*/
         ];
 
         $message = [
             "product_id.*.required" => "Product is required",
-            /*"qty.*.required" => "Quantity is required",
-            "waste.*.required" => "Waste is required",*/
+            "qty.*.required" => "Quantity is required",
+            /*"waste.*.required" => "Waste is required",
 
             "qty.*.required_without" => "The Quantity field is required when Waste is not present.",
-            "waste.*.required_without" => "The Waste field is required when Quantity is not present.",
+            "waste.*.required_without" => "The Waste field is required when Quantity is not present.",*/
         ];
 
         $validation =  Validator::make($request->all(),$rules,$message);
@@ -212,7 +206,6 @@ class AdjustmentController extends Controller
 
                     foreach ($lims_product_adjustment_data as $product_adjustment_data) {
                         $old_qty_value   = $product_adjustment_data->qty;
-                        $old_waste_value = $product_adjustment_data->waste_qty;
 
                         $lims_product_data = Product::find($product_adjustment_data->product_id);
 
@@ -223,15 +216,11 @@ class AdjustmentController extends Controller
 
                         if($product_adjustment_data->action == '-'){
                             $lims_product_data->qty += $old_qty_value;
-                            $lims_product_data->waste_qty += $old_waste_value;
                             $lims_product_warehouse_data->qty += $old_qty_value;
-                            $lims_product_warehouse_data->waste_qty += $old_waste_value;
                         }
                         elseif($product_adjustment_data->action == '+'){
                             $lims_product_data->qty -= $old_qty_value;
-                            $lims_product_data->waste_qty -= $old_waste_value;
                             $lims_product_warehouse_data->qty -= $old_qty_value;
-                            $lims_product_warehouse_data->waste_qty -= $old_waste_value;
                         }
                         $lims_product_data->save();
                         $lims_product_warehouse_data->save();
@@ -256,7 +245,6 @@ class AdjustmentController extends Controller
                         $unit_data    = Unit::find($request->unit_id[$i]);
 
                         $quantity     = $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;
-                        $waste_qty    = $request->waste[$i] ? $request->waste[$i] * $unit_data->value : 0 * $unit_data->value;
 
                         $product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -265,15 +253,11 @@ class AdjustmentController extends Controller
 
                         if($request->action[$i] == '-'){
                             $product_data->qty -= $quantity;
-                            $product_data->waste_qty -= $waste_qty;
                             $product_warehouse_data->qty -= $quantity;
-                            $product_warehouse_data->waste_qty -= $waste_qty;
                         }
                         elseif($request->action[$i] == '+'){
                             $product_data->qty += $quantity;
-                            $product_data->waste_qty += $waste_qty;
                             $product_warehouse_data->qty += $quantity;
-                            $product_warehouse_data->waste_qty += $waste_qty;
                         }
 
                         $product_data->save();
@@ -284,18 +268,15 @@ class AdjustmentController extends Controller
                         $product_adjustment->adjustment_id = $adjustment->id;
                         $product_adjustment->product_id = $request->product_id[$i];
                         $product_adjustment->qty = $request->qty[$i] * $unit_data->value;
-                        $product_adjustment->waste_qty = $request->waste[$i] * $unit_data->value;
                         $product_adjustment->action = $request->action[$i];
                         $product_adjustment->save();
 
                         $total_qty_input += $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;
-                        $total_waste_input += $request->qty[$i] ? $request->waste[$i] * $unit_data->value : 0 * $unit_data->value;
                     }
 
                     $up_adjustment = Adjustment::find($adjustment->id);
 
                     $up_adjustment->total_qty        = $total_qty_input;
-                    $up_adjustment->total_waste_qty  = $total_waste_input;
                     $up_adjustment->save();
 
                     DB::commit();
@@ -338,14 +319,13 @@ class AdjustmentController extends Controller
     public function destroy(Request $request, $id)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
-        
+
         $adjustment = Adjustment::find($id);
         $lims_product_adjustment_data = ProductAdjustment::where('adjustment_id', $adjustment->id)->get();
         DB::beginTransaction();
         try {
             foreach ($lims_product_adjustment_data as $product_adjustment_data) {
                 $old_qty_value   = $product_adjustment_data->qty;
-                $old_waste_value = $product_adjustment_data->waste_qty;
 
                 $lims_product_data = Product::find($product_adjustment_data->product_id);
 
@@ -356,15 +336,11 @@ class AdjustmentController extends Controller
 
                 if($product_adjustment_data->action == '-'){
                     $lims_product_data->qty += $old_qty_value;
-                    $lims_product_data->waste_qty += $old_waste_value;
                     $lims_product_warehouse_data->qty += $old_qty_value;
-                    $lims_product_warehouse_data->waste_qty += $old_waste_value;
                 }
                 elseif($product_adjustment_data->action == '+'){
                     $lims_product_data->qty -= $old_qty_value;
-                    $lims_product_data->waste_qty -= $old_waste_value;
                     $lims_product_warehouse_data->qty -= $old_qty_value;
-                    $lims_product_warehouse_data->waste_qty -= $old_waste_value;
                 }
                 $lims_product_data->save();
                 $lims_product_warehouse_data->save();
@@ -425,16 +401,16 @@ class AdjustmentController extends Controller
                 <input type="hidden" class="form-control product_id" name="product_id[]" value="'.$product->id.'" required="" autocomplete="off">
                 <input type="number" class="form-control qty" name="qty[]" value="1" step="any" min="1" autocomplete="off">
             </td>';
+        $row .= '
+                <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
+                <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
+                <input type="hidden" class="subtotal-input" name="subtotal_input[]" value="1">
+                 ';
         $row .= '<td>
-                    <input type="hidden" class="form-control unit_price" name="unit_price[]" value="'.$product->product_price.'">
-                    <input type="hidden" class="form-control unit_id" name="unit_id[]" value="'.$product->unit_id.'">
-                    <input type="number" class="form-control waste" name="waste[]" value="1" step="any">
-                </td>';
-        $row .= '<input type="hidden" class="subtotal-input" name="subtotal_input[]" value="1">';
-        $row .= '<td>
-                    <select class="form-control" name="action[]">
-                        <option value="-">Subtraction</option>
+                    <select class="form-control" name="action[]" required>
+                        <option value="">Select</option>
                         <option value="+">Addition</option>
+                        <option value="-">Subtraction</option>
                     </select>
                 </td>';
         $row .= '<td>

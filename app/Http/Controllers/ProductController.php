@@ -26,13 +26,14 @@ class ProductController extends Controller
         OwnLibrary::validateAccess($this->moduleId,1);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        //if($user_ware_house)
 
-        $products = Product::whereNotNull('id');
+        $products = Product::whereNotNull('products.id');
         if($user_ware_house){
-
+            $products->join('product_warehouse', 'product_warehouse.product_id' ,'=', 'products.id');
+            $products->select('products.*', 'product_warehouse.qty as qty');
+            $products->whereIn('product_warehouse.warehouse_id', $user_ware_house);
         }
-        $products->orderBy('id','DESC');
+        $products->orderBy('.products.id','DESC');
         $products = $products->paginate(20);
 
         return view('backend.product.index', compact('products'));
@@ -245,15 +246,21 @@ class ProductController extends Controller
     public function product_warehouse_qty_get(Request $request){
         $product_id = $request->product_id;
 
+        $user_ware_house = OwnLibrary::user_warehosue();
+
         $lims_product_data = Product::Find($product_id);
-        $lims_product_warehouse_data = \App\Models\Product_Warehouse::where('product_id', $product_id)->get();
+        $lims_product_warehouse_data = \App\Models\Product_Warehouse::where('product_id', $product_id);
+        if($user_ware_house){
+            $lims_product_warehouse_data->whereIn('warehouse_id', $user_ware_house);
+        }
+        $lims_product_warehouse_data = $lims_product_warehouse_data->get();
 
         $html = '';
         $html .= '<thead>';
             $html .= '<tr>';
                 $html .= '<th>Warehouse</th>';
                 $html .= '<th>Quantity</th>';
-                $html .= '<th>Waste</th>';
+                /*$html .= '<th>Waste</th>';*/
             $html .= '</tr>';
         $html .= '</thead>';
         $html .= '<tbody>';
@@ -263,7 +270,7 @@ class ProductController extends Controller
             $html .= '<tr>';
                 $html .= '<td class="text-center">'.$lims_warehouse_data->name.'</td>';
                 $html .= '<td class="text-right">'.$product_warehouse_data->qty/$lims_product_data->unit->value.'</td>';
-                $html .= '<td class="text-right">'.$product_warehouse_data->waste_qty/$lims_product_data->unit->value.'</td>';
+                /*$html .= '<td class="text-right">'.$product_warehouse_data->waste_qty/$lims_product_data->unit->value.'</td>';*/
             $html .= '</tr>';
         }
         $html .= '</tbody>';

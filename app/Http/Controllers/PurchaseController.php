@@ -30,23 +30,25 @@ class PurchaseController extends Controller
             $lims_purchase_list = Purchase::orderBy('id', 'desc')->get();*/
 
         $user_ware_house = OwnLibrary::user_warehosue();
-
         $purchases = Purchase::whereNotNull('id');
         if($user_ware_house){
-
+            $purchases->whereIn('warehouse_id', $user_ware_house);
         }
         if($request->order_no){
             $purchases->where('reference_no', 'like', '%' . $request->order_no . '%');
         }
         if($request->barcode){
-            $value = explode('-', $request->barcode);
+            $value = explode('~', $request->barcode);
             $product_id = $value[0];
             $purchase_id = $value[1];
+            $reference_no = (isset($value[2])) ? $value[2] : '';
 
-            $purchases->whereHas('purchase_details', function($query) use($product_id, $purchase_id) {
+            $purchases->whereHas('purchase_details', function($query) use($product_id, $purchase_id, $reference_no) {
                 $query->where('purchase_id', $purchase_id);
                 $query->where('product_id', $product_id);
             });
+            $purchases->where('reference_no', $reference_no);
+
 
         }
         $purchases->orderBy('id','DESC');
@@ -59,7 +61,13 @@ class PurchaseController extends Controller
     {
         OwnLibrary::validateAccess($this->moduleId,2);
 
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+        $warehouses = $warehouses->get();
+
         $suppliers = Supplier::select('id','name')->orderBy('name')->get();
         return view('backend.purchase.create',compact('warehouses','suppliers'));
     }
@@ -68,7 +76,7 @@ class PurchaseController extends Controller
     {
         $rules = [
             "warehouse" => "required|integer",
-            "reference_no" => "required",
+            "reference_no" => "required|unique:purchases",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
             "qty.*" => "required",
@@ -83,6 +91,7 @@ class PurchaseController extends Controller
             "qty.*.required" => "Quantity is required",
 
             "reference_no.required" => "Order no. is required",
+            "reference_no.unique" => "The order no has already been taken.",
             "subtotal_input.required" => "Subtotal is required",
             "total_qty_input.required" => "Total quantity is required",
             "total_price_input.required" => "Total price is required",
@@ -191,7 +200,13 @@ class PurchaseController extends Controller
         OwnLibrary::validateAccess($this->moduleId,3);
 
         $purchase = Purchase::find($id);
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+        $warehouses = $warehouses->get();
+
         $suppliers = Supplier::select('id','name')->orderBy('name')->get();
         $product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
 
@@ -203,7 +218,7 @@ class PurchaseController extends Controller
         $purchase = Purchase::find($id);
         $rules = [
             "warehouse" => "required|integer",
-            "reference_no" => "required",
+            "reference_no" => "required|unique:purchases,reference_no,".$id,
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
             "qty.*" => "required",
@@ -218,6 +233,7 @@ class PurchaseController extends Controller
             "qty.*.required" => "Quantity is required",
 
             "reference_no.required" => "Order no. is required",
+            "reference_no.unique" => "The order no has already been taken.",
             "subtotal_input.required" => "Subtotal is required",
             "total_qty_input.required" => "Total quantity is required",
             "total_price_input.required" => "Total price is required",
@@ -267,11 +283,7 @@ class PurchaseController extends Controller
                     $purchase->status  = 1;
                     $purchase->note  = $request->note;
 
-                    if ($request->hasFile('document')){
-                        if($purchase->file) @unlink($purchase->document);
-                        $purchase_document = OwnLibrary::uploadImage($request->document, "purchase/document");
-                        $purchase->document = $purchase_document;
-                    }
+
                     $purchase->save();
 
                     $total_qty_input = 0;

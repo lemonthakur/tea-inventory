@@ -32,10 +32,9 @@ class TransferController extends Controller
             $lims_purchase_list = Purchase::orderBy('id', 'desc')->get();*/
 
         $user_ware_house = OwnLibrary::user_warehosue();
-
         $transfers = Transfer::whereNotNull('id');
         if($user_ware_house){
-
+            $transfers->whereIn('from_warehouse_id', $user_ware_house);
         }
         $transfers->orderBy('id','DESC');
         $transfers = $transfers->paginate(20);
@@ -47,8 +46,15 @@ class TransferController extends Controller
     {
         OwnLibrary::validateAccess($this->moduleId,2);
 
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouse_from = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouse_from->whereIn('id', $user_ware_house);
+        }
+        $warehouse_from = $warehouse_from->get();
+
         $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
-        return view('backend.transfer.create',compact('warehouses'));
+        return view('backend.transfer.create',compact('warehouses', 'warehouse_from'));
     }
 
     public function store(Request $request)
@@ -59,12 +65,10 @@ class TransferController extends Controller
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
             "qty.*" => "required",
-            "waste.*" => "required",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",
             "total_price_input" => "required",
-            "total_waste_input" => "required",
         ];
 
         $message = [
@@ -73,12 +77,10 @@ class TransferController extends Controller
 
             "product_id.*.required" => "Product is required",
             "qty.*.required" => "Quantity is required",
-            "waste.*.required" => "Waste is required",
 
             "subtotal_input.required" => "Subtotal is required",
             "total_qty_input.required" => "Total quantity is required",
             "total_price_input.required" => "Total price is required",
-            "total_waste_input.required" => "Total waste is required",
         ];
 
         $validation =  Validator::make($request->all(),$rules,$message);
@@ -99,11 +101,9 @@ class TransferController extends Controller
                     $transfer->item                 = count($request->product_id);
 
                     $transfer->total_qty            = 0;
-                    $transfer->total_waste_qty      = 0;
 
                     $transfer->total_cost           = $request->total_price_input;
                     $transfer->grand_total          = $request->total_price_input;
-                    $transfer->grand_total_waste    = 0;
                     $transfer->note  = $request->note;
 
                     if ($request->hasFile('document')){
@@ -112,16 +112,11 @@ class TransferController extends Controller
                     }
                     $transfer->save();
 
-
-                    $grand_total_waste = 0;
                     $total_qty_input = 0;
-                    $total_waste_input = 0;
                     for ($i = 0; count($request->product_id) > $i; $i++) {
-                        
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
-                        $waste_qty    = $request->waste[$i] * $unit_data->value;
 
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -129,7 +124,6 @@ class TransferController extends Controller
                         ])->first();
 
                         $lims_product_warehouse_data->qty -= $quantity;
-                        $lims_product_warehouse_data->waste_qty -= $waste_qty;
                         $lims_product_warehouse_data->save();
                     
 
@@ -141,13 +135,11 @@ class TransferController extends Controller
                         //add quantity to destination warehouse
                         if ($lims_product_warehouse_data){
                             $lims_product_warehouse_data->qty += $quantity;
-                            $lims_product_warehouse_data->waste_qty = $lims_product_warehouse_data->waste_qty + $waste_qty;
                         } else {
                             $lims_product_warehouse_data = new Product_Warehouse();
                             $lims_product_warehouse_data->product_id = $request->product_id[$i];
                             $lims_product_warehouse_data->warehouse_id = $request->to_warehouse_id;
                             $lims_product_warehouse_data->qty = $quantity;
-                            $lims_product_warehouse_data->waste_qty = $waste_qty;
                         }
                         $lims_product_warehouse_data->save();
     
@@ -156,23 +148,16 @@ class TransferController extends Controller
                         $product_transfer->transfer_id = $transfer->id ;
                         $product_transfer->product_id = $request->product_id[$i];
                         $product_transfer->qty = $request->qty[$i] * $unit_data->value;
-                        $product_transfer->waste_qty = $request->waste[$i] * $unit_data->value;
                         $product_transfer->purchase_unit_id = $request->unit_id[$i];
                         $product_transfer->net_unit_cost = $request->unit_price[$i];
                         $product_transfer->total = $request->subtotal_input[$i];
-                        $product_transfer->waste_total = $request->waste[$i]*$request->unit_price[$i];
                         $product_transfer->save();
 
-
-                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
                         $total_qty_input += $request->qty[$i] * $unit_data->value;
-                        $total_waste_input += $request->waste[$i] * $unit_data->value;
                 
                         $up_transfer = Transfer::find($transfer->id);
-                        $up_transfer->grand_total_waste = $grand_total_waste;
 
                         $up_transfer->total_qty        = $total_qty_input;
-                        $up_transfer->total_waste_qty  = $total_waste_input;
                         $up_transfer->save();
                     }
 
@@ -198,11 +183,18 @@ class TransferController extends Controller
     public function edit(Transfer $transfer)
     {
         OwnLibrary::validateAccess($this->moduleId,3);
+
+        $user_ware_house = OwnLibrary::user_warehosue();
+        $warehouse_from = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouse_from->whereIn('id', $user_ware_house);
+        }
+        $warehouse_from = $warehouse_from->get();
         $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
 
         $product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
 
-        return view('backend.transfer.edit',compact('transfer', 'warehouses', 'product_transfer_data'));
+        return view('backend.transfer.edit',compact('transfer', 'warehouses', 'product_transfer_data', 'warehouse_from'));
     }
 
     public function update(Request $request, Transfer $transfer)
@@ -213,12 +205,10 @@ class TransferController extends Controller
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
             "product_id.*" => "required|integer",
             "qty.*" => "required",
-            "waste.*" => "required",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",
             "total_price_input" => "required",
-            "total_waste_input" => "required",
         ];
 
         $message = [
@@ -227,12 +217,10 @@ class TransferController extends Controller
 
             "product_id.*.required" => "Product is required",
             "qty.*.required" => "Quantity is required",
-            "waste.*.required" => "Waste is required",
 
             "subtotal_input.required" => "Subtotal is required",
             "total_qty_input.required" => "Total quantity is required",
             "total_price_input.required" => "Total price is required",
-            "total_waste_input.required" => "Total waste is required",
         ];
 
         $validation =  Validator::make($request->all(),$rules,$message);
@@ -249,7 +237,6 @@ class TransferController extends Controller
                     foreach ($lims_product_transfer_data as $product_transfer_data) {
 
                         $old_qty_value   = $product_transfer_data->qty;
-                        $old_waste_value = $product_transfer_data->waste_qty;
 
                         $lims_purchase_unit_data = Unit::find($product_transfer_data->purchase_unit_id);
                         $lims_product_data = Product::find($product_transfer_data->product_id);
@@ -260,7 +247,6 @@ class TransferController extends Controller
                         ])->first();
 
                         $lims_product_from_warehouse_data->qty += $old_qty_value;
-                        $lims_product_from_warehouse_data->waste_qty += $old_waste_value;
                         $lims_product_from_warehouse_data->save();
 
                         $lims_product_to_warehouse_data = Product_Warehouse::where([
@@ -269,7 +255,6 @@ class TransferController extends Controller
                         ])->first();
 
                         $lims_product_to_warehouse_data->qty -= $old_qty_value;
-                        $lims_product_to_warehouse_data->waste_qty -= $old_waste_value;
                         $lims_product_to_warehouse_data->save();
 
                         $product_transfer_data->delete();
@@ -281,11 +266,9 @@ class TransferController extends Controller
                     $lims_transfer_data->item                 = count($request->product_id);
 
                     $lims_transfer_data->total_qty            = 0;
-                    $lims_transfer_data->total_waste_qty      = 0;
 
                     $lims_transfer_data->total_cost           = $request->total_price_input;
                     $lims_transfer_data->grand_total          = $request->total_price_input;
-                    $lims_transfer_data->grand_total_waste    = 0;
                     $lims_transfer_data->note  = $request->note;
 
                     if ($request->hasFile('document')){
@@ -295,16 +278,12 @@ class TransferController extends Controller
                     }
                     $lims_transfer_data->save();
 
-                
-                    $grand_total_waste = 0;
                     $total_qty_input = 0;
-                    $total_waste_input = 0;
                     for ($i = 0; count($request->product_id) > $i; $i++) {
                     
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
-                        $waste_qty    = $request->waste[$i] * $unit_data->value;
 
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -312,10 +291,7 @@ class TransferController extends Controller
                         ])->first();
 
                         $lims_product_warehouse_data->qty -= $quantity;
-                        $lims_product_warehouse_data->waste_qty -= $waste_qty;
                         $lims_product_warehouse_data->save();
-                       
-
                     
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -325,13 +301,11 @@ class TransferController extends Controller
                         //add quantity to destination warehouse
                         if ($lims_product_warehouse_data){
                             $lims_product_warehouse_data->qty += $quantity;
-                            $lims_product_warehouse_data->waste_qty = $lims_product_warehouse_data->waste_qty + $waste_qty;
                         } else {
                             $lims_product_warehouse_data = new Product_Warehouse();
                             $lims_product_warehouse_data->product_id = $request->product_id[$i];
                             $lims_product_warehouse_data->warehouse_id = $request->to_warehouse_id;
                             $lims_product_warehouse_data->qty = $quantity;
-                            $lims_product_warehouse_data->waste_qty = $waste_qty;
                         }
                         $lims_product_warehouse_data->save();
   
@@ -340,25 +314,17 @@ class TransferController extends Controller
                         $product_transfer->transfer_id = $transfer->id ;
                         $product_transfer->product_id = $request->product_id[$i];
                         $product_transfer->qty = $request->qty[$i] * $unit_data->value;
-                        $product_transfer->waste_qty = $request->waste[$i] * $unit_data->value;
                         $product_transfer->purchase_unit_id = $request->unit_id[$i];
                         $product_transfer->net_unit_cost = $request->unit_price[$i];
                         $product_transfer->total = $request->subtotal_input[$i];
-                        $product_transfer->waste_total = $request->waste[$i]*$request->unit_price[$i];
                         $product_transfer->save();
 
-                    
-
-                        $grand_total_waste += $request->waste[$i] * $request->unit_price[$i];
                         $total_qty_input += $request->qty[$i] * $unit_data->value;
-                        $total_waste_input += $request->waste[$i] * $unit_data->value;
                     }
             
                     $up_transfer = Transfer::find($transfer->id);
-                    $up_transfer->grand_total_waste = $grand_total_waste;
 
                     $up_transfer->total_qty        = $total_qty_input;
-                    $up_transfer->total_waste_qty  = $total_waste_input;
                     $up_transfer->save();
 
                     DB::commit();
@@ -406,7 +372,6 @@ class TransferController extends Controller
                         <th>#</th>
                         <th>product</th>
                         <th class="text-center">Qty</th>
-                        <th class="text-center">Waste</th>
                         <th class="text-center">Unit Cost</th>
                         <th class="text-center">Subtotal</th>
                     </thead>
@@ -421,14 +386,13 @@ class TransferController extends Controller
                             $html .='<td><strong>'.$sl++.'</strong></td>';
                             $html .='<td>'.$product->name.' ('.$product->code.')</td>';
                             $html .='<td class="text-right">'.$product_transfer_data->qty/$unit->value.' '.$unit->name.'</td>';
-                            $html .='<td class="text-right">'.$product_transfer_data->waste_qty/$unit->value.' '.$unit->name.'</td>';
                             $html .='<td class="text-right">'.$product_transfer_data->net_unit_cost.'</td>';
                             $html .='<td class="text-right">'.$product_transfer_data->total.'</td>';
                         $html .='</tr>';
                     }
 
             $html .='<tr>';
-                $html .='<td colspan="5"><strong>Total</strong></td>';
+                $html .='<td colspan="4"><strong>Total</strong></td>';
                 $html .='<td class="text-right"><strong>'.number_format($transfer->grand_total, 2).'</strong></td>';
             $html .='</tr>';
 
@@ -474,8 +438,6 @@ class TransferController extends Controller
                 $lims_purchase_unit_data = Unit::find($product_transfer_data->purchase_unit_id);
                 
                 $old_qty_value   = $product_transfer_data->qty;
-                $old_waste_value = $product_transfer_data->waste_qty;
-
                 
                 $lims_product_from_warehouse_data = Product_Warehouse::where([
                     ['product_id', $product_transfer_data->product_id],
@@ -483,7 +445,6 @@ class TransferController extends Controller
                 ])->first();
 
                 $lims_product_from_warehouse_data->qty += $old_qty_value;
-                $lims_product_from_warehouse_data->waste_qty += $old_waste_value;
                 $lims_product_from_warehouse_data->save();
 
                 $lims_product_to_warehouse_data = Product_Warehouse::where([
@@ -492,7 +453,6 @@ class TransferController extends Controller
                 ])->first();
 
                 $lims_product_to_warehouse_data->qty -= $old_qty_value;
-                $lims_product_to_warehouse_data->waste_qty -= $old_waste_value;
                 $lims_product_to_warehouse_data->save();
 
                 $product_transfer_data->delete();

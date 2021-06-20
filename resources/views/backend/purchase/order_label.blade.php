@@ -29,7 +29,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach($lims_product_purchase_data as $v)
-                                                <?php $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($v->product->id.'-'.$purchase->id, $v->product->barcode_symbology); ?>
+                                                <?php $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($v->product->id.'~'.$purchase->id.'~'.$purchase->reference_no, $v->product->barcode_symbology); ?>
 
                                                 <tr data-imagedata="{{$barcode_image}}" data-price="{{number_format($v->total, 2)}}">
                                                     <td>{{$v->product->name}}</td>
@@ -39,7 +39,7 @@
                                                     <td class="text-center">{{number_format($v->total, 2)}}</td>
                                                     <td class="">{{$purchase->reference_no}}</td>
                                                     <td class="product-code">{{$v->product->code}}</td>
-                                                    <td><input type="number" class="form-control qty" name="qty[]" value="1" /></td>
+                                                    <td><input type="hidden" class="form-control qty" name="qty[]" value="1" /></td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
