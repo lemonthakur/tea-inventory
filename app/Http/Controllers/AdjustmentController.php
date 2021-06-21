@@ -123,6 +123,14 @@ class AdjustmentController extends Controller
                         $product_adjustment->product_id = $request->product_id[$i];
                         $product_adjustment->qty = $request->qty[$i] * $unit_data->value;
                         $product_adjustment->action = $request->action[$i];
+
+                        $product_adjustment->adjustment_unit_id = $request->unit_id[$i];
+                        $product_adjustment->net_unit_cost      = $request->unit_price[$i];
+                        $product_adjustment->total              = $request->qty[$i] * $request->unit_price[$i];
+
+                        $product_adjustment->org_input        = $request->qty[$i];
+                        $product_adjustment->unit_value       = $unit_data->value;
+
                         $product_adjustment->save();
 
                         $total_qty_input += $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;
@@ -269,6 +277,14 @@ class AdjustmentController extends Controller
                         $product_adjustment->product_id = $request->product_id[$i];
                         $product_adjustment->qty = $request->qty[$i] * $unit_data->value;
                         $product_adjustment->action = $request->action[$i];
+
+                        $product_adjustment->adjustment_unit_id = $request->unit_id[$i];
+                        $product_adjustment->net_unit_cost      = $request->unit_price[$i];
+                        $product_adjustment->total              = $request->qty[$i] * $request->unit_price[$i];
+
+                        $product_adjustment->org_input        = $request->qty[$i];
+                        $product_adjustment->unit_value       = $unit_data->value;
+
                         $product_adjustment->save();
 
                         $total_qty_input += $request->qty[$i] ? $request->qty[$i] * $unit_data->value : 0 * $unit_data->value;

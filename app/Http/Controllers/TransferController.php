@@ -125,7 +125,7 @@ class TransferController extends Controller
 
                         $lims_product_warehouse_data->qty -= $quantity;
                         $lims_product_warehouse_data->save();
-                    
+
 
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
@@ -142,7 +142,7 @@ class TransferController extends Controller
                             $lims_product_warehouse_data->qty = $quantity;
                         }
                         $lims_product_warehouse_data->save();
-    
+
                         // Add to product transfer
                         $product_transfer = new ProductTransfer();
                         $product_transfer->transfer_id = $transfer->id ;
@@ -151,10 +151,14 @@ class TransferController extends Controller
                         $product_transfer->purchase_unit_id = $request->unit_id[$i];
                         $product_transfer->net_unit_cost = $request->unit_price[$i];
                         $product_transfer->total = $request->subtotal_input[$i];
+
+                        $product_transfer->org_input        = $request->qty[$i];
+                        $product_transfer->unit_value       = $unit_data->value;
+
                         $product_transfer->save();
 
                         $total_qty_input += $request->qty[$i] * $unit_data->value;
-                
+
                         $up_transfer = Transfer::find($transfer->id);
 
                         $up_transfer->total_qty        = $total_qty_input;
@@ -280,7 +284,7 @@ class TransferController extends Controller
 
                     $total_qty_input = 0;
                     for ($i = 0; count($request->product_id) > $i; $i++) {
-                    
+
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
@@ -292,7 +296,7 @@ class TransferController extends Controller
 
                         $lims_product_warehouse_data->qty -= $quantity;
                         $lims_product_warehouse_data->save();
-                    
+
                         $lims_product_warehouse_data = Product_Warehouse::where([
                             ['product_id', $request->product_id[$i]],
                             ['warehouse_id', $request->to_warehouse_id ],
@@ -308,7 +312,7 @@ class TransferController extends Controller
                             $lims_product_warehouse_data->qty = $quantity;
                         }
                         $lims_product_warehouse_data->save();
-  
+
                         // Add to product transfer
                         $product_transfer = new ProductTransfer();
                         $product_transfer->transfer_id = $transfer->id ;
@@ -317,11 +321,15 @@ class TransferController extends Controller
                         $product_transfer->purchase_unit_id = $request->unit_id[$i];
                         $product_transfer->net_unit_cost = $request->unit_price[$i];
                         $product_transfer->total = $request->subtotal_input[$i];
+
+                        $product_transfer->org_input        = $request->qty[$i];
+                        $product_transfer->unit_value       = $unit_data->value;
+
                         $product_transfer->save();
 
                         $total_qty_input += $request->qty[$i] * $unit_data->value;
                     }
-            
+
                     $up_transfer = Transfer::find($transfer->id);
 
                     $up_transfer->total_qty        = $total_qty_input;
@@ -433,12 +441,12 @@ class TransferController extends Controller
         OwnLibrary::validateAccess($this->moduleId,4);
         $lims_product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
         DB::beginTransaction();
-        try {        
+        try {
             foreach ($lims_product_transfer_data as $product_transfer_data) {
                 $lims_purchase_unit_data = Unit::find($product_transfer_data->purchase_unit_id);
-                
+
                 $old_qty_value   = $product_transfer_data->qty;
-                
+
                 $lims_product_from_warehouse_data = Product_Warehouse::where([
                     ['product_id', $product_transfer_data->product_id],
                     ['warehouse_id', $transfer->from_warehouse_id],
