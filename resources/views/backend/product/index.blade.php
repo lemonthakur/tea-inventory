@@ -55,7 +55,7 @@
                                         <th>Brand</th>
                                         <th>Category</th>
                                         <th>Quantity</th>
-                                        <th>Waste</th>
+                                        {{--<th>Waste</th>--}}
                                         <th>Unit</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -105,8 +105,8 @@
                                             <td>{{ $product->code }}</td>
                                             <td>{{ $product->brand->name }}</td>
                                             <td>{{ $product->category->name }}</td>
-                                            <td>{{ $product->qty/$product->unit->value }}</td>
-                                            <td>{{ $product->waste_qty/$product->unit->value  }}</td>
+                                            <td class="text-right @if($product->qty < $product->alert_quantity){{'bg-warning'}}@endif">{{ $product->qty/$product->unit->value }}</td>
+                                            {{--<td>{{ $product->waste_qty/$product->unit->value  }}</td>--}}
                                             <td>{{ $product->unit->name }}</td>
                                             <td class="text-center">
                                                 @if($product->status == 1)
@@ -227,10 +227,11 @@
 
                 var act = (product[12] == 1) ? 'Active' : 'Inactive';
                 var fil = (product[14]) ? 'Download File' : '';
+                var bf_color = (product[11] < product[13]) ? "bg-warning" : "";
                 htmltext = '<p><strong>{{"Name"}}: </strong>'+product[1]+'</p><p><strong>{{"Code"}}: </strong>'+product[2]+ '</p>' +
                     '<strong>{{"Barcode"}}: </strong><img src="data:image/png;base64,'+imagedata+'" alt="barcode" /></p>' +
                     '<p><strong>{{"Brand"}}: </strong>'+product[5]+'</p><p><strong>{{"category"}}: </strong>'+product[7]+'</p>' +
-                    '<p><strong>{{"Quantity"}}: </strong>'+product[11]+'</p><p><strong>{{"Waste"}}: </strong>'+product[18]+'</p><p><strong>{{"Unit"}}: </strong>'+product[9]+'</p>' +
+                    '<p class="'+bf_color+'"><strong>{{"Quantity"}}: </strong>'+product[11]+'</p>{{--<p><strong>{{"Waste"}}: </strong>'+product[18]+'</p>--}}<p><strong>{{"Unit"}}: </strong>'+product[9]+'</p>' +
                     '<p><strong>{{"Price"}}: </strong>'+ product[10]+'</p>' +
                     '<p><strong>{{"Alert Quantity"}} : </strong>'+product[13]+'</p>' +
                     '<p><strong>{{"File"}} : </strong><a href="'+ product[17]+'">'+fil+'</a></p>' +
