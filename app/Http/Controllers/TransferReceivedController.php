@@ -22,10 +22,10 @@ use Auth;
 
 class TransferReceivedController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 17;
     public function index()
     {
-        OwnLibrary::validateAccess($this->moduleId,2);
+        OwnLibrary::validateAccess($this->moduleId,1);
 
         $user_ware_house = OwnLibrary::user_warehosue();
         $transfers = Transfer::whereNotNull('id');

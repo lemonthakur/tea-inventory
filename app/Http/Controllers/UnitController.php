@@ -13,7 +13,7 @@ use DB;
 
 class UnitController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 22;
     /**
      * Display a listing of the resource.
      *

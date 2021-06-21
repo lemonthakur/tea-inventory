@@ -29,10 +29,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Transfer Received List</h3>
+                                @if(!empty($aclList[17][2]))
                                 <a href="{{route('transfer.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <?php
@@ -71,15 +73,20 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                                                        @if(!empty($aclList[17][8]))
                                                         <li>
                                                             <button type="button" class="btn btn-link view" data-transfer-id="{{ $transfer->id }}"><i class="fa fa-eye"></i> View
                                                             </button>
                                                         </li>
+                                                        @endif
+                                                            @if(!empty($aclList[17][3]))
                                                         <li>
                                                             <a class="btn btn-link" href="{{route('transfer.edit',$transfer->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </a>
                                                         </li>
+                                                            @endif
+                                                            @if(!empty($aclList[17][4]))
                                                         <form method="post" action="{{ route('transfer.destroy',$transfer->id) }}">
                                                             @method('delete')
                                                             @csrf
@@ -89,6 +96,7 @@
                                                                 </button>
                                                             </li>
                                                         </form>
+                                                                @endif
                                                     </ul>
                                                 </div>
 
@@ -128,7 +136,9 @@
                 <div class="container mt-3 pb-2 border-bottom">
                     <div class="row">
                         <div class="col-md-3">
+                            @if(!empty($aclList[17][7]))
                             <button id="print-btn" type="button" class="btn btn-default btn-sm d-print-none"><i class="fa fa-print"></i> Print</button>
+                            @endif
                         </div>
                         <div class="col-md-6">
                             <h3 id="exampleModalLabel" class="modal-title text-center container-fluid">{{ $siteSetting->site_title ?? '' }}</h3>

@@ -9,9 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class SiteSettingController extends Controller
 {
-    private $moduleId = 1;
+    private $moduleId = 23;
 
     public function edit(){
+        OwnLibrary::validateAccess($this->moduleId,3);
         $setting = SiteSetting::find(1);
         return view('backend.site-setting.edit',compact('setting'));
     }

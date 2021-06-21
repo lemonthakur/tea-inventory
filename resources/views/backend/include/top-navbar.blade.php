@@ -6,7 +6,13 @@
         </li>
     </ul>
 
-
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a href="{{route('admin.logout')}}" class="nav-link">
+                <i class="fas fa-sign-out-alt"></i>
+            </a>
+        </li>
+    </ul>
     <!-- Right navbar links -->
 {{--    <ul class="navbar-nav ml-auto">--}}
 {{--        <!-- Messages Dropdown Menu -->--}}

@@ -21,10 +21,10 @@ use Carbon\Carbon;
 
 class PurchaseController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 15;
     public function index(Request $request)
     {
-        OwnLibrary::validateAccess($this->moduleId,2);
+        OwnLibrary::validateAccess($this->moduleId,1);
         /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
             $lims_purchase_list = Purchase::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
         else
@@ -75,6 +75,7 @@ class PurchaseController extends Controller
 
     public function store(Request $request)
     {
+        OwnLibrary::validateAccess($this->moduleId,2);
         $rules = [
             "warehouse" => "required|integer",
             "reference_no" => "required|unique:purchases",
@@ -224,6 +225,7 @@ class PurchaseController extends Controller
 
     public function update(Request $request, $id)
     {
+        OwnLibrary::validateAccess($this->moduleId,3);
         $purchase = Purchase::find($id);
         $rules = [
             "warehouse" => "required|integer",
@@ -304,7 +306,7 @@ class PurchaseController extends Controller
 
                     $total_qty_input = 0;
                     for ($i = 0; count($request->product_id) > $i; $i++) {
-                    
+
                         $product_data = Product::find($request->product_id[$i]);
                         $unit_data    = Unit::find($request->unit_id[$i]);
                         $quantity     = $request->qty[$i] * $unit_data->value;
@@ -343,7 +345,7 @@ class PurchaseController extends Controller
                         $product_purchase->save();
                         $total_qty_input += $request->qty[$i] * $unit_data->value;
                     }
-                
+
                     $up_purchase = Purchase::find($purchase->id);
                     $up_purchase->total_qty        = $total_qty_input;
                     $up_purchase->status        = $request->status;
@@ -569,14 +571,14 @@ class PurchaseController extends Controller
     public function destroy(Request $request, $id)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
-        
+
         $purchase = Purchase::find($id);
         $lims_product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
         DB::beginTransaction();
-        try { 
+        try {
             foreach ($lims_product_purchase_data as $product_purchase_data) {
                 $lims_purchase_unit_data = Unit::find($product_purchase_data->purchase_unit_id);
-                
+
                 $old_qty_value   = $product_purchase_data->qty;
                 $lims_product_data = Product::find($product_purchase_data->product_id);
 

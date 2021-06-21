@@ -27,7 +27,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Unit List</h3>
-                                @if(!empty($aclList[1][2]))
+                                @if(!empty($aclList[22][2]))
                                     <a href="{{route('unit.create')}}" class="btn btn-primary float-right text-white">
                                         <i class="fas fa-plus-circle"></i>
                                         Add New
@@ -69,8 +69,8 @@
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                @if(!empty($aclList[1][3]) || !empty($aclList[1][8]))
-                                                    @if(!empty($aclList[1][3]))
+                                                @if(!empty($aclList[22][3]) || !empty($aclList[22][4]))
+                                                    @if(!empty($aclList[22][3]))
                                                         <a class="btn btn-xs btn-warning text-white" href="{{route('unit.edit',$unit->id)}}" title="Edit">
                                                             <i class="fas fa-pencil-alt"></i>
                                                         </a>

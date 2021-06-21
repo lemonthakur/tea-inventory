@@ -28,10 +28,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Category List</h3>
+                                @if(!empty($aclList[11][2]))
                                 <a href="{{route('categories.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body table-responsive">
@@ -64,14 +66,18 @@
                                             </td>
                                             <td class="text-center">
                                                     <form method="post" action="{{ route('categories.destroy',$category->id) }}">
+                                                        @if(!empty($aclList[11][3]))
                                                             <a class="btn btn-xs btn-warning text-white" href="{{route('categories.edit',$category->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i>
                                                             </a>
+                                                        @endif
+                                                            @if(!empty($aclList[11][4]))
                                                             @method('delete')
                                                             @csrf
                                                             <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">
                                                                 <i class="fas fa-trash-alt"></i>
                                                             </button>
+                                                                @endif
                                                     </form>
                                             </td>
                                         </tr>

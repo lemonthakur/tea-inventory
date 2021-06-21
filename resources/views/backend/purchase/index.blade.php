@@ -29,10 +29,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Order In List</h3>
+                                @if(!empty($aclList[15][2]))
                                 <a href="{{route('order.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
 
@@ -110,27 +112,37 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                                                        @if(!empty($aclList[15][7]))
                                                         @if($purchase->status == 1)
                                                             <li>
                                                                 <a type="button" class="btn btn-link" href="{{route('order.label', $purchase->id)}}" target="_blank">
                                                                     <i class="fa fa-check"></i> Print Label</a>
                                                             </li>
                                                         @endif
+                                                        @endif
+
+                                                            @if(!empty($aclList[15][3]))
                                                         @if($purchase->status == 2)
                                                             <li>
                                                                 <button type="button" class="btn btn-link received" data-purchase-id="{{ $purchase->id }}" data-link="{{route('order.received', $purchase->id)}}">
                                                                     <i class="fa fa-check"></i> Mark as received</button>
                                                             </li>
                                                         @endif
+                                                            @endif
+                                                            @if(!empty($aclList[15][8]))
                                                         <li>
                                                             <button type="button" class="btn btn-link view" data-purchase-id="{{ $purchase->id }}"><i class="fa fa-eye"></i> View
                                                             </button>
                                                         </li>
+                                                            @endif
+                                                            @if(!empty($aclList[15][3]))
                                                         <li>
                                                             <a class="btn btn-link" href="{{route('order.edit',$purchase->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </a>
                                                         </li>
+                                                            @endif
+                                                            @if(!empty($aclList[15][4]))
                                                         <form method="post" action="{{ route('order.destroy',$purchase->id) }}">
                                                             @method('delete')
                                                             @csrf
@@ -140,6 +152,7 @@
                                                                 </button>
                                                             </li>
                                                         </form>
+                                                                @endif
                                                     </ul>
                                                 </div>
 

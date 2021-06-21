@@ -28,10 +28,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Production List</h3>
+                                @if(!empty($aclList[18][2]))
                                 <a href="{{route('production.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body table-responsive">
@@ -63,16 +65,19 @@
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                @if(!empty($aclList[5][3]) || !empty($aclList[5][4]))
+
+                                                @if(!empty($aclList[18][8]))
                                                     <a href="{{route('production.show',$production->id)}}" title="Details" class="btn btn-info btn-xs">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
+                                                @endif
+                                                    @if(!empty($aclList[18][3]))
                                                 @if($production->status == 0)
                                                     <a href="{{route('production.edit',$production->id)}}" title="Finished Production" class="btn btn-success btn-xs">
                                                         <i class="fas fa-check"></i>
                                                     </a>
                                                     @endif
-                                                @endif
+                                                        @endif
                                             </td>
                                         </tr>
                                     @empty

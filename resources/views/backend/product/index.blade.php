@@ -29,10 +29,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Product List</h3>
+                                @if(!empty($aclList[12][1]))
                                 <a href="{{route('product.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <?php
@@ -120,15 +122,20 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                                                        @if(!empty($aclList[12][8]))
                                                         <li>
                                                             <button type="button" class="btn btn-link view"><i class="fa fa-eye"></i> View
                                                             </button>
                                                         </li>
+                                                        @endif
+                                                            @if(!empty($aclList[12][3]))
                                                         <li>
                                                             <a class="btn btn-link" href="{{route('product.edit',$product->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </a>
                                                         </li>
+                                                            @endif
+                                                            @if(!empty($aclList[12][4]))
                                                         <form method="post" action="{{ route('product.destroy',$product->id) }}">
                                                             @method('delete')
                                                             @csrf
@@ -138,6 +145,7 @@
                                                                 </button>
                                                             </li>
                                                         </form>
+                                                                @endif
                                                     </ul>
                                                 </div>
 
@@ -170,7 +178,9 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 id="exampleModalLabel" class="modal-title">{{'Product Details'}}</h5>
+                    @if(!empty($aclList[12][7]))
                     <button id="print-btn" type="button" class="btn btn-default btn-sm ml-3"><i class="fa fa-print"></i> {{'Print'}}</button>
+                    @endif
                     <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
                 </div>
                 <div class="modal-body">

@@ -99,7 +99,7 @@
                                                     class="text-danger"> {{$errors->has("warehouse_id") ? $errors->first("warehouse_id") : ""}} </span>
                                             </div>
                                         </div>
-
+                                        @if(!empty($aclList[10][5]))
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="password">Password<span class="text-danger">*</span></label>
@@ -115,6 +115,7 @@
                                                 <span class="text-danger"> {{$errors->has("confirm_password") ? $errors->first("confirm_password") : ""}} </span>
                                             </div>
                                         </div>
+                                        @endif
 
                                         <div class="col-md-6">
                                             <div class="form-group select2-parent">

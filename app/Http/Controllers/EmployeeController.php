@@ -14,8 +14,10 @@ use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
+    protected $moduleId = 10;
 
     public function index(){
+        OwnLibrary::validateAccess($this->moduleId, 1);
         $users = User::with(['role:id,name','creator:id,name','updator:id,name'])
             ->where('id','!=', 1)
 //            ->where('isEmployee','=', 0)
@@ -28,11 +30,13 @@ class EmployeeController extends Controller
     }
 
     public function create(){
+        OwnLibrary::validateAccess($this->moduleId, 2);
         $warehouses = Warehouse::select('id','name')->where('status','=',1)->orderBy('name')->get();
         $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
         return view('backend.employee.create',compact('roles','warehouses'));
     }
     public function store(Request $request){
+        OwnLibrary::validateAccess($this->moduleId, 2);
         $rules = [
             'name' => 'required|max:190',
             'email' => 'required|email|unique:users|max:100',
@@ -101,6 +105,7 @@ class EmployeeController extends Controller
     }
 
     public function edit(User $employee){
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $roles = Role::select('id','name')->where('status','=',1)->where('id','!=', 1)->get();
         $warehouses = Warehouse::select('id','name')->where('status','=',1)->orderBy('name')->get();
         $employeeWarehouses = EmployeeWarhouse::select('warehouse_id')->where('user_id','=',$employee->id)->get()->toArray();
@@ -109,6 +114,7 @@ class EmployeeController extends Controller
     }
 
     public function update(Request $request, User $employee){
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $rules = [
             'name' => 'required|max:190',
             'email' => 'required|email|max:190|unique:users,email,' . $employee->id,
@@ -179,6 +185,7 @@ class EmployeeController extends Controller
     }
 
     public function destroy(User $employee){
+        OwnLibrary::validateAccess($this->moduleId, 4);
         if ($employee->delete()){
             session()->flash('success','Data Delated');
         }else{

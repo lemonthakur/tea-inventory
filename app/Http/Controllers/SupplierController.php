@@ -8,8 +8,10 @@ use Illuminate\Http\Request;
 
 class SupplierController extends Controller
 {
+    protected $moduleId = 20;
     public function index()
     {
+        OwnLibrary::validateAccess($this->moduleId,1);
         $suppliers = Supplier::orderBy('id','DESC')->paginate(20);
         $paginate = OwnLibrary::paginationSerial($suppliers);
         return view('backend.supplier.index',compact('suppliers','paginate'));
@@ -18,11 +20,13 @@ class SupplierController extends Controller
 
     public function create()
     {
+        OwnLibrary::validateAccess($this->moduleId,2);
         return view('backend.supplier.create');
     }
 
     public function store(Request $request)
     {
+        OwnLibrary::validateAccess($this->moduleId,2);
         $rules = [
             'name' => 'required|max:250',
             'email' => 'required|email|max:250',
@@ -56,11 +60,13 @@ class SupplierController extends Controller
 
     public function edit(Supplier $supplier)
     {
+        OwnLibrary::validateAccess($this->moduleId,3);
         return view('backend.supplier.edit',compact('supplier'));
     }
 
     public function update(Request $request, Supplier $supplier)
     {
+        OwnLibrary::validateAccess($this->moduleId,3);
         $rules = [
             'name' => 'required|max:250',
             'email' => 'required|email|max:250',
@@ -93,6 +99,7 @@ class SupplierController extends Controller
 
     public function destroy(Supplier $supplier)
     {
+        OwnLibrary::validateAccess($this->moduleId,4);
         if ($supplier->delete()){
             session()->flash("success", "Data deleted");
         }else{

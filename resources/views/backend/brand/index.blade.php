@@ -27,7 +27,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Brand List</h3>
-                                @if(!empty($aclList[1][2]))
+                                @if(!empty($aclList[19][2]))
                                     <a href="{{route('brand.create')}}" class="btn btn-primary float-right text-white">
                                         <i class="fas fa-plus-circle"></i>
                                         Add New
@@ -96,14 +96,14 @@
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                @if(!empty($aclList[1][3]) || !empty($aclList[1][8]))
+                                                @if(!empty($aclList[19][3]) || !empty($aclList[19][4]))
                                                     <form method="post" action="{{ route('brand.destroy',$brand->id) }}">
-                                                        @if(!empty($aclList[1][3]))
+                                                        @if(!empty($aclList[19][3]))
                                                             <a class="btn btn-xs btn-warning text-white" href="{{route('brand.edit',$brand->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i>
                                                             </a>
                                                         @endif
-                                                        @if(!empty($aclList[1][4]))
+                                                        @if(!empty($aclList[19][4]))
                                                             @method('delete')
                                                             @csrf
                                                             <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">

@@ -13,7 +13,7 @@ use DB;
 
 class BrandController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 19;
     /**
      * Display a listing of the resource.
      *

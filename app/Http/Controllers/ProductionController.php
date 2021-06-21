@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CustomClass\OwnLibrary;
 use App\Models\Product;
 use App\Models\Product_Warehouse;
 use App\Models\Production;
@@ -13,18 +14,38 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductionController extends Controller
 {
+    protected $moduleId = 18;
     public function index(){
-        $productions = Production::with('product','warehouse')->orderBy('id','desc')->paginate(20);
+        OwnLibrary::validateAccess($this->moduleId, 1);
+
+        $user_ware_house = OwnLibrary::user_warehosue();
+
+        $productions = Production::with('product','warehouse')->orderBy('id','desc');
+
+        if($user_ware_house){
+            $productions->whereIn('warehouse_id', $user_ware_house)->orWhere('created_by',auth()->id());
+        }
+
+        $productions = $productions->paginate(20);
+
         return view('backend.production.index',compact('productions'));
     }
 
     public function create(){
-        $warehouses = Warehouse::orderBy('name')->get();
+        OwnLibrary::validateAccess($this->moduleId, 2);
+        $warehouses = Warehouse::orderBy('name');
+
+        $user_ware_house = OwnLibrary::user_warehosue();
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+
+        $warehouses = $warehouses->get();
+
         return view('backend.production.create',compact('warehouses'));
     }
 
     public function cartAdd(Request $request){
-
         $rules = [
             "nWarehouseId" => "required|integer",
             "nproductId" => "required|integer",
@@ -116,7 +137,7 @@ class ProductionController extends Controller
     }
 
     public function store(Request $request){
-
+        OwnLibrary::validateAccess($this->moduleId, 2);
         $rules = [
             "product" => "required",
             "note" => "max:220",
@@ -178,12 +199,14 @@ class ProductionController extends Controller
     }
 
     public function show($id){
+        OwnLibrary::validateAccess($this->moduleId, 8);
         $production = Production::with('productionUse','productionUse.product','productionUse.warehouse','product','warehouse','employee')
             ->find($id);
         return view('backend.production.show',compact('production'));
     }
 
     public function edit($id){
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $warehouses = Warehouse::orderBy('name')->get();
         $production = Production::with('productionUse','productionUse.product','productionUse.warehouse','product','warehouse','employee')
             ->find($id);
@@ -191,7 +214,7 @@ class ProductionController extends Controller
     }
 
     public function update(Request $request,$id){
-
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $rules = [
             "warehouse" => "required",
             "produce_amount" => "required",

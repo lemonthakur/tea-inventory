@@ -29,10 +29,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Employee List</h3>
+                                @if(!empty($aclList[10][2]))
                                 <a href="{{route('employees.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
@@ -94,14 +96,18 @@
                                                 <td class="text-center">
 
                                                     <form method="post" action="{{ route('employees.destroy',$user->id) }}">
+                                                        @if(!empty($aclList[10][3]))
                                                         <a class="btn btn-xs btn-warning text-white" href="{{route('employees.edit',$user->id)}}" title="Edit">
                                                             <i class="fas fa-pencil-alt"></i>
                                                         </a>
+                                                        @endif
                                                         @method('delete')
                                                         @csrf
+                                                            @if(!empty($aclList[10][4]))
                                                         <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">
                                                             <i class="fas fa-trash-alt"></i>
                                                         </button>
+                                                                @endif
                                                     </form>
                                                 </td>
                                             </tr>

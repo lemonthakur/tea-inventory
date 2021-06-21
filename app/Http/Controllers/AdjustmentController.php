@@ -21,10 +21,10 @@ use Auth;
 
 class AdjustmentController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 13;
     public function index()
     {
-        OwnLibrary::validateAccess($this->moduleId,2);
+        OwnLibrary::validateAccess($this->moduleId,1);
 
         $user_ware_house = OwnLibrary::user_warehosue();
         $adjustments = Adjustment::whereNotNull('id');
@@ -51,6 +51,7 @@ class AdjustmentController extends Controller
 
     public function store(Request $request)
     {
+        OwnLibrary::validateAccess($this->moduleId,2);
         $rules = [
             "warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
@@ -180,6 +181,7 @@ class AdjustmentController extends Controller
 
     public function update(Request $request, $id)
     {
+        OwnLibrary::validateAccess($this->moduleId,3);
         $adjustment = Adjustment::find($id);
         $rules = [
             "warehouse_id" => "required|integer",

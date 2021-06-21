@@ -50,7 +50,7 @@
                     </a>
                 </li>
 
-                @if(!empty($aclList[6][1]))
+                @if(!empty($aclList[6][1]) || !empty($aclList[10][1]) || !empty($aclList[10][2]))
                     <li class="nav-item has-treeview {{ ($routeName == 'user.index' || $routeName == 'user.create' || $routeName == 'user.edit' || $routeName == 'employees.index' || $routeName == 'employees.create' || $routeName == 'employees.edit') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
                             <i class="nav-icon fas fa-user"></i>
@@ -69,6 +69,7 @@
 {{--                                </a>--}}
 {{--                            </li>--}}
                             @endif
+                            @if(!empty($aclList[10][1]))
                             <li class="nav-item">
                                 <a href="{{route("employees.index")}}"
                                    class="nav-link {{ ($routeName == 'employees.index') ? 'active' : '' }}">
@@ -76,6 +77,8 @@
                                     <p>Employee List</p>
                                 </a>
                             </li>
+                                @endif
+                                @if(!empty($aclList[10][2]))
                             <li class="nav-item">
                                 <a href="{{route("employees.create")}}"
                                    class="nav-link {{ ($routeName == 'employees.create') ? 'active' : '' }}">
@@ -83,6 +86,7 @@
                                     <p>Employee Create</p>
                                 </a>
                             </li>
+                                    @endif
                         </ul>
                     </li>
                 @endif
@@ -129,6 +133,8 @@
                 </li>
                 @endif
 
+                @if(!empty($aclList[11][1]) || !empty($aclList[11][2]) || !empty($aclList[12][1]) || !empty($aclList[12][2])
+                || !empty($aclList[13][1]) || !empty($aclList[13][2]) || !empty($aclList[14][7]))
                 <li class="nav-item has-treeview {{ ($routeName == 'categories.index' || $routeName == 'categories.create'
                  || $routeName == 'categories.edit' || $routeName == 'product.index' || $routeName == 'product.create'
                 || $routeName == 'product.edit' || $routeName == 'product.printBarcode' || $routeName == 'qty_adjustment.index' || $routeName == 'qty_adjustment.create' || $routeName == 'qty_adjustment.edit') ? 'menu-open' : '' }}">
@@ -140,6 +146,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[11][1]))
                             <li class="nav-item">
                                 <a href="{{route("categories.index")}}"
                                    class="nav-link {{ ($routeName == 'categories.index') ? 'active' : '' }}">
@@ -147,6 +154,8 @@
                                     <p>Category List</p>
                                 </a>
                             </li>
+                        @endif
+                            @if(!empty($aclList[11][2]))
                         <li class="nav-item">
                             <a href="{{route("categories.create")}}"
                                class="nav-link {{ ($routeName == 'categories.create') ? 'active' : '' }}">
@@ -154,6 +163,8 @@
                                 <p>Category Create</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[12][1]))
                         <li class="nav-item">
                             <a href="{{route("product.index")}}"
                                class="nav-link {{ ($routeName == 'product.index') ? 'active' : '' }}">
@@ -161,6 +172,8 @@
                                 <p>Product List</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[12][1]))
                         <li class="nav-item">
                             <a href="{{route("product.create")}}"
                                class="nav-link {{ ($routeName == 'product.create' || $routeName == 'product.edit') ? 'active' : '' }}">
@@ -168,6 +181,8 @@
                                 <p>Product Create</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[13][1]))
                         <li class="nav-item">
                             <a href="{{route("qty_adjustment.index")}}"
                                class="nav-link {{ ($routeName == 'qty_adjustment.index') ? 'active' : '' }}">
@@ -175,6 +190,8 @@
                                 <p>Adjustment List</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[13][2]))
                         <li class="nav-item">
                             <a href="{{route("qty_adjustment.create")}}"
                                class="nav-link {{ ($routeName == 'qty_adjustment.create' || $routeName == 'qty_adjustment.edit') ? 'active' : '' }}">
@@ -182,6 +199,8 @@
                                 <p>Adjustment Create</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[14][7]))
                         <li class="nav-item">
                             <a href="{{route("product.printBarcode")}}"
                                class="nav-link {{ ($routeName == 'product.printBarcode') ? 'active' : '' }}">
@@ -189,9 +208,12 @@
                                 <p>Print Barcode</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
+                @endif
 
+                @if(!empty($aclList[15][1]) || !empty($aclList[15][2]))
                 <li class="nav-item has-treeview {{ ($routeName == 'order.index' || $routeName == 'order.create' ||
                 $routeName == 'order.edit' || $routeName == 'order.label') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
@@ -202,6 +224,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[15][1]))
                         <li class="nav-item">
                             <a href="{{route("order.index")}}"
                                class="nav-link {{ ($routeName == 'order.index' || $routeName == 'order.edit') ? 'active' : '' }}">
@@ -209,6 +232,8 @@
                                 <p>Order List</p>
                             </a>
                         </li>
+                        @endif
+                        @if(!empty($aclList[15][2]))
                         <li class="nav-item">
                             <a href="{{route("order.create")}}"
                                class="nav-link {{ ($routeName == 'order.create') ? 'active' : '' }}">
@@ -216,9 +241,12 @@
                                 <p>Add Order</p>
                             </a>
                         </li>
+                            @endif
                     </ul>
                 </li>
+                @endif
 
+                @if(!empty($aclList[16][1]) || !empty($aclList[16][2]) || !empty($aclList[17][1]))
                 <li class="nav-item has-treeview {{ ($routeName == 'transfer.index' || $routeName == 'transfer.create' ||
                 $routeName == 'transfer.edit' || $routeName == 'transfer-received.index') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
@@ -229,6 +257,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[16][1]))
                         <li class="nav-item">
                             <a href="{{route("transfer.index")}}"
                                class="nav-link {{ ($routeName == 'transfer.index' || $routeName == 'transfer.edit') ? 'active' : '' }}">
@@ -236,6 +265,8 @@
                                 <p>Transfer List</p>
                             </a>
                         </li>
+                        @endif
+                            @if(!empty($aclList[16][2]))
                         <li class="nav-item">
                             <a href="{{route("transfer.create")}}"
                                class="nav-link {{ ($routeName == 'transfer.create') ? 'active' : '' }}">
@@ -243,6 +274,8 @@
                                 <p>Add Transfer</p>
                             </a>
                         </li>
+                            @endif
+                            @if(!empty($aclList[17][1]))
                         <li class="nav-item">
                             <a href="{{route("transfer-received.index")}}"
                                class="nav-link {{ ($routeName == 'transfer-received.index') ? 'active' : '' }}">
@@ -250,9 +283,11 @@
                                 <p>Received Transfer</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
-
+                @endif
+                @if(!empty($aclList[18][1]) || !empty($aclList[18][2]))
                 <li class="nav-item has-treeview {{ ($routeName == 'production.index' || $routeName == 'production.create') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
@@ -262,6 +297,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[18][1]))
                         <li class="nav-item">
                             <a href="{{route("production.index")}}"
                                class="nav-link {{ ($routeName == 'production.index') ? 'active' : '' }}">
@@ -269,6 +305,8 @@
                                 <p>Production List</p>
                             </a>
                         </li>
+                        @endif
+                            @if(!empty($aclList[18][2]))
                         <li class="nav-item">
                             <a href="{{route("production.create")}}"
                                class="nav-link {{ ($routeName == 'production.create') ? 'active' : '' }}">
@@ -276,9 +314,11 @@
                                 <p>Production Create</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
-
+                @endif
+                @if(!empty($aclList[19][1]) || !empty($aclList[19][2]))
                 <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
@@ -288,6 +328,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[19][1]))
                         <li class="nav-item">
                             <a href="{{route("brand.index")}}"
                                class="nav-link {{ ($routeName == 'brand.index') ? 'active' : '' }}">
@@ -295,6 +336,8 @@
                                 <p>Brand List</p>
                             </a>
                         </li>
+                        @endif
+                            @if(!empty($aclList[19][2]))
                         <li class="nav-item">
                             <a href="{{route("brand.create")}}"
                                class="nav-link {{ ($routeName == 'brand.create') ? 'active' : '' }}">
@@ -302,9 +345,11 @@
                                 <p>Brand Create</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
-
+@endif
+                @if(!empty($aclList[20][1]) || !empty($aclList[20][2]))
                 <li class="nav-item has-treeview {{ ($routeName == 'suppliers.index' || $routeName == 'suppliers.create' || $routeName == 'suppliers.edit') ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link">
                         <i class="nav-icon fas fa-user"></i>
@@ -314,6 +359,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[20][1]))
                             <li class="nav-item">
                                 <a href="{{route("suppliers.index")}}"
                                    class="nav-link {{ ($routeName == 'suppliers.index') ? 'active' : '' }}">
@@ -321,6 +367,8 @@
                                     <p>Supplier List</p>
                                 </a>
                             </li>
+                        @endif
+                            @if(!empty($aclList[20][2]))
                         <li class="nav-item">
                             <a href="{{route("suppliers.create")}}"
                                class="nav-link {{ ($routeName == 'suppliers.create') ? 'active' : '' }}">
@@ -328,10 +376,13 @@
                                 <p>Supplier Create</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
+                @endif
 
-                @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]))
+                @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]) || !empty($aclList[21][1])
+                || !empty($aclList[22][1]) || !empty($aclList[23][3]))
                 <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create'
                 || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'
                 || $routeName == 'module.edit' || $routeName == 'site.setting.edit' || $routeName == 'warehouse.index' || $routeName == 'warehouse.create'
@@ -346,6 +397,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+                        @if(!empty($aclList[21][1]))
                         <li class="nav-item">
                             <a href="{{route("warehouse.index")}}"
                                class="nav-link {{ ($routeName == 'warehouse.index' || $routeName == 'warehouse.create'|| $routeName == 'warehouse.edit') ? 'active' : '' }}">
@@ -353,6 +405,8 @@
                                 <p>Warehouse</p>
                             </a>
                         </li>
+                        @endif
+                            @if(!empty($aclList[22][1]))
                         <li class="nav-item">
                             <a href="{{route("unit.index")}}"
                                class="nav-link {{ ($routeName == 'unit.index' || $routeName == 'unit.create'|| $routeName == 'unit.edit') ? 'active' : '' }}">
@@ -360,6 +414,7 @@
                                 <p>Unit</p>
                             </a>
                         </li>
+                            @endif
                         @if(!empty($aclList[4][1]))
                         <li class="nav-item">
                             <a href="{{route("module.index")}}"
@@ -378,6 +433,7 @@
                             </a>
                         </li>
                         @endif
+                            @if(!empty($aclList[23][1]))
                         <li class="nav-item">
                             <a href="{{route("site.setting.edit")}}"
                                class="nav-link {{ ($routeName == 'site.setting.edit') ? 'active' : '' }}">
@@ -385,6 +441,7 @@
                                 <p>Site Setting</p>
                             </a>
                         </li>
+                                @endif
                     </ul>
                 </li>
                 @endif

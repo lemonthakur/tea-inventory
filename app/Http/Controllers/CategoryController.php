@@ -8,8 +8,11 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    protected $moduleId = 11;
+
     public function index()
     {
+        OwnLibrary::validateAccess($this->moduleId, 1);
         $categories = Category::with('category')->orderBy('id','DESC')->paginate(20);
         $paginate = OwnLibrary::paginationSerial($categories);
         return view('backend.category.index',compact('categories','paginate'));
@@ -18,12 +21,14 @@ class CategoryController extends Controller
 
     public function create()
     {
+        OwnLibrary::validateAccess($this->moduleId, 2);
         $categories = Category::select('id','name')->orderBy('name')->where('category_id','=',null)->where('status','=',1)->get();
         return view('backend.category.create',compact('categories'));
     }
 
     public function store(Request $request)
     {
+        OwnLibrary::validateAccess($this->moduleId, 2);
         $rules = [
             'name' => 'required|max:250'
         ];
@@ -52,12 +57,14 @@ class CategoryController extends Controller
 
     public function edit(Category $category)
     {
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $categories = Category::select('id','name')->orderBy('name')->where('category_id','=',null)->where('status','=',1)->get();
         return view('backend.category.edit',compact('category','categories'));
     }
 
     public function update(Request $request, Category $category)
     {
+        OwnLibrary::validateAccess($this->moduleId, 3);
         $rules = [
             'name' => 'required|max:250'
         ];
@@ -85,6 +92,7 @@ class CategoryController extends Controller
 
     public function destroy(Category $category)
     {
+        OwnLibrary::validateAccess($this->moduleId, 4);
         if ($category->delete()){
             session()->flash("success", "Data deleted");
         }else{

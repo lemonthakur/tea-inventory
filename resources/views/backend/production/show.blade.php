@@ -83,7 +83,9 @@
                         </div>
                         <div class="my-2 text-right">
                             <a href="{{url()->previous()}}" class="btn btn-info">Go back</a>
+                            @if(!empty($aclList[18][7]))
                             <button id="print-btn" type="button" class="btn btn-primary">Print</button>
+                                @endif
                         </div>
                     </div>
                 </div>

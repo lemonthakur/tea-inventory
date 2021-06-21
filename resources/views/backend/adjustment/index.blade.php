@@ -29,10 +29,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Adjustment List</h3>
+                                @if(!empty($aclList[13][2]))
                                 <a href="{{route('qty_adjustment.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <?php
@@ -77,11 +79,14 @@
                                                         <span class="sr-only">Toggle Dropdown</span>
                                                     </button>
                                                     <ul class="dropdown-menu edit-options dropdown-menu-right dropdown-default" user="menu">
+                                                        @if(!empty($aclList[13][3]))
                                                         <li>
                                                             <a class="btn btn-link" href="{{route('qty_adjustment.edit',$adjustment->id)}}" title="Edit">
                                                                 <i class="fas fa-pencil-alt"></i> Edit
                                                             </a>
                                                         </li>
+                                                        @endif
+                                                            @if(!empty($aclList[13][4]))
                                                         <form method="post" action="{{ route('qty_adjustment.destroy',$adjustment->id) }}">
                                                             @method('delete')
                                                             @csrf
@@ -91,6 +96,7 @@
                                                                 </button>
                                                             </li>
                                                         </form>
+                                                                @endif
                                                     </ul>
                                                 </div>
 

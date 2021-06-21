@@ -13,7 +13,7 @@ use DB;
 
 class WarehouseController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 21;
     /**
      * Display a listing of the resource.
      *

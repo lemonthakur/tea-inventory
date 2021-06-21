@@ -20,7 +20,7 @@ use DB;
 
 class ProductController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 12;
     public function index()
     {
         OwnLibrary::validateAccess($this->moduleId,1);
@@ -354,7 +354,7 @@ class ProductController extends Controller
                 $warehouse_name[] = $lims_warehouse_data->name;
                 $variant_name[] = $lims_variant_data->name;
                 $variant_qty[] = $product_variant_warehouse_data->qty;
-                
+
             }
         }
         else{
@@ -373,6 +373,7 @@ class ProductController extends Controller
 
     public function printBarcode()
     {
+        OwnLibrary::validateAccess(14,7);
         return view('backend.product.print_barcode');
     }
 

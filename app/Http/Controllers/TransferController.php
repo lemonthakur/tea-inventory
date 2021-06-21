@@ -22,10 +22,10 @@ use Auth;
 
 class TransferController extends Controller
 {
-    protected $moduleId = 1;
+    protected $moduleId = 16;
     public function index()
     {
-        OwnLibrary::validateAccess($this->moduleId,2);
+        OwnLibrary::validateAccess($this->moduleId,1);
         /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
             $lims_purchase_list = Purchase::orderBy('id', 'desc')->where('user_id', Auth::id())->get();
         else
@@ -54,11 +54,13 @@ class TransferController extends Controller
         $warehouse_from = $warehouse_from->get();
 
         $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+
         return view('backend.transfer.create',compact('warehouses', 'warehouse_from'));
     }
 
     public function store(Request $request)
     {
+        OwnLibrary::validateAccess($this->moduleId,2);
         $rules = [
             "from_warehouse_id" => "required|integer",
             "to_warehouse_id" => "required|integer",
@@ -203,6 +205,7 @@ class TransferController extends Controller
 
     public function update(Request $request, Transfer $transfer)
     {
+        OwnLibrary::validateAccess($this->moduleId,3);
         $rules = [
             "from_warehouse_id" => "required|integer",
             "to_warehouse_id" => "required|integer",

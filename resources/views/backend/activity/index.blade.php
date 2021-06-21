@@ -28,10 +28,12 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Activity List</h3>
+                                @if(!empty($aclList[5][2]))
                                 <a href="{{route('activity.create')}}" class="btn btn-primary float-right text-white">
                                     <i class="fas fa-plus-circle"></i>
                                     Add New
                                 </a>
+                                    @endif
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body table-responsive">
