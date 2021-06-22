@@ -27,7 +27,17 @@
 
                             <div class="card-body">
                                 <form method="get" action="{{route('order-report.get')}}">
+                                    @csrf
                                     <div class="row">
+                                        <div class="col-md-2">
+                                            <div class="form-group select2-parent">
+                                                <label for="product">Product</label>
+                                                <select name="product_ser" class="form-control search-product" style="width: 100%;" data-allow-clear="true" data-url="{{route('ser-product.get')}}">
+                                                    <option></option>
+                                                </select>
+                                                <input type="hidden" id="productProduceRoute" value="{{route('ser-product.get')}}">
+                                            </div>
+                                        </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="name">Start Date</label>
@@ -40,7 +50,7 @@
                                                 <input type="text" class="form-control datepicker" id="end_date" name="end_date" value="{{request()->query('end_date')}}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group select2-parent">
                                                 <label for="warehouse">Warehouse</label>
                                                 <select
@@ -54,7 +64,7 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group select2-parent">
                                                 <label for="warehouse">Supplier</label>
                                                 <select
@@ -68,17 +78,28 @@
                                                 </select>
                                             </div>
                                         </div>
-
-                                        <div class="col-md-1">
-                                            <div class="form-group" style="padding-top: 33px;">
-                                                <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
+                                        <div class="col-md-2">
+                                            <div class="form-group select2-parent">
+                                                <label for="product">Status</label>
+                                                <select name="status_ser" class="form-control" style="width: 100%;">
+                                                    <option value="">All</option>
+                                                    <option value="1" @if(request()->query('status_ser') == 1) selected @endif>Received</option>
+                                                    <option value="2" @if(request()->query('status_ser') == 2) selected @endif>Pending</option>
+                                                </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-1">
+
+                                        <div class="col-md-2">
                                             <div class="form-group" style="padding-top: 33px;">
+                                                <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
                                                 <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
                                             </div>
                                         </div>
+                                        {{--<div class="col-md-1">
+                                            <div class="form-group" style="padding-top: 33px;">
+                                                <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                                            </div>
+                                        </div>--}}
                                     </div>
                                 </form>
                                 <div class="col-md-12 text-right">
@@ -107,7 +128,8 @@
                                         <th>Product Name</th>
                                         <th>Purchase Amount</th>
                                         <th>Purchase Qty</th>
-                                        {{--<th>In Stock</th>--}}
+                                        <th>Unit</th>
+                                        <th>Status</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -122,13 +144,27 @@
                                             <td>{{ $purchase->product_name }}</td>
                                             <td class="text-right">{{ number_format($purchase->purchases_amount, 2) }}</td>
                                             <td class="text-right">{{ number_format($purchase->purchases_qty, 2) }}</td>
+                                            <td>{{ $purchase->units_name }}</td>
+                                            <td class="text-center">
+                                                @if($purchase->purchases_status == 1)
+                                                    <button class="btn btn-xs btn-success">Received</button>
+                                                @else
+                                                    <button class="btn btn-xs btn-warning">Pending</button>
+                                                @endif
+                                            </td>
                                             {{--<td class="text-right">{{ number_format($purchase->stock_qty, 2) }}</td>--}}
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="text-center">Nothing Found</td>
+                                            <td colspan="11" class="text-center">Nothing Found</td>
                                         </tr>
                                     @endforelse
+                                        <tr>
+                                            <td colspan="7" class="text-right"><b>Total</b></td>
+                                            <td class="text-right"><b>{{number_format($total_price, 2)}}</b></td>
+                                            <td class="text-right"><b>{{number_format($total_purchase_qty, 2)}}</b></td>
+                                            <td colspan="2"></td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
