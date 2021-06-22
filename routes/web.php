@@ -22,6 +22,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\AdjustmentController;
 use App\Http\Controllers\TransferReceivedController;
+use App\Http\Controllers\OrderReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -111,5 +112,9 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::put('productions/{id}',[ProductionController::class,'update'])->name('production.update');
     Route::post('productions/add-to-cart',[ProductionController::class,'cartAdd'])->name('production.add.cart');
     Route::post('productions/remove-cart',[ProductionController::class,'removeCart'])->name('production.remove.cart');
+
+    // Order report
+    Route::any('order-report',[OrderReportController::class,'index'])->name('order-report.get');
+    Route::get('order-report-excel',[OrderReportController::class,'orderReportExcel']);
 });
 

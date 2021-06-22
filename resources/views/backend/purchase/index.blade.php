@@ -82,7 +82,7 @@
                                     <thead>
                                     <tr>
                                         <th>SL</th>
-                                        <th>Date</th>
+                                        <th>Order Date</th>
                                         <th>Reference</th>
                                         <th>Supplier</th>
                                         <th class="text-center">Grand Total</th>

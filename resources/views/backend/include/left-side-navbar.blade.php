@@ -381,6 +381,30 @@
                 </li>
                 @endif
 
+                @if(!empty($aclList[4][1]))
+                    <li class="nav-item has-treeview {{ ($routeName == 'order-report.get') ? 'menu-open' : '' }}">
+                        <a href="#"
+                           class="nav-link">
+                            <i class="nav-icon fas fa-cog"></i>
+                            <p>
+                                Reports
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            @if(!empty($aclList[21][1]))
+                                <li class="nav-item">
+                                    <a href="{{route("order-report.get")}}"
+                                       class="nav-link {{ ($routeName == 'order-report.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Order Report</p>
+                                    </a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
+
                 @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]) || !empty($aclList[21][1])
                 || !empty($aclList[22][1]) || !empty($aclList[23][3]))
                 <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create'
