@@ -94,3 +94,27 @@ function tinymceInitial(){
         fullpage_hide_in_source_view: true
     });
 }
+
+$('.search-product').select2({
+
+    ajax: {
+        url: $('.search-product').data('url'),
+        type:"POST",
+        dataType:"JSON",
+        data: function (params) {
+            return  query = {
+                search: params.term,
+                _token: $("input[name='_token']").val()
+            }
+        },
+        processResults: function (response) {
+            return {
+                results: response
+            };
+        },
+
+    },
+    placeholder: 'Search by product name or product code',
+    minimumInputLength: 2,
+});
+
