@@ -10,6 +10,20 @@
     <style>
         body{
             background-color: whitesmoke;
+            padding: 0;
+            margin: 0;
+        }
+        .header{
+            width: 90%;
+            background-color: cornflowerblue;
+            padding: 10px 0;
+            color: white;
+            margin: 5px auto 20px auto;
+        }
+        .header h3 {
+            margin: 0;
+            text-transform: capitalize;
+            text-align: center;
         }
         table{
             width: 90%;
@@ -19,76 +33,46 @@
         table,th,td{
             border: 1px solid gray;
         }
+        table thead {
+            background-color: #4152a7;
+            color: #ffffff;
+        }
+        table tbody tr:nth-child(odd){
+            background-color: lightgrey;
+        }
+        table tbody tr:nth-child(even){
+            background-color: white;
+        }
         th,td{
-            padding: 3px 2px;
+            padding: 3px 10px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
+<div class="header">
+    <h3>Product list with low quantity - {{date('d-m-Y H:i A')}}</h3>
+</div>
 <table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Unit</th>
+        <th>Warehouse</th>
+        <th>Qty</th>
+        <th>Waste</th>
+    </tr>
+    </thead>
     <tbody>
-    <tr style="text-align: center;">
-        <th colspan="4">
-            <h3>{{ucwords($formSubmit->form->form_title)}}</h3>
-        </th>
-    </tr>
-    <tr>
-        <th>First Name</th>
-        <td>{{$formSubmit->first_name}}</td>
-        <th>Last Name</th>
-        <td>{{$formSubmit->last_name}}</td>
-    </tr>
-    <tr>
-        <th>Email</th>
-        <td>{{$formSubmit->email}}</td>
-        <th>Phone</th>
-        <td>{{$formSubmit->phone_number}}</td>
-    </tr>
-    <tr>
-        <th>Zip Code</th>
-        <td>{{$formSubmit->postal_code}}</td>
-        <th>Receiver</th>
-        <td>
-            <p><strong>Name</strong>: {{$formSubmit->receiver_name ?? ''}}</p>
-            <p><strong>Email</strong>: {{$formSubmit->receiver_email ?? ''}}</p>
-        </td>
-    </tr>
-    @foreach($formSubmit->formSubmitValue->chunk(2) as $values)
+    @foreach($products as $product)
         <tr>
-            @foreach($values as $value)
-                @if($value->field_type == "checkbox")
-                    <th>{{ucwords($value->field_name)}}</th>
-                    <td>{{ucwords(implode(', ',json_decode($value->value)))}}</td>
-                @elseif($value->field_type == "file")
-                    <th>{{ucwords($value->field_name)}}</th>
-                    <td width="35%">
-                        <div class="row">
-                            @foreach(json_decode($value->value) as $file)
-                                @if($file->ext == 'jpg' || $file->ext == 'jpeg' || $file->ext == 'png' || $file->ext == 'gif')
-                                    <div style="width: 30%; margin-right: 3px;display: inline-block;text-align: center;">
-                                        <a target="_blank" href="{{asset($file->url)}}">
-                                            <img width="100%" src="{{asset($file->url)}}" alt="{{$value->field_name.' image'}}">
-                                        </a>
-                                    </div>
-                                @else
-                                    <div style="width: 30%; margin-right: 3px;display: inline-block;text-align: center">
-                                        <a class="btn btn-warning btn-xs" download href="{{asset($file->url)}}">Download</a>
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
-                    </td>
-                @else
-                    <th>{{ucwords($value->field_name)}}</th>
-                    <td>{{ucwords($value->value)}}</td>
-                @endif
-
-                @if(count($values) < 2)
-                    <th></th>
-                    <td></td>
-                @endif
-
-            @endforeach
+            <td>{{ucwords($product->product->name)}}</td>
+            <td>{{$product->product->code}}</td>
+            <td>{{strtoupper($product->product->unit->name)}}</td>
+            <td>{{ucwords($product->warehouse->name)}}</td>
+            <td>{{$product->qty}}</td>
+            <td>{{$product->waste_qty}}</td>
         </tr>
     @endforeach
     </tbody>

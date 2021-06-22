@@ -29,6 +29,7 @@ class SiteSettingController extends Controller
            'meta_description' => 'max:180',
            'meta_keyword' => 'max:180',
            'copy_right' => 'max:50',
+           'alert_quantity' => 'required',
         ];
 
         $message = [
@@ -51,6 +52,7 @@ class SiteSettingController extends Controller
         $setting->meta_description = $request->meta_description ?? Null;
         $setting->meta_keyword = $request->meta_keyword ?? Null;
         $setting->copy_right = $request->copy_right ?? Null;
+        $setting->alert_quantity = $request->alert_quantity ?? 5;
 
         if ($request->hasFile('icon')){
             if (!empty($setting->icon)){

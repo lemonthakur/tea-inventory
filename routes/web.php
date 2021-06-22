@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\MailReceiverController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
@@ -116,5 +117,10 @@ Route::group(['middleware'=>'authCheck'],function (){
     // Order report
     Route::any('order-report',[OrderReportController::class,'index'])->name('order-report.get');
     Route::get('order-report-excel',[OrderReportController::class,'orderReportExcel']);
+
+//    Email receiver list
+    Route::get('email-receivers',[MailReceiverController::class,'index'])->name('email-receiver.index');
+    Route::post('email-receivers',[MailReceiverController::class,'store'])->name('email-receiver.store');
+    Route::delete('email-receivers/{id}',[MailReceiverController::class,'destroy'])->name('email-receiver.destroy');
 });
 

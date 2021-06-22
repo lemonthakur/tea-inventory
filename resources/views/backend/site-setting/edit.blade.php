@@ -78,11 +78,19 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="meta_keyword">Meta Keywordst</label>
                                                 <input type="text" class="form-control {{$errors->has("meta_keyword") ? "is-invalid":""}}" id="meta_keyword" name="meta_keyword" placeholder="" value="{{old("meta_keyword",$setting->meta_keyword)}}">
                                                 <span class="text-danger"> {{$errors->has("meta_keyword") ? $errors->first("meta_keyword") : ""}} </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="meta_keyword">Stock Low Alert Quantity<span class="text-red">*</span></label>
+                                                <input type="number" step="any" class="form-control {{$errors->has("alert_quantity") ? "is-invalid":""}}" id="alert_quantity" name="alert_quantity" placeholder="" value="{{old("alert_quantity",$setting->alert_quantity)}}">
+                                                <span class="text-danger"> {{$errors->has("alert_quantity") ? $errors->first("alert_quantity") : ""}} </span>
                                             </div>
                                         </div>
 

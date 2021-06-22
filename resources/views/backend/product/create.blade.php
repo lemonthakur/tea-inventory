@@ -124,10 +124,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 d-none">
                                             <div class="form-group">
                                                 <label>Alert Quantity <span class="text-danger">*</span></label>
-                                                <input type="number" name="alert_quantity" value="{{old("alert_quantity")}}"
+                                                <input type="number" name="alert_quantity" value="{{old("alert_quantity",0)}}"
                                                        class="form-control {{$errors->has("alert_quantity") ? "is-invalid":""}}" step="any" required>
                                                 <span class="text-danger"> {{$errors->has("alert_quantity") ? $errors->first("alert_quantity") : ""}} </span>
                                             </div>

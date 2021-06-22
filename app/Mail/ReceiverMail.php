@@ -12,16 +12,16 @@ class ReceiverMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $formSubmit;
+    public $products;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(FormSubmit $formSubmit)
+    public function __construct($products)
     {
-        $this->formSubmit = $formSubmit;
+        $this->products = $products;
     }
 
     /**
@@ -31,8 +31,8 @@ class ReceiverMail extends Mailable
      */
     public function build()
     {
-        return $this->from('info@duckbd.com')
-            ->subject('Form Submit Value')->view('emails.receiver-email')
-            ->with('formSubmit', $this->formSubmit);
+        return $this->from('info@inventory.com')
+            ->subject('Stock low quantity warning')->view('emails.receiver-email')
+            ->with('products', $this->products);
     }
 }

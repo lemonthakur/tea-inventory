@@ -411,7 +411,7 @@
                 || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'
                 || $routeName == 'module.edit' || $routeName == 'site.setting.edit' || $routeName == 'warehouse.index' || $routeName == 'warehouse.create'
                 || $routeName == 'warehouse.edit' || $routeName == 'unit.index' || $routeName == 'unit.create'
-                || $routeName == 'unit.edit') ? 'menu-open' : '' }}">
+                || $routeName == 'unit.edit' || $routeName == 'email-receiver.index') ? 'menu-open' : '' }}">
                     <a href="#"
                        class="nav-link">
                         <i class="nav-icon fas fa-cog"></i>
@@ -421,6 +421,15 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{route("email-receiver.index")}}"
+                               class="nav-link {{ ($routeName == 'email-receiver.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Email Receiver</p>
+                            </a>
+                        </li>
+
                         @if(!empty($aclList[21][1]))
                         <li class="nav-item">
                             <a href="{{route("warehouse.index")}}"
@@ -457,7 +466,7 @@
                             </a>
                         </li>
                         @endif
-                            @if(!empty($aclList[23][1]))
+                            @if(!empty($aclList[23][3]))
                         <li class="nav-item">
                             <a href="{{route("site.setting.edit")}}"
                                class="nav-link {{ ($routeName == 'site.setting.edit') ? 'active' : '' }}">

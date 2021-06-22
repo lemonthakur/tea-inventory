@@ -61,7 +61,7 @@ class ProductController extends Controller
             'brand_id' => 'required|integer',
             'category_id' => 'required|integer',
             'unit_id' => 'required|integer',
-            'alert_quantity' => 'required',
+//            'alert_quantity' => 'required',
             'status' => 'required|integer|max:2',
         ];
 
@@ -96,7 +96,8 @@ class ProductController extends Controller
                 $product->category_id        = $request->category_id;
                 $product->unit_id            = $request->unit_id;
                 $product->product_price      = $request->product_price;
-                $product->alert_quantity     = $request->alert_quantity;
+//                $product->alert_quantity     = $request->alert_quantity;
+                $product->alert_quantity     = 0;
                 $product->status             = $request->status;
                 $product->product_details    = $request->product_details;
 
@@ -156,7 +157,7 @@ class ProductController extends Controller
             'brand_id' => 'required|integer',
             'category_id' => 'required|integer',
             'unit_id' => 'required|integer',
-            'alert_quantity' => 'required',
+//            'alert_quantity' => 'required',
             'status' => 'required|integer|max:2',
         ];
 
@@ -190,7 +191,8 @@ class ProductController extends Controller
                 $product->category_id        = $request->category_id;
                 $product->unit_id            = $request->unit_id;
                 $product->product_price      = $request->product_price;
-                $product->alert_quantity     = $request->alert_quantity;
+//                $product->alert_quantity     = $request->alert_quantity;
+                $product->alert_quantity     = 0;
                 $product->status             = $request->status;
                 $product->product_details    = $request->product_details;
 

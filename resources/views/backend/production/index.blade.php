@@ -44,6 +44,9 @@
                                         <th>Production Number</th>
                                         <th>Warehouse</th>
                                         <th>Product Name</th>
+                                        <th>Produce</th>
+                                        <th>Waste</th>
+                                        <th>Unit</th>
                                         <th>Employee</th>
                                         <th>Status</th>
                                         <th>Action</th>
@@ -56,6 +59,9 @@
                                             <td>{{ ucwords($production->production_number) }}</td>
                                             <td>{{ $production->warehouse->name ?? '' }}</td>
                                             <td>{{$production->product->name}}</td>
+                                            <td>{{$production->produce_amount ?? ''}}</td>
+                                            <td>{{$production->waste_amount ?? ''}}</td>
+                                            <td>{{$production->unit_name ?? ''}}</td>
                                             <td>{{ucwords($production->employee->name)}}</td>
                                             <td class="text-center">
                                                 @if($production->status == 1)

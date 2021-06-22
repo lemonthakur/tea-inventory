@@ -117,10 +117,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-4 d-none">
                                             <div class="form-group">
                                                 <label>Product Price</label>
-                                                <input type="number" name="product_price" value="{{old("alert_quantity", $product->product_price)}}"
+                                                <input type="number" name="product_price" value="{{old("alert_quantity", 0)}}"
                                                        class="form-control {{$errors->has("product_price") ? "is-invalid":""}}" step="any" required>
                                                 <span class="text-danger"> {{$errors->has("product_price") ? $errors->first("product_price") : ""}} </span>
                                             </div>
