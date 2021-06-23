@@ -382,7 +382,8 @@
                 @endif
 
                 @if(!empty($aclList[4][1]))
-                    <li class="nav-item has-treeview {{ ($routeName == 'order-report.get') ? 'menu-open' : '' }}">
+                    <li class="nav-item has-treeview {{ ($routeName == 'order-report.get' || $routeName == 'transfer-report.get'
+                    || $routeName == 'receive-transfer-report.get') ? 'menu-open' : '' }}">
                         <a href="#"
                            class="nav-link">
                             <i class="nav-icon fas fa-cog"></i>
@@ -398,6 +399,24 @@
                                        class="nav-link {{ ($routeName == 'order-report.get') ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Order Report</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(!empty($aclList[21][1]))
+                                <li class="nav-item">
+                                    <a href="{{route("transfer-report.get")}}"
+                                       class="nav-link {{ ($routeName == 'transfer-report.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Transfer Report</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(!empty($aclList[21][1]))
+                                <li class="nav-item">
+                                    <a href="{{route("receive-transfer-report.get")}}"
+                                       class="nav-link {{ ($routeName == 'receive-transfer-report.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Transfer Receive Report</p>
                                     </a>
                                 </li>
                             @endif

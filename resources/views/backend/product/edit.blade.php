@@ -67,7 +67,7 @@
                                                 <select name="barcode_symbology" required class="form-control">
                                                     <option value="C39+" @if(old("barcode_symbology")=='C39+' || $product->barcode_symbology=='C39+') selected @endif>Code C39+</option>
                                                     <option value="C39" @if(old("barcode_symbology")=='C39' || $product->barcode_symbology=='C39') selected @endif>Code 39</option>
-                                                    <option value="PDF417" @if(old("barcode_symbology")=='UPCA' || $product->barcode_symbology=='PDF417') selected @endif>PDF417</option>
+                                                    {{--<option value="PDF417" @if(old("barcode_symbology")=='UPCA' || $product->barcode_symbology=='PDF417') selected @endif>PDF417</option>--}}
                                                     {{--<option value="UPCE" @if(old("barcode_symbology")=='UPCE' || $product->barcode_symbology=='UPCE') selected @endif>UPC-E</option>
                                                     <option value="EAN8" @if(old("barcode_symbology")=='EAN8' || $product->barcode_symbology=='EAN8') selected @endif>EAN-8</option>
                                                     <option value="EAN13" @if(old("barcode_symbology")=='EAN13' || $product->barcode_symbology=='EAN13') selected @endif>EAN-13</option>--}}

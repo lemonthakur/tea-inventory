@@ -94,6 +94,21 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-md-12">
+                                            <div class="form-group select2-parent">
+                                                <label>Unit calculation in reports & alret quantity<span class="text-danger">*</span></label>
+                                                <select name="display_unit" id="display_unit" class="form-control">
+                                                    <option selected value="">Select Unit</option>
+                                                    @foreach($lims_unit_list as $unit)
+                                                        @if($unit->base_unit==null)
+                                                            <option value="{{$unit->id}}" @if(old("display_unit")==$unit->id || $setting->display_unit==$unit->id) selected @endif>{{$unit->name}}</option>
+                                                        @endif
+                                                    @endforeach
+                                                </select>
+                                                <span class="text-danger"> {{$errors->has("display_unit") ? $errors->first("display_unit") : ""}} </span>
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-6">
                                             <label>
                                                 Upload Icon (50x50)

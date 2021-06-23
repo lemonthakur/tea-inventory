@@ -15,6 +15,7 @@ use App\Models\Purchase;
 use App\Models\ProductPurchase;
 use App\Models\Product_Warehouse;
 use App\Models\User;
+use App\Models\SiteSetting;
 use DB;
 use Auth;
 use Carbon\Carbon;
@@ -46,9 +47,10 @@ class OrderReportController extends Controller
                         , 'products.qty as stock_qty'
                         , 'purchases.status as purchases_status'
                         , 'units.name as units_name'
+                        , 'units.value as units_value'
                     );
 
-        //$purchases->where('purchases.status', 1);
+        $purchases->where('purchases.status', 1);
         if($user_ware_house){
             $purchases->whereIn('purchases.warehouse_id', $user_ware_house);
         }
@@ -58,8 +60,8 @@ class OrderReportController extends Controller
         }
         if($request->input('start_date')){
             $reportUrl .= '&start_date='.$request->input('start_date');
-
-            if($request->input('status_ser')){
+            $purchases->whereDate('purchases.received_date','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+            /*if($request->input('status_ser')){
                 if($request->input('status_ser') == 1){
                     $purchases->whereDate('purchases.received_date','>=', date("Y-m-d", strtotime($request->input('start_date'))));
                 }else{
@@ -68,12 +70,13 @@ class OrderReportController extends Controller
             }
             else{
                 $purchases->whereDate('purchases.created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
-            }
+            }*/
 
         }
         if($request->input('end_date')){
             $reportUrl .= '&end_date='.$request->input('end_date');
-            if($request->input('status_ser')){
+            $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+            /*if($request->input('status_ser')){
                 if($request->input('status_ser') == 1){
                     $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
                 }else{
@@ -82,9 +85,7 @@ class OrderReportController extends Controller
             }
             else{
                 $purchases->whereDate('purchases.created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
-            }
-
-            $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+            }*/
         }
         if($request->input('warehouse_ser')){
             $reportUrl .= '&warehouse_ser='.$request->input('warehouse_ser');
@@ -113,7 +114,11 @@ class OrderReportController extends Controller
         $warehouses = $warehouses->get();
         $suppliers = Supplier::select('id','name')->orderBy('name')->get();
 
-        return view('backend.reports.index', compact('purchases', 'warehouses', 'suppliers', 'reportUrl', 'total_purchase_qty', 'total_price'));
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+
+        return view('backend.reports.index', compact('purchases', 'warehouses', 'suppliers', 'reportUrl'
+            , 'total_purchase_qty', 'total_price', 'site_setting', 'site_unit'));
     }
 
     public function orderReportExcel(Request $request)
@@ -138,9 +143,10 @@ class OrderReportController extends Controller
             , 'products.qty as stock_qty'
             , 'purchases.status as purchases_status'
             , 'units.name as units_name'
+            , 'units.value as units_value'
         );
 
-        //$purchases->where('purchases.status', 1);
+        $purchases->where('purchases.status', 1);
         if($user_ware_house){
             $purchases->whereIn('purchases.warehouse_id', $user_ware_house);
         }
@@ -148,7 +154,8 @@ class OrderReportController extends Controller
             $purchases->where('product_purchases.product_id', $request->input('product_ser'));
         }
         if($request->input('start_date')){
-            if($request->input('status_ser')){
+            $purchases->whereDate('purchases.received_date','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+            /*if($request->input('status_ser')){
                 if($request->input('status_ser') == 1){
                     $purchases->whereDate('purchases.received_date','>=', date("Y-m-d", strtotime($request->input('start_date'))));
                 }else{
@@ -157,11 +164,12 @@ class OrderReportController extends Controller
             }
             else{
                 $purchases->whereDate('purchases.created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
-            }
+            }*/
 
         }
         if($request->input('end_date')){
-            if($request->input('status_ser')){
+            $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+            /*if($request->input('status_ser')){
                 if($request->input('status_ser') == 1){
                     $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
                 }else{
@@ -170,9 +178,8 @@ class OrderReportController extends Controller
             }
             else{
                 $purchases->whereDate('purchases.created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
-            }
+            }*/
 
-            $purchases->whereDate('purchases.received_date','<=', date("Y-m-d", strtotime($request->input('end_date'))));
         }
         if($request->input('warehouse_ser')){
             $purchases->where('purchases.warehouse_id','=', $request->input('warehouse_ser'));
@@ -190,6 +197,11 @@ class OrderReportController extends Controller
         $total_price        = $purchases->sum('product_purchases.total');
         $purchases = $purchases->get();
 
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+        $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+        $site_unit_name = ($site_unit) ? $site_unit->name : '';
+
         $fileName = 'order-report.csv';
         $headers = array(
             "Content-type"        => "text/csv",
@@ -200,9 +212,9 @@ class OrderReportController extends Controller
         );
 
         $columns = array('SL', 'Order Date', 'Received Date', 'Reference', 'Warehouse', 'Supplier', 'Product Name'
-        , 'Purchase Amount', 'Purchase Qty', 'Unit', 'Status');
+        , 'Unit', 'Purchase Amount', 'Purchase Qty'/*, 'Status'*/);
 
-        $callback = function() use($purchases, $columns, $total_purchase_qty, $total_price) {
+        $callback = function() use($purchases, $columns, $total_purchase_qty, $total_price, $site_unit_val, $site_unit_name) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
             $sl = 1;
@@ -215,13 +227,13 @@ class OrderReportController extends Controller
                 , $purchase->reference_no
                 , $purchase->warehouse_name
                 , $purchase->supplier_name, $purchase->product_name
-                , number_format($purchase->purchases_amount, 2)
-                , number_format($purchase->purchases_qty, 2)
                 , $purchase->units_name
-                , $status
+                , number_format($purchase->purchases_amount, 2)
+                , number_format($purchase->purchases_qty/$purchase->units_value, 2)
+                /*, $status*/
                 ) );
             }
-            fputcsv($file, array('','','','','','','Total',$total_purchase_qty,$total_price));
+            fputcsv($file, array('','','','','','','','Total',number_format($total_price, 2), number_format($total_purchase_qty/$site_unit_val, 2).' '.$site_unit_name));
             fclose($file);
         };
         return response()->stream($callback, 200, $headers);

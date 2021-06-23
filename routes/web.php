@@ -24,6 +24,8 @@ use App\Http\Controllers\TransferController;
 use App\Http\Controllers\AdjustmentController;
 use App\Http\Controllers\TransferReceivedController;
 use App\Http\Controllers\OrderReportController;
+use App\Http\Controllers\TransferReportController;
+use App\Http\Controllers\ReceiveTransferReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -117,6 +119,18 @@ Route::group(['middleware'=>'authCheck'],function (){
     // Order report
     Route::any('order-report',[OrderReportController::class,'index'])->name('order-report.get');
     Route::get('order-report-excel',[OrderReportController::class,'orderReportExcel']);
+
+    // Transfer report
+    Route::any('transfer-report',[TransferReportController::class,'index'])->name('transfer-report.get');
+    Route::get('transfer-report-excel',[TransferReportController::class,'transferReportExcel']);
+
+    // Transfer received
+    Route::any('receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
+    Route::get('receive-transfer-report-excel',[ReceiveTransferReportController::class,'receiveTransferReportExcel']);
+
+    // Transfer received
+    Route::any('receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
+    Route::get('receive-transfer-report-excel',[ReceiveTransferReportController::class,'receiveTransferReportExcel']);
 
 //    Email receiver list
     Route::get('email-receivers',[MailReceiverController::class,'index'])->name('email-receiver.index');
