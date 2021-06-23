@@ -28,6 +28,7 @@ use App\Http\Controllers\TransferReportController;
 use App\Http\Controllers\ReceiveTransferReportController;
 use App\Http\Controllers\ProductStockReportController;
 use App\Http\Controllers\ProductStockRegistersReportController;
+use App\Http\Controllers\ProductAdjustmentReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -141,6 +142,10 @@ Route::group(['middleware'=>'authCheck'],function (){
     // Stock register report
     Route::any('report/product-register-stock',[ProductStockRegistersReportController::class,'index'])->name('product-register-stock.get');
     Route::get('product-register-stock-report-excel',[ProductStockRegistersReportController::class,'productRegisterStockReportExcel']);
+
+    // adjustment report
+    Route::any('report/product-adjustment',[ProductAdjustmentReportController::class,'index'])->name('product-adjustment.get');
+    Route::get('product-adjustment-excel',[ProductAdjustmentReportController::class,'productAdjustmentkReportExcel']);
 
 //    Email receiver list
     Route::get('email-receivers',[MailReceiverController::class,'index'])->name('email-receiver.index');

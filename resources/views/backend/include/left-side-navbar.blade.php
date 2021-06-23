@@ -383,7 +383,8 @@
 
                 @if(!empty($aclList[4][1]))
                     <li class="nav-item has-treeview {{ ($routeName == 'order-report.get' || $routeName == 'transfer-report.get'
-                    || $routeName == 'receive-transfer-report.get' || $routeName == 'product-stock.get' || $routeName == 'product-register-stock.get') ? 'menu-open' : '' }}">
+                    || $routeName == 'receive-transfer-report.get' || $routeName == 'product-stock.get'
+                    || $routeName == 'product-register-stock.get' || $routeName == 'product-adjustment.get') ? 'menu-open' : '' }}">
                         <a href="#"
                            class="nav-link">
                             <i class="nav-icon fas fa-cog"></i>
@@ -438,6 +439,15 @@
                                     </a>
                                 </li>
                             @endif
+                            @if(!empty($aclList[21][1]))
+                            <li class="nav-item">
+                                <a href="{{route("product-adjustment.get")}}"
+                                   class="nav-link {{ ($routeName == 'product-adjustment.get') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Adjustment Report</p>
+                                </a>
+                            </li>
+                        @endif
                         </ul>
                     </li>
                 @endif
