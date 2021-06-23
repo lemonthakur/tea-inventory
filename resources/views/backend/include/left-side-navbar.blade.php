@@ -383,7 +383,7 @@
 
                 @if(!empty($aclList[4][1]))
                     <li class="nav-item has-treeview {{ ($routeName == 'order-report.get' || $routeName == 'transfer-report.get'
-                    || $routeName == 'receive-transfer-report.get') ? 'menu-open' : '' }}">
+                    || $routeName == 'receive-transfer-report.get' || $routeName == 'product-stock.get' || $routeName == 'product-register-stock.get') ? 'menu-open' : '' }}">
                         <a href="#"
                            class="nav-link">
                             <i class="nav-icon fas fa-cog"></i>
@@ -417,6 +417,24 @@
                                        class="nav-link {{ ($routeName == 'receive-transfer-report.get') ? 'active' : '' }}">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Transfer Receive Report</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(!empty($aclList[21][1]))
+                                <li class="nav-item">
+                                    <a href="{{route("product-stock.get")}}"
+                                       class="nav-link {{ ($routeName == 'product-stock.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Stock Report</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(!empty($aclList[21][1]))
+                                <li class="nav-item">
+                                    <a href="{{route("product-register-stock.get")}}"
+                                       class="nav-link {{ ($routeName == 'product-register-stock.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Stock Register Report</p>
                                     </a>
                                 </li>
                             @endif

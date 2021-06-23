@@ -26,6 +26,8 @@ use App\Http\Controllers\TransferReceivedController;
 use App\Http\Controllers\OrderReportController;
 use App\Http\Controllers\TransferReportController;
 use App\Http\Controllers\ReceiveTransferReportController;
+use App\Http\Controllers\ProductStockReportController;
+use App\Http\Controllers\ProductStockRegistersReportController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -117,20 +119,28 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::post('productions/remove-cart',[ProductionController::class,'removeCart'])->name('production.remove.cart');
 
     // Order report
-    Route::any('order-report',[OrderReportController::class,'index'])->name('order-report.get');
+    Route::any('report/order-report',[OrderReportController::class,'index'])->name('order-report.get');
     Route::get('order-report-excel',[OrderReportController::class,'orderReportExcel']);
 
     // Transfer report
-    Route::any('transfer-report',[TransferReportController::class,'index'])->name('transfer-report.get');
+    Route::any('report/transfer-report',[TransferReportController::class,'index'])->name('transfer-report.get');
     Route::get('transfer-report-excel',[TransferReportController::class,'transferReportExcel']);
 
     // Transfer received
-    Route::any('receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
+    Route::any('report/receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
     Route::get('receive-transfer-report-excel',[ReceiveTransferReportController::class,'receiveTransferReportExcel']);
 
     // Transfer received
-    Route::any('receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
+    Route::any('report/receive-transfer-report',[ReceiveTransferReportController::class,'index'])->name('receive-transfer-report.get');
     Route::get('receive-transfer-report-excel',[ReceiveTransferReportController::class,'receiveTransferReportExcel']);
+
+    // Product stock report
+    Route::any('report/product-stock',[ProductStockReportController::class,'index'])->name('product-stock.get');
+    Route::get('product-stock-report-excel',[ProductStockReportController::class,'productStockReportExcel']);
+
+    // Stock register report
+    Route::any('report/product-register-stock',[ProductStockRegistersReportController::class,'index'])->name('product-register-stock.get');
+    Route::get('product-register-stock-report-excel',[ProductStockRegistersReportController::class,'productRegisterStockReportExcel']);
 
 //    Email receiver list
     Route::get('email-receivers',[MailReceiverController::class,'index'])->name('email-receiver.index');
