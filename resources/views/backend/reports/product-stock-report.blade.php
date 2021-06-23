@@ -86,6 +86,9 @@
                                 $page = empty($page) ? 1 : $page;
                                 $sl = ($page-1)*20;
                                 $l = 1;
+
+                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
                             ?>
                             <div class="card-body table-responsive" id="prin-table">
                                 <span id="count_pan">Displaying product from {{ ($products->total()) ? $sl+1 : 0 }} to {{ $sl+$products->count() }} out of total {{ $products->total() }}</span>
@@ -107,7 +110,7 @@
                                             <td>{{ $product->code }}</td>
                                             <td>{{ $product->name }}</td>
                                             <td>{{ $product->product_price }}</td>
-                                            <td class="text-right">{{ number_format($product->qty/$product->unit_value, 2) }}</td>
+                                            <td class="text-right @if($product->qty <= $site_setting->alert_quantity/$site_unit_val){{'bg-warning'}}@endif ">{{ number_format($product->qty/$product->unit_value, 2) }}</td>
                                             <td class="text-right">{{ number_format($product->total, 2) }}</td>
                                         </tr>
                                     @empty
@@ -116,8 +119,7 @@
                                         </tr>
                                     @endforelse
                                             <?php
-                                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
-                                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
+
                                             ?>
                                         <tr>
                                             <td colspan="4" class="text-right"><b>Total</b></td>
