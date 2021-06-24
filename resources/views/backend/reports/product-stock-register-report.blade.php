@@ -23,8 +23,12 @@
                             <div class="card-header">
                                 <h3 class="card-title" style="margin-left: 45% !important;">Stock Register Report</h3>
                                 <p style="margin-left: 95% !important;">
+                                    @if(!empty($aclList[31][7]))
                                     <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
-                                    <a href="{{$reportUrl.'&action=csv'.'&page='.request()->query('page')}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
+                                        @endif
+                                        @if(!empty($aclList[31][9]))
+                                        <a href="{{$reportUrl.'&action=csv'.'&page='.request()->query('page')}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
+                                        @endif
                                 </p>
                             </div>
                             <!-- /.card-header -->

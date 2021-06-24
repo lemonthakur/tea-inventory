@@ -381,7 +381,8 @@
                 </li>
                 @endif
 
-                @if(!empty($aclList[4][1]))
+                @if(!empty($aclList[25][1]) || !empty($aclList[26][1]) || !empty($aclList[27][1]) || !empty($aclList[28][1])
+                || !empty($aclList[30][1]) || !empty($aclList[29][1]) || !empty($aclList[31][1]) || !empty($aclList[32][1]))
 
                     <li class="nav-item has-treeview {{ ($routeName == 'order-report.get' || $routeName == 'transfer-report.get'
                     || $routeName == 'receive-transfer-report.get' || $routeName == 'product-stock.get'
@@ -397,7 +398,7 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            @if(!empty($aclList[21][1]))
+                            @if(!empty($aclList[25][1]))
                                 <li class="nav-item">
                                     <a href="{{route("order-report.get")}}"
                                        class="nav-link {{ ($routeName == 'order-report.get') ? 'active' : '' }}">
@@ -406,7 +407,7 @@
                                     </a>
                                 </li>
                             @endif
-
+                                @if(!empty($aclList[26][1]))
                                 <li class="nav-item">
                                     <a href="{{route("low-quantity.get")}}"
                                        class="nav-link {{ ($routeName == 'low-quantity.get') ? 'active' : '' }}">
@@ -414,6 +415,8 @@
                                         <p>Quantity Report</p>
                                     </a>
                                 </li>
+                                @endif
+                                @if(!empty($aclList[27][1]))
                                 <li class="nav-item">
                                     <a href="{{route("production-report.get")}}"
                                        class="nav-link {{ ($routeName == 'production-report.get') ? 'active' : '' }}">
@@ -421,8 +424,9 @@
                                         <p>Production Report</p>
                                     </a>
                                 </li>
+                                @endif
 
-                            @if(!empty($aclList[21][1]))
+                            @if(!empty($aclList[28][1]))
                                 <li class="nav-item">
                                     <a href="{{route("transfer-report.get")}}"
                                        class="nav-link {{ ($routeName == 'transfer-report.get') ? 'active' : '' }}">
@@ -431,7 +435,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(!empty($aclList[21][1]))
+                            @if(!empty($aclList[30][1]))
                                 <li class="nav-item">
                                     <a href="{{route("receive-transfer-report.get")}}"
                                        class="nav-link {{ ($routeName == 'receive-transfer-report.get') ? 'active' : '' }}">
@@ -440,7 +444,8 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(!empty($aclList[21][1]))
+
+                            @if(!empty($aclList[29][1]))
                                 <li class="nav-item">
                                     <a href="{{route("product-stock.get")}}"
                                        class="nav-link {{ ($routeName == 'product-stock.get') ? 'active' : '' }}">
@@ -449,7 +454,8 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(!empty($aclList[21][1]))
+
+                            @if(!empty($aclList[31][1]))
                                 <li class="nav-item">
                                     <a href="{{route("product-register-stock.get")}}"
                                        class="nav-link {{ ($routeName == 'product-register-stock.get') ? 'active' : '' }}">
@@ -458,7 +464,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(!empty($aclList[21][1]))
+                            @if(!empty($aclList[32][1]))
                             <li class="nav-item">
                                 <a href="{{route("product-adjustment.get")}}"
                                    class="nav-link {{ ($routeName == 'product-adjustment.get') ? 'active' : '' }}">
@@ -473,7 +479,7 @@
                 @endif
 
                 @if(!empty($aclList[4][1]) || !empty($aclList[5][1]) || !empty($aclList[1][1]) || !empty($aclList[21][1])
-                || !empty($aclList[22][1]) || !empty($aclList[23][3]))
+                || !empty($aclList[22][1]) || !empty($aclList[23][3]) || !empty($aclList[24][1] ))
                 <li class="nav-item has-treeview {{ ($routeName == 'activity.index' || $routeName == 'activity.create'
                 || $routeName == 'activity.edit' || $routeName == 'module.index' || $routeName == 'module.create'
                 || $routeName == 'module.edit' || $routeName == 'site.setting.edit' || $routeName == 'warehouse.index' || $routeName == 'warehouse.create'
@@ -488,7 +494,7 @@
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-
+                        @if(!empty($aclList[24][1]))
                         <li class="nav-item">
                             <a href="{{route("email-receiver.index")}}"
                                class="nav-link {{ ($routeName == 'email-receiver.index') ? 'active' : '' }}">
@@ -496,7 +502,7 @@
                                 <p>Email Receiver</p>
                             </a>
                         </li>
-
+                        @endif
                         @if(!empty($aclList[21][1]))
                         <li class="nav-item">
                             <a href="{{route("warehouse.index")}}"
