@@ -7,6 +7,7 @@ use App\Models\Product_Warehouse;
 use App\Models\Production;
 use App\Models\SiteSetting;
 use App\Models\Warehouse;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class ProductionReportController extends Controller
@@ -65,6 +66,8 @@ class ProductionReportController extends Controller
         if ($request->status){
             $productions->where('productions.status','=',$request->status - 1);
         }
+        if($request->input('employee_ser'))
+            $productions->where('productions.employee_id','=', $request->input('employee_ser'));
 
         $productions = $productions->paginate(20);
 
@@ -74,7 +77,18 @@ class ProductionReportController extends Controller
         }
         $warehouses = $warehouses->get();
 
-        return view('backend.production-report.index',compact('productions','warehouses'));
+        if($user_ware_house){
+            $users = User::join('employee_warhouses', 'employee_warhouses.user_id', '=', 'users.id')
+                ->where('users.status', 1)
+                ->whereIn('employee_warhouses.warehouse_id', $user_ware_house)
+                ->select('users.*')
+                ->groupBy('users.id')
+                ->get();
+        }else{
+            $users = User::where('status', 1)->get();
+        }
+
+        return view('backend.production-report.index',compact('productions','warehouses', 'users'));
     }
 
     public function excel(Request $request){
@@ -130,6 +144,8 @@ class ProductionReportController extends Controller
         if ($request->status){
             $productions->where('productions.status','=',$request->status - 1);
         }
+        if($request->input('employee_ser'))
+            $productions->where('productions.employee_id','=', $request->input('employee_ser'));
 
         $productions = $productions->get();
 

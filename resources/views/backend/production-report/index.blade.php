@@ -22,6 +22,10 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title" style="margin-left: 45% !important;">Production Report</h3>
+                                <p style="margin-left: 95% !important;">
+                                    <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
+                                    <a href="{{route('production-report.excel').'?'.http_build_query(request()->query())}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
+                                </p>
                             </div>
                             <!-- /.card-header -->
 
@@ -29,7 +33,7 @@
                                 @csrf
                                 <form method="get" action="{{route('production-report.get')}}">
                                     <div class="row">
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group select2-parent">
                                                 <label for="product">Product</label>
                                                 <select name="product_ser" class="form-control search-product" style="width: 100%;" data-allow-clear="true" data-url="{{route('ser-product.get')}}">
@@ -38,7 +42,7 @@
                                                 <input type="hidden" id="productProduceRoute" value="{{route('ser-product.get')}}">
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group select2-parent">
                                                 <label for="warehouse">Warehouse</label>
                                                 <select
@@ -53,13 +57,28 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
+                                            <div class="form-group select2-parent">
+                                                <label for="warehouse">Employee</label>
+                                                <select
+                                                        class="form-control single-select2"
+                                                        data-placeholder="Select employee" data-allow-clear="true"
+                                                        id="employee_ser" name="employee_ser">
+                                                    <option></option>
+                                                    @foreach($users as $user)
+                                                        <option value="{{$user->id}}" @if(request()->query('employee_ser') == $user->id) selected @endif>{{ucwords($user->name)}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="production_start_from">Production Start From</label>
                                                 <input type="text" class="form-control datepicker" id="production_start_from" name="production_start_from" value="{{request()->query('production_start_from')}}" readonly>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-md-2">
                                             <div class="form-group">
                                                 <label for="production_start_to">Production Start to</label>
                                                 <input type="text" class="form-control datepicker" id="production_start_to" name="production_start_to" value="{{request()->query('production_start_to')}}" readonly>
@@ -100,11 +119,7 @@
                                         </div>
                                     </div>
                                 </form>
-                                <div class="col-md-12 text-right">
-{{--                                    <a href="{{route('low-quantity.print').'?'.http_build_query(request()->query())}}" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></a>--}}
-                                    <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
-                                    <a href="{{route('production-report.excel').'?'.http_build_query(request()->query())}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
-                                </div>
+
                             </div>
 
                             <?php
@@ -167,7 +182,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="8" class="text-center">Nothing Found</td>
+                                            <td colspan="12" class="text-center">Nothing Found</td>
                                         </tr>
                                     @endforelse
 

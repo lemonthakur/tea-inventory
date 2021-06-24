@@ -24,7 +24,7 @@
             <form method="get">
                 @csrf
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group select2-parent">
                             <label for="product">Product</label>
                             <select name="product_ser" class="form-control search-product" style="width: 100%;" data-allow-clear="true" data-url="{{route('ser-product.get')}}">
@@ -33,7 +33,7 @@
                             <input type="hidden" id="productProduceRoute" value="{{route('ser-product.get')}}">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group select2-parent">
                             <label for="warehouse">Warehouse</label>
                             <select
@@ -43,6 +43,20 @@
                                 <option></option>
                                 @foreach($warehouses as $warehouse)
                                     <option value="{{$warehouse->id}}" @if(request()->query('warehouse_ser') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group select2-parent">
+                            <label for="warehouse">Employee</label>
+                            <select
+                                    class="form-control single-select2"
+                                    data-placeholder="Select employee" data-allow-clear="true"
+                                    id="employee_ser" name="employee_ser">
+                                <option></option>
+                                @foreach($users as $user)
+                                    <option value="{{$user->id}}" @if(request()->query('employee_ser') == $user->id) selected @endif>{{ucwords($user->name)}}</option>
                                 @endforeach
                             </select>
                         </div>
