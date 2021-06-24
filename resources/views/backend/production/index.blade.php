@@ -48,6 +48,8 @@
                                         <th>Waste</th>
                                         <th>Unit</th>
                                         <th>Employee</th>
+                                        <th>Start At</th>
+                                        <th>End At</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -63,6 +65,12 @@
                                             <td>{{$production->waste_amount ?? ''}}</td>
                                             <td>{{$production->unit_name ?? ''}}</td>
                                             <td>{{ucwords($production->employee->name)}}</td>
+                                            <td>{{date('d.m-Y',strtotime($production->created_at))}}</td>
+                                            <td>
+                                                @if($production->status == 1)
+                                                    {{date('d.m-Y',strtotime($production->updated_at))}}
+                                                    @endif
+                                            </td>
                                             <td class="text-center">
                                                 @if($production->status == 1)
                                                     <label class="btn btn-xs btn-success">Finished</label>

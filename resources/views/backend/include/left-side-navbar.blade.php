@@ -382,7 +382,8 @@
                 @endif
 
                 @if(!empty($aclList[4][1]))
-                    <li class="nav-item has-treeview {{ ($routeName == 'order-report.get') ? 'menu-open' : '' }}">
+                    <li class="nav-item has-treeview {{ ($routeName == 'order-report.get'
+                    || $routeName == 'low-quantity.get' || $routeName == 'production-report.get' ) ? 'menu-open' : '' }}">
                         <a href="#"
                            class="nav-link">
                             <i class="nav-icon fas fa-cog"></i>
@@ -401,6 +402,20 @@
                                     </a>
                                 </li>
                             @endif
+                                <li class="nav-item">
+                                    <a href="{{route("low-quantity.get")}}"
+                                       class="nav-link {{ ($routeName == 'low-quantity.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Quantity Report</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="{{route("production-report.get")}}"
+                                       class="nav-link {{ ($routeName == 'production-report.get') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Production Report</p>
+                                    </a>
+                                </li>
                         </ul>
                     </li>
                 @endif

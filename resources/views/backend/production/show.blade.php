@@ -10,40 +10,40 @@
                         Production Details of <strong>{{$production->product->name}}</strong> ({{strtoupper($production->production_number)}})
                     </div>
                     <div class="card-body">
-                        <div id="prin-table">
+                        <div id="print-table">
                         <table class="table table-bordered production-table">
                             <tr>
-                                <th style="text-align: center;vertical-align: middle;" colspan="4">
+                                <th style="text-align: center;vertical-align: middle;" colspan="6">
                                     <h5 style="margin: 0;font-size: 20px">Producing Product Details</h5>
                                 </th>
                             </tr>
                             <tr>
                                 <th>Product Name</th>
-                                <td>{{ucwords($production->product->name)}}</td>
+                                <td colspan="2">{{ucwords($production->product->name)}}</td>
                                 <th>Production Code</th>
-                                <td>{{$production->production_number}}</td>
+                                <td colspan="2">{{$production->production_number}}</td>
                             </tr>
                             <tr>
                                 <th>Warehouse</th>
-                                <td>{{$production->warehouse->name ?? ''}}</td>
+                                <td colspan="2">{{$production->warehouse->name ?? ''}}</td>
                                 <th>Employee</th>
-                                <td>{{ucwords($production->employee->name) ?? ''}}</td>
+                                <td colspan="2">{{ucwords($production->employee->name) ?? ''}}</td>
                             </tr>
                             <tr>
                                 <th>Produce Amount</th>
-                                <td>{{$production->produce_amount}}</td>
+                                <td colspan="2">{{$production->produce_amount}}</td>
                                 <th>Waste</th>
-                                <td>{{$production->waste_amount}}</td>
+                                <td colspan="2">{{$production->waste_amount}}</td>
                             </tr>
                             <tr>
                                 <th>Unit</th>
-                                <td>{{$production->unit_name}}</td>
+                                <td colspan="2">{{$production->unit_name}}</td>
                                 <th>Note</th>
-                                <td>{{$production->note}}</td>
+                                <td colspan="2">{{$production->note}}</td>
                             </tr>
                             <tr>
                                 <th>Status</th>
-                                <td>
+                                <td colspan="2">
                                     @if($production->status == 1)
                                         <label class="btn btn-xs btn-success">Finished</label>
                                     @else
@@ -51,30 +51,22 @@
                                     @endif
                                 </td>
                                 <th></th>
-                                <td></td>
+                                <td colspan="2"></td>
                             </tr>
                             <tr>
-                                <th style="text-align: center;vertical-align: middle;" colspan="4">
+                                <th style="text-align: center;vertical-align: middle;" colspan="6">
                                     <h5 style="margin: 0;font-size: 20px">Product Used For Produced</h5>
                                 </th>
                             </tr>
                             @foreach($production->productionUse as $product)
                                 <tr style="background-color: #80808040;">
-                                    <th colspan="4" style="text-align: center;vertical-align: middle;">Product{{$loop->iteration}}</th>
+                                    <th colspan="6" style="text-align: center;vertical-align: middle;">Product Name: {{ucwords($product->product->name ?? '')}}</th>
                                 </tr>
                                 <tr>
-                                    <th>Product Name</th>
-                                    <td>
-                                       {{ucwords($product->product->name ?? '')}}
-                                    </td>
                                     <th>Warehouse</th>
                                     <td>{{ucwords($product->warehouse->name ?? '')}}</td>
-                                </tr>
-                                <tr>
                                     <th>Qty</th>
-                                    <td>
-                                        {{ucwords($product->qty ?? '')}}
-                                    </td>
+                                    <td>{{ucwords($product->qty ?? '')}}</td>
                                     <th>Unit</th>
                                     <td>{{ucwords($product->unit_name ?? '')}}</td>
                                 </tr>
@@ -98,7 +90,7 @@
 @section('js')
     <script>
         $("#print-btn").on("click", function() {
-            var divToPrint=document.getElementById('prin-table');
+            var divToPrint=document.getElementById('print-table');
             var newWin=window.open('','Print-Window');
             newWin.document.open();
             newWin.document.write('<style type="text/css">@media  print' +

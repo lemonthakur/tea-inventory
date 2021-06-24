@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LowQuantityReportController;
 use App\Http\Controllers\MailReceiverController;
 use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\ProductionReportController;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserAccessController;
@@ -75,7 +77,7 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::resource("/product",ProductController::class);
     Route::get('/gencode', [ProductController::class,'generateCode']);
     Route::get('peodut-file-download/{id}', [ProductController::class,'peodutFileDownload'])->name('peodutFile.download');
-    Route::post('/ser-product-get', [ProductController::class,'search'])->name('ser-product.get');
+    Route::any('/ser-product-get', [ProductController::class,'search'])->name('ser-product.get');
     Route::post('/product-wise-row-get', [ProductController::class,'product_wise_row_get'])->name('product-wise-row.get');
     Route::post('/product-warehouse-qty-get', [ProductController::class,'product_warehouse_qty_get'])->name('product-warehouse-qty.get');
     Route::get('/products/print-barcode',[ProductController::class, 'printBarcode'])->name('product.printBarcode');
@@ -122,5 +124,14 @@ Route::group(['middleware'=>'authCheck'],function (){
     Route::get('email-receivers',[MailReceiverController::class,'index'])->name('email-receiver.index');
     Route::post('email-receivers',[MailReceiverController::class,'store'])->name('email-receiver.store');
     Route::delete('email-receivers/{id}',[MailReceiverController::class,'destroy'])->name('email-receiver.destroy');
+
+//  Quantity report
+    Route::any('low-quantity-report/index',[LowQuantityReportController::class,'index'])->name('low-quantity.get');
+    Route::get('low-quantity-report/excel',[LowQuantityReportController::class,'excel'])->name('low-quantity.excel');
+    Route::get('low-quantity-report/print',[LowQuantityReportController::class,'print'])->name('low-quantity.print');
+
+//    Production Report
+    Route::any('prodcution-report/index',[ProductionReportController::class,'index'])->name('production-report.get');
+    Route::get('prodcution-report/excel',[ProductionReportController::class,'excel'])->name('production-report.excel');
 });
 
