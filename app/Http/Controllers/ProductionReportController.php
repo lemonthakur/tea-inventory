@@ -47,19 +47,24 @@ class ProductionReportController extends Controller
         }
 
         if ($request->production_start_from){
-            $productions->where('productions.created_at','>=',date("Y-m-d", strtotime($request->production_start_from)));
+            $productions->whereDate('productions.created_at','>=',date("Y-m-d", strtotime($request->production_start_from)));
         }
 
         if ($request->production_start_to){
-            $productions->where('productions.created_at','<=',date("Y-m-d", strtotime($request->production_start_to)));
+            $productions->whereDate('productions.created_at','<=',date("Y-m-d", strtotime($request->production_start_to)));
         }
+
 
         if ($request->production_finished_from){
-            $productions->where('productions.updated_at','>=',date("Y-m-d", strtotime($request->production_finished_from)));
+            $productions->whereDate('productions.updated_at','>=',date("Y-m-d", strtotime($request->production_finished_from)));
         }
 
-        if ($request->production_start_to){
-            $productions->where('productions.updated_at','<=',date("Y-m-d", strtotime($request->production_finished_to)));
+        if ($request->production_finished_to){
+            $productions->whereDate('productions.updated_at','<=',date("Y-m-d", strtotime($request->production_finished_to)));
+        }
+
+        if ($request->production_finished_from || $request->production_finished_to){
+            $productions->where('productions.status','=',1);
         }
 
         if ($request->status){

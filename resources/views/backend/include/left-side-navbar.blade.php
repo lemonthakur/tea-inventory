@@ -428,15 +428,6 @@
                             @endif
 
                             @if(!empty($aclList[28][1]))
-                                <li class="nav-item">
-                                    <a href="{{route("production-report.get")}}"
-                                       class="nav-link {{ ($routeName == 'production-report.get') ? 'active' : '' }}">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Production Report</p>
-                                    </a>
-                                </li>
-                            @endif
-                            @if(!empty($aclList[28][1]))
 
                                 <li class="nav-item">
                                     <a href="{{route("transfer-report.get")}}"
