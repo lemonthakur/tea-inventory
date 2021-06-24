@@ -33,7 +33,7 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        
+
                                         </tbody>
                                     </table>
                                 </div>
@@ -118,7 +118,7 @@
                 minimumInputLength: 2,
             });
         });
-        
+
         $(document).on('click','.btn-delete',function () {
             let deleteButton = $(this);
             deleteButton.closest('tr').remove();
@@ -143,7 +143,7 @@
                         $("table.order-list tbody").append(result);
                     },
                     complete: function (e) {
-                        
+                        $('#live-search').val(null).trigger('change.select2');
                     }
                 });
             }
@@ -235,7 +235,7 @@
           newWin.document.write('<style type="text/css">@media  print { #modal_header { display: none } #print-btn { display: none } #close-btn { display: none } } table.barcodelist { page-break-inside:auto } table.barcodelist tr { page-break-inside:avoid; page-break-after:auto }</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
           newWin.document.close();
           setTimeout(function(){newWin.close();},10);
-    });    
+    });
 
     </script>
 @endsection

@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Order Report")
+@section("page-title","Transfer Report")
 @section("main-content")
 
     <div class="content-wrapper">
@@ -21,7 +21,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title" style="margin-left: 45% !important;">Order Report</h3>
+                                <h3 class="card-title" style="margin-left: 45% !important;">Transfer Report</h3>
                                 <p style="margin-left: 95% !important;">
                                     <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
                                     <a href="{{$reportUrl.'&action=csv'}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
@@ -30,7 +30,7 @@
                             <!-- /.card-header -->
 
                             <div class="card-body">
-                                <form method="get" action="{{route('order-report.get')}}">
+                                <form method="get" action="{{route('transfer-report.get')}}">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-2">
@@ -56,7 +56,7 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group select2-parent">
-                                                <label for="warehouse">Warehouse</label>
+                                                <label for="warehouse">From warehouse</label>
                                                 <select
                                                         class="form-control single-select2"
                                                         data-placeholder="Select Warehouse" data-allow-clear="true"
@@ -70,40 +70,25 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group select2-parent">
-                                                <label for="warehouse">Supplier</label>
+                                                <label for="warehouse">To Warehouse</label>
                                                 <select
                                                         class="form-control single-select2"
                                                         data-placeholder="Select Warehouse" data-allow-clear="true"
-                                                        id="supplier_ser" name="supplier_ser">
+                                                        id="to_warehouse_ser" name="to_warehouse_ser">
                                                     <option></option>
-                                                    @foreach($suppliers as $supplier)
-                                                        <option value="{{$supplier->id}}" @if(request()->query('supplier_ser') == $supplier->id) selected @endif>{{ucwords($supplier->name)}}</option>
+                                                    @foreach($to_warehouses as $to_warehouse)
+                                                        <option value="{{$to_warehouse->id}}" @if(request()->query('to_warehouse_ser') == $to_warehouse->id) selected @endif>{{ucwords($to_warehouse->name)}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-                                        {{--<div class="col-md-2">
-                                            <div class="form-group select2-parent">
-                                                <label for="product">Status</label>
-                                                <select name="status_ser" class="form-control" style="width: 100%;">
-                                                    <option value="">All</option>
-                                                    <option value="1" @if(request()->query('status_ser') == 1) selected @endif>Received</option>
-                                                    <option value="2" @if(request()->query('status_ser') == 2) selected @endif>Pending</option>
-                                                </select>
-                                            </div>
-                                        </div>--}}
 
                                         <div class="col-md-2">
                                             <div class="form-group" style="padding-top: 33px;">
                                                 <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
-                                                <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                                                <a href="{{route("transfer-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
                                             </div>
                                         </div>
-                                        {{--<div class="col-md-1">
-                                            <div class="form-group" style="padding-top: 33px;">
-                                                <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
-                                            </div>
-                                        </div>--}}
                                     </div>
                                 </form>
                                 {{--<div class="col-md-12 text-right"></div>--}}
@@ -116,48 +101,37 @@
                                 $l = 1;
                             ?>
                             <div class="card-body table-responsive" id="prin-table">
-                                <span id="count_pan">Displaying Order from {{ ($purchases->total()) ? $sl+1 : 0 }} to {{ $sl+$purchases->count() }} out of total {{ $purchases->total() }}</span>
+                                <span id="count_pan">Displaying transfer from {{ ($transfers->total()) ? $sl+1 : 0 }} to {{ $sl+$transfers->count() }} out of total {{ $transfers->total() }}</span>
                                 <table class="table table-bordered production-table">
                                     <thead>
                                     <tr>
                                         <th>SL</th>
-                                        <th>Order Date</th>
-                                        <th>Received Date</th>
+                                        <th>Date</th>
                                         <th>Reference</th>
-                                        <th>Warehouse</th>
-                                        <th>Supplier</th>
+                                        <th>From Warehouse</th>
+                                        <th>To Warehouse</th>
                                         <th>Product Name</th>
                                         <th>Unit</th>
-                                        <th>Purchase Amount</th>
-                                        <th>Purchase Qty</th>
-                                        {{--<th>Status</th>--}}
+                                        <th>Amount</th>
+                                        <th>Qty</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @forelse($purchases as $purchase)
-                                        <tr class="purchase-link" data-purchase-id="{{ $purchase->id }}">
+                                    @forelse($transfers as $transfer)
+                                        <tr>
                                             <td>{{ ++$sl }}</td>
-                                            <td>{{ date("d/m/Y", strtotime($purchase->order_date)) }}</td>
-                                            <td>{{ $purchase->received_date ? date("d/m/Y", strtotime($purchase->received_date)) : '' }}</td>
-                                            <td>{{ $purchase->reference_no }}</td>
-                                            <td>{{ $purchase->warehouse_name }}</td>
-                                            <td>{{ $purchase->supplier_name }}</td>
-                                            <td>{{ $purchase->product_name }}</td>
-                                            <td>{{ $purchase->units_name }}</td>
-                                            <td class="text-right">{{ number_format($purchase->purchases_amount, 2) }}</td>
-                                            <td class="text-right">{{ number_format($purchase->purchases_qty/$purchase->units_value, 2) }}</td>
-                                            {{--<td class="text-center">
-                                                @if($purchase->purchases_status == 1)
-                                                    <button class="btn btn-xs btn-success">Received</button>
-                                                @else
-                                                    <button class="btn btn-xs btn-warning">Pending</button>
-                                                @endif
-                                            </td>--}}
-                                            {{--<td class="text-right">{{ number_format($purchase->stock_qty, 2) }}</td>--}}
+                                            <td>{{ date("d/m/Y", strtotime($transfer->transfer_date)) }}</td>
+                                            <td>{{ $transfer->reference_no }}</td>
+                                            <td>{{ $transfer->from_warehouse_name }}</td>
+                                            <td>{{ $transfer->to_warehouse_name }}</td>
+                                            <td>{{ $transfer->product_name }}</td>
+                                            <td>{{ $transfer->units_name }}</td>
+                                            <td class="text-right">{{ number_format($transfer->transfer_amount, 2) }}</td>
+                                            <td class="text-right">{{ number_format($transfer->transfer_qty/$transfer->units_value, 2) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="text-center">Nothing Found</td>
+                                            <td colspan="9" class="text-center">Nothing Found</td>
                                         </tr>
                                     @endforelse
                                             <?php
@@ -165,9 +139,9 @@
                                                 $site_unit_name = ($site_unit) ? $site_unit->name : '';
                                             ?>
                                         <tr>
-                                            <td colspan="8" class="text-right"><b>Total</b></td>
+                                            <td colspan="7" class="text-right"><b>Total</b></td>
                                             <td class="text-right"><b>{{number_format($total_price, 2)}}</b></td>
-                                            <td class="text-right"><b>{{number_format($total_purchase_qty/$site_unit_val, 2)}}&nbsp;{{$site_unit_name}}</b></td>
+                                            <td class="text-right"><b>{{number_format($total_transfer_qty/$site_unit_val, 2)}}&nbsp;{{$site_unit_name}}</b></td>
                                         </tr>
 
                                     </tbody>
@@ -175,8 +149,7 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{ $purchases->appends(\Request::except('page'))->links("backend.include.pagination") }}
-                                {{--{{$purchases->links("backend.include.pagination")}}--}}
+                                {{ $transfers->appends(\Request::except('page'))->links("backend.include.pagination") }}
                             </div>
                         </div>
                     </div>
@@ -187,37 +160,6 @@
         <!-- /.content -->
     </div>
 
-    <div id="purchase-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
-        <div role="document" class="modal-dialog modal-lg">
-            <div class="modal-content">
-                {{--<div class="modal-header">
-                    <h5 id="exampleModalLabel" class="modal-title">{{'Order In Details'}}</h5>
-                    <button id="print-btn" type="button" class="btn btn-default btn-sm ml-3"><i class="fa fa-print"></i> {{'Print'}}</button>
-                    <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
-                </div>--}}
-
-                <div class="container mt-3 pb-2 border-bottom">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <button id="print-btn" type="button" class="btn btn-default btn-sm d-print-none"><i class="fa fa-print"></i> Print</button>
-                        </div>
-                        <div class="col-md-6">
-                            <h3 id="exampleModalLabel" class="modal-title text-center container-fluid">{{ $siteSetting->site_title ?? '' }}</h3>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close d-print-none"><span aria-hidden="true">×</span></button>
-                        </div>
-                        <div class="col-md-12 text-center">
-                            <i style="font-size: 15px;">Order In Details</i>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-body" id="product-edtils-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('js')

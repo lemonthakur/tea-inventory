@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\CustomClass\OwnLibrary;
 use App\Models\SiteSetting;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +15,9 @@ class SiteSettingController extends Controller
     public function edit(){
         OwnLibrary::validateAccess($this->moduleId,3);
         $setting = SiteSetting::find(1);
-        return view('backend.site-setting.edit',compact('setting'));
+        $lims_unit_list = Unit::where('status', 1)->get();
+
+        return view('backend.site-setting.edit',compact('setting', 'lims_unit_list'));
     }
 
     public function update(Request $request){
@@ -53,6 +56,7 @@ class SiteSettingController extends Controller
         $setting->meta_keyword = $request->meta_keyword ?? Null;
         $setting->copy_right = $request->copy_right ?? Null;
         $setting->alert_quantity = $request->alert_quantity ?? 5;
+        $setting->display_unit = $request->display_unit;
 
         if ($request->hasFile('icon')){
             if (!empty($setting->icon)){

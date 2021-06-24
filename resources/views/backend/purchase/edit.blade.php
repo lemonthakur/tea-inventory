@@ -251,7 +251,7 @@
                 minimumInputLength: 2,
             });
         });
-        
+
         $(document).on('click','.btn-delete',function () {
             let deleteButton = $(this);
             deleteButton.closest('tr').remove();

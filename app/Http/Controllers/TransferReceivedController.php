@@ -23,7 +23,7 @@ use Auth;
 class TransferReceivedController extends Controller
 {
     protected $moduleId = 17;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
 
@@ -32,6 +32,17 @@ class TransferReceivedController extends Controller
         if($user_ware_house){
             $transfers->whereIn('to_warehouse_id', $user_ware_house);
         }
+        if($request->input('product_ser')){
+            $product_id = $request->input('product_ser');
+            $transfers->whereHas('transfer_details', function($query) use($product_id) {
+                $query->where('product_id', $product_id);
+            });
+        }
+        if($request->input('start_date'))
+            $transfers->whereDate('created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+        if($request->input('end_date'))
+            $transfers->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+
         $transfers->orderBy('id','DESC');
         $transfers = $transfers->paginate(20);
 

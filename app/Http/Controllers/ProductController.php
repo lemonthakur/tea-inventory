@@ -14,6 +14,7 @@ use App\Models\Unit;
 use App\Models\Warehouse;
 use App\Models\Supplier;
 use App\Models\Product;
+use App\Models\SiteSetting;
 use Auth;
 use DNS1D;
 use DB;
@@ -21,15 +22,15 @@ use DB;
 class ProductController extends Controller
 {
     protected $moduleId = 12;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
 
         $user_ware_house = OwnLibrary::user_warehosue();
 
         $products = Product::whereNotNull('products.id');
-        if($user_ware_house){
-            $products->join('product_warehouse', 'product_warehouse.product_id' ,'=', 'products.id');
+        /*if($user_ware_house){
+            $products->leftjoin('product_warehouse', 'product_warehouse.product_id' ,'=', 'products.id');
             //$products->select('products.*', 'product_warehouse.qty as qtys', DB::raw("SUM(product_warehouse.qty) as qtys"));
             $products->select(
                 DB::raw("SUM(product_warehouse.qty) as qty")
@@ -54,14 +55,23 @@ class ProductController extends Controller
                 , 'products.created_at'
                 , 'products.updated_at'
             );
-            $products->whereIn('product_warehouse.warehouse_id', $user_ware_house);
+            //$products->whereIn('product_warehouse.warehouse_id', $user_ware_house);
             $products->groupBy('products.id');
-        }
+        }*/
+        if($request->input('product_ser'))
+            $products->where('products.id', $request->input('product_ser'));
+        if($request->input('quantity_from_ser'))
+            $products->where('products.qty', '>=', $request->input('quantity_from_ser'));
+        if($request->input('quantity_to_ser'))
+            $products->where('products.qty', '<=', $request->input('quantity_to_ser'));
+
         $products->orderBy('products.id','DESC');
 
         $products = $products->paginate(20);
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
 
-        return view('backend.product.index', compact('products'));
+        return view('backend.product.index', compact('products', 'site_setting', 'site_unit'));
 
     }
 
@@ -278,7 +288,7 @@ class ProductController extends Controller
         $lims_product_data = Product::Find($product_id);
         $lims_product_warehouse_data = \App\Models\Product_Warehouse::where('product_id', $product_id);
         if($user_ware_house){
-            $lims_product_warehouse_data->whereIn('warehouse_id', $user_ware_house);
+            //$lims_product_warehouse_data->whereIn('warehouse_id', $user_ware_house);
         }
         $lims_product_warehouse_data = $lims_product_warehouse_data->get();
 

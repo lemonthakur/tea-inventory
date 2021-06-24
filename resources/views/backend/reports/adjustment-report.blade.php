@@ -1,5 +1,5 @@
 @extends("backend.master.main-layout")
-@section("page-title","Order Report")
+@section("page-title","Adjustment Report")
 @section("main-content")
 
     <div class="content-wrapper">
@@ -21,7 +21,7 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title" style="margin-left: 45% !important;">Order Report</h3>
+                                <h3 class="card-title" style="margin-left: 45% !important;">Adjustment Report</h3>
                                 <p style="margin-left: 95% !important;">
                                     <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
                                     <a href="{{$reportUrl.'&action=csv'}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
@@ -30,7 +30,7 @@
                             <!-- /.card-header -->
 
                             <div class="card-body">
-                                <form method="get" action="{{route('order-report.get')}}">
+                                <form method="get" action="{{route('product-adjustment.get')}}">
                                     @csrf
                                     <div class="row">
                                         <div class="col-md-2">
@@ -70,40 +70,24 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group select2-parent">
-                                                <label for="warehouse">Supplier</label>
+                                                <label for="warehouse">Action</label>
                                                 <select
                                                         class="form-control single-select2"
-                                                        data-placeholder="Select Warehouse" data-allow-clear="true"
-                                                        id="supplier_ser" name="supplier_ser">
+                                                        data-placeholder="Select action" data-allow-clear="true"
+                                                        id="action_ser" name="action_ser">
                                                     <option></option>
-                                                    @foreach($suppliers as $supplier)
-                                                        <option value="{{$supplier->id}}" @if(request()->query('supplier_ser') == $supplier->id) selected @endif>{{ucwords($supplier->name)}}</option>
-                                                    @endforeach
+                                                    <option value="+" @if(request()->query('action_ser') == '+') selected @endif>Addition</option>
+                                                    <option value="-" @if(request()->query('action_ser') == '-') selected @endif>Subtraction</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        {{--<div class="col-md-2">
-                                            <div class="form-group select2-parent">
-                                                <label for="product">Status</label>
-                                                <select name="status_ser" class="form-control" style="width: 100%;">
-                                                    <option value="">All</option>
-                                                    <option value="1" @if(request()->query('status_ser') == 1) selected @endif>Received</option>
-                                                    <option value="2" @if(request()->query('status_ser') == 2) selected @endif>Pending</option>
-                                                </select>
-                                            </div>
-                                        </div>--}}
 
                                         <div class="col-md-2">
                                             <div class="form-group" style="padding-top: 33px;">
                                                 <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
-                                                <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                                                <a href="{{route("product-adjustment.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
                                             </div>
                                         </div>
-                                        {{--<div class="col-md-1">
-                                            <div class="form-group" style="padding-top: 33px;">
-                                                <a href="{{route("order-report.get")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
-                                            </div>
-                                        </div>--}}
                                     </div>
                                 </form>
                                 {{--<div class="col-md-12 text-right"></div>--}}
@@ -114,60 +98,50 @@
                                 $page = empty($page) ? 1 : $page;
                                 $sl = ($page-1)*20;
                                 $l = 1;
+
+                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
                             ?>
                             <div class="card-body table-responsive" id="prin-table">
-                                <span id="count_pan">Displaying Order from {{ ($purchases->total()) ? $sl+1 : 0 }} to {{ $sl+$purchases->count() }} out of total {{ $purchases->total() }}</span>
+                                <span id="count_pan">Displaying adjustment from {{ ($adjustments->total()) ? $sl+1 : 0 }} to {{ $sl+$adjustments->count() }} out of total {{ $adjustments->total() }}</span>
                                 <table class="table table-bordered production-table">
                                     <thead>
                                     <tr>
                                         <th>SL</th>
-                                        <th>Order Date</th>
-                                        <th>Received Date</th>
+                                        <th>Date</th>
                                         <th>Reference</th>
                                         <th>Warehouse</th>
-                                        <th>Supplier</th>
+                                        <th>Action</th>
                                         <th>Product Name</th>
                                         <th>Unit</th>
-                                        <th>Purchase Amount</th>
-                                        <th>Purchase Qty</th>
-                                        {{--<th>Status</th>--}}
+                                        <th>Amount</th>
+                                        <th>Quantity</th>
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    @forelse($purchases as $purchase)
-                                        <tr class="purchase-link" data-purchase-id="{{ $purchase->id }}">
+                                    @forelse($adjustments as $adjustment)
+                                        <tr>
                                             <td>{{ ++$sl }}</td>
-                                            <td>{{ date("d/m/Y", strtotime($purchase->order_date)) }}</td>
-                                            <td>{{ $purchase->received_date ? date("d/m/Y", strtotime($purchase->received_date)) : '' }}</td>
-                                            <td>{{ $purchase->reference_no }}</td>
-                                            <td>{{ $purchase->warehouse_name }}</td>
-                                            <td>{{ $purchase->supplier_name }}</td>
-                                            <td>{{ $purchase->product_name }}</td>
-                                            <td>{{ $purchase->units_name }}</td>
-                                            <td class="text-right">{{ number_format($purchase->purchases_amount, 2) }}</td>
-                                            <td class="text-right">{{ number_format($purchase->purchases_qty/$purchase->units_value, 2) }}</td>
-                                            {{--<td class="text-center">
-                                                @if($purchase->purchases_status == 1)
-                                                    <button class="btn btn-xs btn-success">Received</button>
-                                                @else
-                                                    <button class="btn btn-xs btn-warning">Pending</button>
-                                                @endif
-                                            </td>--}}
-                                            {{--<td class="text-right">{{ number_format($purchase->stock_qty, 2) }}</td>--}}
+                                            <td>{{ date("d/m/Y", strtotime($adjustment->adjustments_date)) }}</td>
+                                            <td>{{ $adjustment->reference_no }}</td>
+                                            <td>{{ $adjustment->warehouse_name }}</td>
+                                            <td>
+                                                {{ ($adjustment->action == '+') ? 'Addition' : 'Subtraction' }}
+                                            </td>
+                                            <td>{{ $adjustment->product_name }}</td>
+                                            <td>{{ $adjustment->units_name }}</td>
+                                            <td class="text-right">{{ number_format($adjustment->adjustments_amount, 2) }}</td>
+                                            <td class="text-right">{{ number_format($adjustment->adjustments_qty/$adjustment->units_value, 2) }}</td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="text-center">Nothing Found</td>
+                                            <td colspan="9" class="text-center">Nothing Found</td>
                                         </tr>
                                     @endforelse
-                                            <?php
-                                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
-                                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
-                                            ?>
                                         <tr>
-                                            <td colspan="8" class="text-right"><b>Total</b></td>
+                                            <td colspan="7" class="text-right"><b>Total</b></td>
                                             <td class="text-right"><b>{{number_format($total_price, 2)}}</b></td>
-                                            <td class="text-right"><b>{{number_format($total_purchase_qty/$site_unit_val, 2)}}&nbsp;{{$site_unit_name}}</b></td>
+                                            <td class="text-right"><b>{{number_format($total_adjustment_qty/$site_unit_val, 2)}}&nbsp;{{$site_unit_name}}</b></td>
                                         </tr>
 
                                     </tbody>
@@ -175,8 +149,7 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{ $purchases->appends(\Request::except('page'))->links("backend.include.pagination") }}
-                                {{--{{$purchases->links("backend.include.pagination")}}--}}
+                                {{ $adjustments->appends(\Request::except('page'))->links("backend.include.pagination") }}
                             </div>
                         </div>
                     </div>

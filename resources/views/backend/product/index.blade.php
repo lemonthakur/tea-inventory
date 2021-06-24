@@ -21,6 +21,43 @@
         </div>
         <!-- /.content-header -->
 
+        <div class="card-body">
+            <form method="get" action="{{route('product.index')}}">
+                @csrf
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group select2-parent">
+                            <label for="product">Product</label>
+                            <select name="product_ser" class="form-control search-product" style="width: 100%;" data-allow-clear="true" data-url="{{route('ser-product.get')}}">
+                                <option></option>
+                            </select>
+                            <input type="hidden" id="productProduceRoute" value="{{route('ser-product.get')}}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="name">Quantity From</label>
+                            <input type="number" class="form-control" id="quantity_from_ser" name="quantity_from_ser" value="{{request()->query('quantity_from_ser')}}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="name">Quantity To</label>
+                            <input type="number" class="form-control" id="quantity_to_ser" name="quantity_to_ser" value="{{request()->query('quantity_to_ser')}}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group" style="padding-top: 33px;">
+                            <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
+                            <a href="{{route("product.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {{--<div class="col-md-12 text-right"></div>--}}
+        </div>
+
         <!-- Main content -->
         <div class="content">
             <div class="container-fluid">
@@ -42,6 +79,9 @@
                                 $page = empty($page) ? 1 : $page;
                                 $sl = ($page-1)*20;
                                 $l = 1;
+
+                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
                             ?>
                             <div class="card-body table-responsive">
                                 <span>Displaying product from {{ ($products->total()) ? $sl+1 : 0 }} to {{ $sl+$products->count() }} out of total {{ $products->total() }}</span>
@@ -105,7 +145,7 @@
                                             <td>{{ $product->code }}</td>
                                             <td>{{ $product->brand->name }}</td>
                                             <td>{{ $product->category->name }}</td>
-                                            <td class="text-right @if($product->qty < $product->alert_quantity){{'bg-warning'}}@endif">{{ $product->qty/$product->unit->value }}</td>
+                                            <td class="text-right @if($product->qty < $site_setting->alert_quantity/$site_unit_val){{'bg-warning'}}@endif">{{ $product->qty/$product->unit->value }}</td>
                                             {{--<td>{{ $product->waste_qty/$product->unit->value  }}</td>--}}
                                             <td>{{ $product->unit->name }}</td>
                                             <td class="text-center">
@@ -221,19 +261,20 @@
                 productDetails(product, imagedata);
             });
 
+            var alert_setting = "{{$site_setting->alert_quantity/$site_unit_val}}";
             function productDetails(product, imagedata) {
-                product[15] = product[15].replace(/@/g, '"');
+                product[15] = product[15] ? product[15].replace(/@/g, '"') : '';
                 htmltext = slidertext = '';
 
                 var act = (product[12] == 1) ? 'Active' : 'Inactive';
                 var fil = (product[14]) ? 'Download File' : '';
-                var bf_color = (product[11] < product[13]) ? "bg-warning" : "";
+                var bf_color = (product[11] < alert_setting) ? "bg-warning" : "";
                 htmltext = '<p><strong>{{"Name"}}: </strong>'+product[1]+'</p><p><strong>{{"Code"}}: </strong>'+product[2]+ '</p>' +
                     '<strong>{{"Barcode"}}: </strong><img src="data:image/png;base64,'+imagedata+'" alt="barcode" /></p>' +
                     '<p><strong>{{"Brand"}}: </strong>'+product[5]+'</p><p><strong>{{"category"}}: </strong>'+product[7]+'</p>' +
                     '<p class="'+bf_color+'"><strong>{{"Quantity"}}: </strong>'+product[11]+'</p>{{--<p><strong>{{"Waste"}}: </strong>'+product[18]+'</p>--}}<p><strong>{{"Unit"}}: </strong>'+product[9]+'</p>' +
                     '<p><strong>{{"Price"}}: </strong>'+ product[10]+'</p>' +
-                    '<p><strong>{{"Alert Quantity"}} : </strong>'+product[13]+'</p>' +
+                    '{{--<p><strong>{{"Alert Quantity"}} : </strong>'+product[13]+'</p>--}}' +
                     '<p><strong>{{"File"}} : </strong><a href="'+ product[17]+'">'+fil+'</a></p>' +
                     '<p><strong>{{"Product Details"}}: </strong></p>'+product[15]+'<p><strong>{{"Status"}} : </strong>'+act+'</p>';
 

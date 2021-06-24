@@ -44,14 +44,10 @@
                                                        value="{{request()->query('q')}}">
                                             </div>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div class="col-md-2">
                                             <div class="form-group" style="padding-top: 33px;">
                                                 <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-1">
-                                            <div class="form-group" style="padding-top: 33px;">
-                                                <a href="{{route("warehouse.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                                                <a href="{{route("brand.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
                                             </div>
                                         </div>
                                     </div>

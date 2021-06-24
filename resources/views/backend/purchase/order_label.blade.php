@@ -29,7 +29,7 @@
                                         </thead>
                                         <tbody>
                                             @foreach($lims_product_purchase_data as $v)
-                                                <?php $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($v->product->id.'~'.$purchase->id.'~'.$purchase->reference_no, $v->product->barcode_symbology); ?>
+                                                <?php $barcode_image = App\CustomClass\OwnLibrary::barcode_generator($v->product->id.'-'.$purchase->id, $v->product->barcode_symbology); ?>
 
                                                 <tr data-imagedata="{{$barcode_image}}" data-price="{{number_format($v->total, 2)}}">
                                                     <td>{{$v->product->name}}</td>
@@ -55,8 +55,9 @@
                                     <strong><input type="checkbox" name="warehouse" checked /> Warehouse</strong>&nbsp;
                                     <strong><input type="checkbox" name="code" checked /> Price</strong>&nbsp;
                                     <strong><input type="checkbox" name="quantity" checked /> Quantity</strong>&nbsp;
-                                    <strong><input type="checkbox" name="code" checked /> Order number</strong>&nbsp;
+                                    <strong><input type="checkbox" name="order_number" checked /> Order number</strong>&nbsp;
                                     <strong><input type="checkbox" name="code" checked /> Product Code</strong>&nbsp;
+                                    <strong><input type="checkbox" name="barcode" checked /> Barcode</strong>&nbsp;
                                 </div>
                             </div>
 
@@ -119,6 +120,7 @@
                 var promo_price = [];
                 var qty = [];
                 var barcode_image = [];
+                var order_number = [];
 
                 var supplier = [];
                 var warehouse = [];
@@ -127,6 +129,9 @@
                 for(i = 0; i <= rownumber; i++){
                     product_name.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(1)').text());
                     code.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(7)').text());
+                    code.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(7)').text());
+                    order_number.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('td:nth-child(6)').text());
+
                     price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('price'));
                     promo_price.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').data('promo-price'));
                     qty.push($('table.order-list tbody tr:nth-child(' + (i + 1) + ')').find('.qty').val());
@@ -161,13 +166,18 @@
                         if($('input[name="warehouse"]').is(":checked"))
                             htmltext += warehouse[index] + '<br>';
 
+                        if($('input[name="order_number"]').is(":checked"))
+                            htmltext += order_number[index] + '<br>';
+
                         if($('input[name="quantity"]').is(":checked"))
                             htmltext += quantity[index] + '<br>';
 
-                        if(paper_size == 18)
-                            htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
-                        else
-                            htmltext += '<img style="max-width:150px;" src="data:image/png;base64,'+barcode_image[index]+'" alt="barcode" /><br>';
+                        if($('input[name="barcode"]').is(":checked")) {
+                            if (paper_size == 18)
+                                htmltext += '<img style="max-width:150px;" src="data:image/png;base64,' + barcode_image[index] + '" alt="barcode" /><br>';
+                            else
+                                htmltext += '<img style="max-width:150px;" src="data:image/png;base64,' + barcode_image[index] + '" alt="barcode" /><br>';
+                        }
 
                         if($('input[name="code"]').is(":checked"))
                             htmltext += '<strong>'+code[index]+'</strong><br>';

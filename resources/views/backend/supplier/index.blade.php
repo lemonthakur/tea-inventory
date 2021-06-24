@@ -20,6 +20,26 @@
         </div>
         <!-- /.content-header -->
 
+        <div class="card-body">
+            <form method="get" action="{{route('suppliers.index')}}">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="name">Name/Email/Contact Number</label>
+                            <input type="text" class="form-control" id="q" name="q"
+                                   value="{{request()->query('q')}}">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group" style="padding-top: 33px;">
+                            <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
+                            <a href="{{route("suppliers.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <!-- Main content -->
         <div class="content">
             <div class="container-fluid">

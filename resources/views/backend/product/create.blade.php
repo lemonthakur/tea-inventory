@@ -65,7 +65,7 @@
                                                     <select name="barcode_symbology" required class="form-control">
                                                         <option value="C39+" @if(old("code")=='C39+') selected @endif>Colde C39+</option>
                                                         <option value="C39" @if(old("code")=='C39') selected @endif>Code 39</option>
-                                                        <option value="PDF417" @if(old("code")=='PDF417') selected @endif>PDF417</option>
+                                                        {{--<option value="PDF417" @if(old("code")=='PDF417') selected @endif>PDF417</option>--}}
                                                         {{--<option value="UPCE" @if(old("code")=='UPCE') selected @endif>UPC-E</option>
                                                         <option value="EAN8" @if(old("code")=='EAN8') selected @endif>EAN-8</option>
                                                         <option value="EAN13" @if(old("code")=='EAN13') selected @endif>EAN-13</option>--}}
