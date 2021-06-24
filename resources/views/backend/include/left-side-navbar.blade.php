@@ -444,7 +444,7 @@
                                 <a href="{{route("low-quantity.get")}}"
                                    class="nav-link {{ ($routeName == 'low-quantity.get') ? 'active' : '' }}">
                                     <i class="far fa-circle nav-icon"></i>
-                                    <p>Warehouse Wise Qty Report</p>
+                                    <p>Warehouse Stock Report</p>
                                 </a>
                             </li>
                             @if(!empty($aclList[21][1]))
