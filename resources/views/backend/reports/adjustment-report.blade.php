@@ -72,10 +72,10 @@
                                             <div class="form-group select2-parent">
                                                 <label for="warehouse">Action</label>
                                                 <select
-                                                        class="form-control single-select2"
+                                                        class="form-control"
                                                         data-placeholder="Select action" data-allow-clear="true"
                                                         id="action_ser" name="action_ser">
-                                                    <option></option>
+                                                    <option>All</option>
                                                     <option value="+" @if(request()->query('action_ser') == '+') selected @endif>Addition</option>
                                                     <option value="-" @if(request()->query('action_ser') == '-') selected @endif>Subtraction</option>
                                                 </select>
