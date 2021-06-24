@@ -120,6 +120,16 @@
                                     </div>
                                 </form>
 
+                                <div class="col-md-12 text-right">
+{{--                                    <a href="{{route('low-quantity.print').'?'.http_build_query(request()->query())}}" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></a>--}}
+                                    @if(!empty($aclList[27][7]))
+                                    <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
+                                    @endif
+                                    @if(!empty($aclList[27][9]))
+                                        <a href="{{route('production-report.excel').'?'.http_build_query(request()->query())}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
+                                    @endif
+                                </div>
+
                             </div>
 
                             <?php

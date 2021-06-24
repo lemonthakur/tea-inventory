@@ -28,7 +28,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title">Mail Receiver List</h3>
-                                @if(!empty($aclList[5][2]))
+                                @if(!empty($aclList[24][2]))
                                     <button type="button" class="btn btn-primary float-right text-white" data-toggle="modal" data-target="#addReceiver">
                                     <i class="fas fa-plus-circle"></i>
                                     Add
@@ -58,7 +58,7 @@
                                             <td>{{$receiver->user->role->name ?? ''}}</td>
                                             <td class="text-center">
                                                     <form method="post" action="{{ route('email-receiver.destroy',$receiver->id) }}">
-                                                        @if(!empty($aclList[5][4]))
+                                                        @if(!empty($aclList[24][4]))
                                                             @method('delete')
                                                             @csrf
                                                             <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">

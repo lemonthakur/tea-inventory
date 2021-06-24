@@ -38,23 +38,23 @@
                             </div>
                             <!-- /.card-header -->
                             <div class="card-body">
-<form>
-                                    <div class="row py-3">
-                                        <div class="col-md-4">
-                                            <div class="form-group select2-parent">
-                                                <label for="employee">Employee Name<span class="text-danger">*</span></label>
-                                                <select name="employee" class="form-control live-search" id="live-search" style="width: 100%;">
-                                                    <option></option>
-                                                </select>
-                                                <span class="text-danger"> {{$errors->has("employee") ? $errors->first("employee") : ""}} </span>
+                                <form method="get">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <label for="name">Name/email/phone</label>
+                                                <input type="text" class="form-control" name="name_ser" value="{{request()->query('name_ser')}}">
                                             </div>
                                         </div>
-                                        <div class="col-md-4"></div>
-                                        <div class="col-md-4 text-right">
-                                            <button class="btn btn-primary" type="button">Search</button>
+
+                                        <div class="col-md-2">
+                                            <div class="form-group" style="padding-top: 33px;">
+                                                <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
+                                                <a href="{{route('employees.index')}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                                            </div>
                                         </div>
                                     </div>
-</form>
+                                </form>
                                 <div class="table-responsive">
                                     <table class="table table-bordered table-hover table-striped">
                                         <thead>
