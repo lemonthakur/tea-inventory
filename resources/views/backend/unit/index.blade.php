@@ -29,7 +29,7 @@
                                    value="{{request()->query('q')}}">
                         </div>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <div class="form-group" style="padding-top: 33px;">
                             <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
                             <a href="{{route("unit.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
