@@ -75,6 +75,10 @@ class LowQuantityReportController extends Controller
         $siteSetting = SiteSetting::select('alert_quantity')->find(1);
         $user_ware_house = OwnLibrary::user_warehosue();
 
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+        $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+
         $products = Product_Warehouse::select(
             'product_warehouse.id as product_warehouse_id',
             'product_warehouse.qty as product_warehouse_qty',
@@ -84,10 +88,19 @@ class LowQuantityReportController extends Controller
             'units.name as unit_name',
             'warehouses.name as warehouse_name',
         )
-            ->orderBy('product_warehouse_qty',$request->order_by ?? 'asc')
             ->join("products", "product_warehouse.product_id","=","products.id")
             ->join("units", "products.unit_id","=","units.id")
             ->join("warehouses", "product_warehouse.warehouse_id","=","warehouses.id");
+        if($request->order_by){
+            if($request->order_by == 'alert_quantity'){
+                $products->where('product_warehouse.qty', '<=', $site_setting->alert_quantity/$site_unit_val);
+                $products->orderBy('product_warehouse_qty', 'asc');
+            }else{
+                $products->orderBy('product_warehouse_qty',$request->order_by ?? 'asc');
+            }
+        }else{
+            $products->orderBy('product_warehouse_qty',$request->order_by ?? 'asc');
+        }
 
         if ($request->quantity){
             $products->where('product_warehouse.qty','<=',$request->quantity);

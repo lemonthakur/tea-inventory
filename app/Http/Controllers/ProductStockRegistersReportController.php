@@ -139,6 +139,7 @@ class ProductStockRegistersReportController extends Controller
             }else{
                 $products->orderBy('qty', $request->input('order_by_ser'));
             }
+            $reportUrl .= '&order_by_ser='.$request->input('order_by_ser');
         }else{
             $products->orderBy('products.name','asc');
         }
@@ -167,6 +168,10 @@ class ProductStockRegistersReportController extends Controller
     {
         OwnLibrary::validateAccess($this->moduleId,2);
         $user_ware_house = OwnLibrary::user_warehosue();
+
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+        $site_unit_val = ($site_unit) ? $site_unit->value : 1;
 
         $products = Product::join('units', 'units.id' ,'=', 'products.unit_id');
         if($user_ware_house){
@@ -265,10 +270,16 @@ class ProductStockRegistersReportController extends Controller
         $products->groupBy('products.id');
 
         if($request->input('order_by_ser')){
-            $products->orderBy('qty', $request->input('order_by_ser'));
+            if($request->order_by_ser == 'alert_quantity'){
+                $products->having('qty', '<=', $site_setting->alert_quantity/$site_unit_val);
+                $products->orderBy('qty', 'asc');
+            }else{
+                $products->orderBy('qty', $request->input('order_by_ser'));
+            }
         }else{
             $products->orderBy('products.name','asc');
         }
+
         if($request->input('page')){
             if($request->input('page')==1)
                 $page = 20*(0*$request->input('page'));

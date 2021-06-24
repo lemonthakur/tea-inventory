@@ -22,6 +22,10 @@
                         <div class="card">
                             <div class="card-header">
                                 <h3 class="card-title" style="margin-left: 45% !important;">Quantity Report</h3>
+                                <p style="margin-left: 95% !important;">
+                                    <button id="print-btn" type="button" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></button>
+                                    <a href="{{route('low-quantity.excel').'?'.http_build_query(request()->query())}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
+                                </p>
                             </div>
                             <!-- /.card-header -->
 
@@ -84,6 +88,7 @@
                                         </div>
                                     </div>
                                 </form>
+
                                 <div class="col-md-12 text-right">
 {{--                                    <a href="{{route('low-quantity.print').'?'.http_build_query(request()->query())}}" class="btn  btn-xs btn-primary"><i class="fas fa-print"></i></a>--}}
                                     @if(!empty($aclList[26][7]))
@@ -93,6 +98,7 @@
                                         <a href="{{route('low-quantity.excel').'?'.http_build_query(request()->query())}}" class="btn btn-xs btn-success ledger-excel-hrf" title="Export to CSV" target="_blank"><i class="fas fa-file-excel"></i></a>
                                     @endif
                                 </div>
+
                             </div>
 
                             <?php

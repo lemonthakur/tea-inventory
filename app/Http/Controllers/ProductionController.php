@@ -8,6 +8,7 @@ use App\Models\Product_Warehouse;
 use App\Models\Production;
 use App\Models\ProductionUseProduct;
 use App\Models\Warehouse;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Cart;
 use Illuminate\Support\Facades\Validator;
@@ -27,6 +28,8 @@ class ProductionController extends Controller
         }
         if($request->input('warehouse_ser'))
             $productions->where('warehouse_id','=', $request->input('warehouse_ser'));
+        if($request->input('employee_ser'))
+            $productions->where('employee_id','=', $request->input('employee_ser'));
 
         if($request->input('product_ser'))
             $productions->where('product_id','=', $request->input('product_ser'));
@@ -44,7 +47,19 @@ class ProductionController extends Controller
         }
         $warehouses = $warehouses->get();
 
-        return view('backend.production.index',compact('productions', 'warehouses'));
+        if($user_ware_house){
+            $users = User::join('employee_warhouses', 'employee_warhouses.user_id', '=', 'users.id')
+                    ->where('users.status', 1)
+                    ->whereIn('employee_warhouses.warehouse_id', $user_ware_house)
+                    ->select('users.*')
+                    ->groupBy('users.id')
+                    ->get();
+        }else{
+            $users = User::where('status', 1)->get();
+        }
+
+
+        return view('backend.production.index',compact('productions', 'warehouses', 'users'));
     }
 
     public function create(){
