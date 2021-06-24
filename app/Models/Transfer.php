@@ -24,7 +24,7 @@ class Transfer extends Model
             $post->updated_by = Auth::id();
         });
     }
-    
+
     public function fromWarehouse()
     {
     	return $this->belongsTo('App\Models\Warehouse', 'from_warehouse_id');
@@ -39,4 +39,10 @@ class Transfer extends Model
     {
     	return $this->belongsTo('App\Models\User', 'user_id');
     }
+
+    public function transfer_details()
+    {
+        return $this->hasMany(ProductTransfer::class,'transfer_id','id');
+    }
+
 }

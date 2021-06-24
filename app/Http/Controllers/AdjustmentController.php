@@ -22,7 +22,7 @@ use Auth;
 class AdjustmentController extends Controller
 {
     protected $moduleId = 13;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
 
@@ -31,6 +31,17 @@ class AdjustmentController extends Controller
         if($user_ware_house){
             $adjustments->whereIn('warehouse_id', $user_ware_house);
         }
+        if($request->input('product_ser')){
+            $product_id = $request->input('product_ser');
+            $adjustments->whereHas('adjustment_projectst', function($query) use($product_id) {
+                $query->where('product_id', $product_id);
+            });
+        }
+        if($request->input('start_date'))
+            $adjustments->whereDate('created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+        if($request->input('end_date'))
+            $adjustments->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+
         $adjustments->orderBy('id','DESC');
         $adjustments = $adjustments->paginate(20);
         return view('backend.adjustment.index', compact('adjustments'));
@@ -55,7 +66,9 @@ class AdjustmentController extends Controller
         $rules = [
             "warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
 
             /*"waste.*" => "required",
@@ -186,7 +199,9 @@ class AdjustmentController extends Controller
         $rules = [
             "warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
             /*"waste.*" => "required",
 

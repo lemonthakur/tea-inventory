@@ -21,6 +21,43 @@
         </div>
         <!-- /.content-header -->
 
+        <div class="card-body">
+            <form method="get" action="{{route('product.index')}}">
+                @csrf
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group select2-parent">
+                            <label for="product">Product</label>
+                            <select name="product_ser" class="form-control search-product" style="width: 100%;" data-allow-clear="true" data-url="{{route('ser-product.get')}}">
+                                <option></option>
+                            </select>
+                            <input type="hidden" id="productProduceRoute" value="{{route('ser-product.get')}}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="name">Quantity From</label>
+                            <input type="number" class="form-control" id="quantity_from_ser" name="quantity_from_ser" value="{{request()->query('quantity_from_ser')}}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label for="name">Quantity To</label>
+                            <input type="number" class="form-control" id="quantity_to_ser" name="quantity_to_ser" value="{{request()->query('quantity_to_ser')}}">
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group" style="padding-top: 33px;">
+                            <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
+                            <a href="{{route("product.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            {{--<div class="col-md-12 text-right"></div>--}}
+        </div>
+
         <!-- Main content -->
         <div class="content">
             <div class="container-fluid">

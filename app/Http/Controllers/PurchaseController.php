@@ -39,19 +39,28 @@ class PurchaseController extends Controller
             $purchases->where('reference_no', 'like', '%' . $request->order_no . '%');
         }
         if($request->barcode){
-            $value = explode('~', $request->barcode);
+            $value = explode('-', $request->barcode);
             $product_id = $value[0];
             $purchase_id = $value[1];
-            $reference_no = (isset($value[2])) ? $value[2] : '';
+            //$reference_no = (isset($value[2])) ? $value[2] : '';
 
-            $purchases->whereHas('purchase_details', function($query) use($product_id, $purchase_id, $reference_no) {
+            $purchases->whereHas('purchase_details', function($query) use($product_id, $purchase_id) {
                 $query->where('purchase_id', $purchase_id);
                 $query->where('product_id', $product_id);
             });
-            $purchases->where('reference_no', $reference_no);
-
-
+            //$purchases->where('reference_no', $reference_no);
         }
+        if($request->input('product_ser')){
+            $product_id = $request->input('product_ser');
+            $purchases->whereHas('purchase_details', function($query) use($product_id) {
+                $query->where('product_id', $product_id);
+            });
+        }
+        if($request->input('start_date'))
+            $purchases->whereDate('created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+        if($request->input('end_date'))
+            $purchases->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+
         $purchases->orderBy('id','DESC');
         $purchases = $purchases->paginate(20);
 
@@ -80,8 +89,11 @@ class PurchaseController extends Controller
             "warehouse" => "required|integer",
             "reference_no" => "required|unique:purchases",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
+            "subtotal_input"    => "required|array|min:1",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",
@@ -231,8 +243,11 @@ class PurchaseController extends Controller
             "warehouse" => "required|integer",
             "reference_no" => "required|unique:purchases,reference_no,".$id,
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
+            "subtotal_input"    => "required|array|min:1",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",

@@ -9,10 +9,20 @@ use Illuminate\Http\Request;
 class SupplierController extends Controller
 {
     protected $moduleId = 20;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
-        $suppliers = Supplier::orderBy('id','DESC')->paginate(20);
+        $suppliers = Supplier::whereNotNull('id');
+        if($request->input('q')){
+            $q = $request->input('q');
+            $suppliers->where(function($query) use($q){
+                $query->where('name', 'like', '%' . $q . '%');
+                $query->orWhere('contact_no', 'like', '%' . $q . '%');
+                $query->orWhere('email', 'like', '%' . $q . '%');
+            });
+        }
+        $suppliers = $suppliers->orderBy('id','DESC')->paginate(20);
+
         $paginate = OwnLibrary::paginationSerial($suppliers);
         return view('backend.supplier.index',compact('suppliers','paginate'));
     }

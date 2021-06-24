@@ -22,7 +22,7 @@ use DB;
 class ProductController extends Controller
 {
     protected $moduleId = 12;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
 
@@ -58,6 +58,13 @@ class ProductController extends Controller
             //$products->whereIn('product_warehouse.warehouse_id', $user_ware_house);
             $products->groupBy('products.id');
         }*/
+        if($request->input('product_ser'))
+            $products->where('products.id', $request->input('product_ser'));
+        if($request->input('quantity_from_ser'))
+            $products->where('products.qty', '>=', $request->input('quantity_from_ser'));
+        if($request->input('quantity_to_ser'))
+            $products->where('products.qty', '<=', $request->input('quantity_to_ser'));
+
         $products->orderBy('products.id','DESC');
 
         $products = $products->paginate(20);

@@ -24,6 +24,10 @@ class UnitController extends Controller
         OwnLibrary::validateAccess($this->moduleId,1);
 
         $units = Unit::whereNotNull('id');
+        if($request->input('q')){
+            $q = $request->input('q');
+            $units->where('name', 'like', '%' . $q . '%');
+        }
         $units->orderBy('id','DESC');
         $units = $units->paginate(20);
 

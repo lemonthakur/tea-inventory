@@ -10,10 +10,14 @@ class CategoryController extends Controller
 {
     protected $moduleId = 11;
 
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId, 1);
-        $categories = Category::with('category')->orderBy('id','DESC')->paginate(20);
+        $categories = Category::with('category');
+            if($request->input('name_ser'))
+                $categories->where('name', 'like', '%' . $request->input('name_ser') . '%');
+
+        $categories = $categories->orderBy('id','DESC')->paginate(20);
         $paginate = OwnLibrary::paginationSerial($categories);
         return view('backend.category.index',compact('categories','paginate'));
     }

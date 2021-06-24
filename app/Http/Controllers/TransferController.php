@@ -23,7 +23,7 @@ use Auth;
 class TransferController extends Controller
 {
     protected $moduleId = 16;
-    public function index()
+    public function index(Request $request)
     {
         OwnLibrary::validateAccess($this->moduleId,1);
         /*if(Auth::user()->role_id > 2 && config('staff_access') == 'own')
@@ -36,6 +36,17 @@ class TransferController extends Controller
         if($user_ware_house){
             $transfers->whereIn('from_warehouse_id', $user_ware_house);
         }
+        if($request->input('product_ser')){
+            $product_id = $request->input('product_ser');
+            $transfers->whereHas('transfer_details', function($query) use($product_id) {
+                $query->where('product_id', $product_id);
+            });
+        }
+        if($request->input('start_date'))
+            $transfers->whereDate('created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+        if($request->input('end_date'))
+            $transfers->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+
         $transfers->orderBy('id','DESC');
         $transfers = $transfers->paginate(20);
 
@@ -65,8 +76,11 @@ class TransferController extends Controller
             "from_warehouse_id" => "required|integer",
             "to_warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
+            "subtotal_input"    => "required|array|min:1",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",
@@ -210,8 +224,11 @@ class TransferController extends Controller
             "from_warehouse_id" => "required|integer",
             "to_warehouse_id" => "required|integer",
             "document" => "mimes:jpg,jpeg,png,gif,pdf,csv,docx,xlsx,txt",
+            "product_id"    => "required|array|min:1",
             "product_id.*" => "required|integer",
+            "qty"    => "required|array|min:1",
             "qty.*" => "required",
+            "subtotal_input"    => "required|array|min:1",
             "subtotal_input.*" => "required",
 
             "total_qty_input" => "required",

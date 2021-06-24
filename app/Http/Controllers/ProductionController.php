@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 class ProductionController extends Controller
 {
     protected $moduleId = 18;
-    public function index(){
+    public function index(Request $request){
         OwnLibrary::validateAccess($this->moduleId, 1);
 
         $user_ware_house = OwnLibrary::user_warehosue();
@@ -25,10 +25,26 @@ class ProductionController extends Controller
         if($user_ware_house){
             $productions->whereIn('warehouse_id', $user_ware_house)->orWhere('created_by',auth()->id());
         }
+        if($request->input('warehouse_ser'))
+            $productions->where('warehouse_id','=', $request->input('warehouse_ser'));
+
+        if($request->input('product_ser'))
+            $productions->where('product_id','=', $request->input('product_ser'));
+        if($request->input('start_date'))
+            $productions->whereDate('created_at','>=', date("Y-m-d", strtotime($request->input('start_date'))));
+        if($request->input('end_date'))
+            $productions->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
+
 
         $productions = $productions->paginate(20);
 
-        return view('backend.production.index',compact('productions'));
+        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        if($user_ware_house){
+            $warehouses->whereIn('id', $user_ware_house);
+        }
+        $warehouses = $warehouses->get();
+
+        return view('backend.production.index',compact('productions', 'warehouses'));
     }
 
     public function create(){
