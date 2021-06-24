@@ -61,6 +61,8 @@ Route::group(['middleware'=>'authCheck'],function (){
         'employees' => EmployeeController::class,
     ]);
     Route::post('/employees-get', [EmployeeController::class,'getEmployee'])->name('employee.get');
+    Route::get('/employee-change-password', [EmployeeController::class,'changePasswordView'])->name('employee.change-password');
+    Route::post('/employee-change-password', [EmployeeController::class,'changePassword'])->name('employee.change-password.store');
 
     Route::get('site-setting',[SiteSettingController::class,'edit'])->name('site.setting.edit');
     Route::put('site-setting', [SiteSettingController::class,'update'])->name('site.setting.update');

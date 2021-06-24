@@ -7,8 +7,13 @@
     </ul>
 
     <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-            <a href="{{route('admin.logout')}}" class="nav-link">
+        <li class="nav-item">
+            <a href="{{route('employee.change-password')}}" class="nav-link" title="Change Password">
+                <i class="fas fa-exchange-alt"></i>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{route('admin.logout')}}" class="nav-link" title="Logout">
                 <i class="fas fa-sign-out-alt"></i>
             </a>
         </li>

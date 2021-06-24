@@ -199,4 +199,43 @@ class EmployeeController extends Controller
         $employee = User::select('id','name as text')->where('name','LIKE',"$search%")->limit(10)->get();
         return response()->json($employee);
     }
+
+    public function changePasswordView(){
+        return view('backend.employee.change-password');
+    }
+    public function changePassword(Request $request)
+    {
+        $rules = [
+            'old_password' => 'required|min:5',
+            'password' => 'required|min:5',
+            'confirm_password' => 'required|same:password|min:5',
+        ];
+
+        $message = [
+            'password.required' => 'The new password field is required.',
+            'confirm_password.same' => 'The confirm password and new password must match.',
+        ];
+
+        $validation = Validator::make($request->all(), $rules, $message);
+
+        if ($validation->fails()) {
+            return redirect()->back()
+                ->withErrors($validation);
+
+        }
+        if (!Hash::check($request->old_password,auth()->user()->password)){
+            session()->flash('error','Old password not match');
+            return redirect()->back();
+        }
+
+        $user = User::find(auth()->id());
+        $user->password = Hash::make($request->password);
+        if ($user->save()){
+            session()->flash('success','Password Change Successfully');
+            return redirect()->route('dashboard');
+        }else{
+            session()->flash('error','Password Not Change');
+            return redirect()->back();
+        }
+    }
 }
