@@ -40,7 +40,7 @@ class SupplierController extends Controller
         $rules = [
             'name' => 'required|max:250',
             'email' => 'required|email|max:250',
-            'contact_no' => 'required|min:11|max:30',
+            'contact_no' => 'required|max:30',
             'address' => 'max:500',
         ];
 
@@ -80,7 +80,7 @@ class SupplierController extends Controller
         $rules = [
             'name' => 'required|max:250',
             'email' => 'required|email|max:250',
-            'contact_no' => 'required|min:11|max:30',
+            'contact_no' => 'required|max:30',
             'address' => 'max:500',
         ];
 
