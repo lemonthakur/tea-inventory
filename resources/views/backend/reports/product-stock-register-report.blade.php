@@ -73,15 +73,16 @@
                                             </div>
                                         </div>
                                         <div class="col-md-2">
-                                            <div class="form-group select2-parent">
+                                            <div class="form-group">
                                                 <label for="warehouse">Order by</label>
                                                 <select
-                                                    class="form-control single-select2"
-                                                    data-placeholder="Select order" data-allow-clear="true"
+                                                    class="form-control"
+                                                     data-allow-clear="true"
                                                     id="order_by_ser" name="order_by_ser">
-                                                    <option></option>
-                                                    <option value="asc" @if(request()->query('order_by_ser') == 'asc') selected @endif>Lower to high</option>
-                                                    <option value="desc" @if(request()->query('order_by_ser') == 'desc') selected @endif>Higher to low</option>
+                                                    <option value="">All</option>
+                                                    <option value="asc" @if(request()->query('order_by_ser') == 'asc') selected @endif>Ascending</option>
+                                                    <option value="desc" @if(request()->query('order_by_ser') == 'desc') selected @endif>Descending</option>
+                                                    <option @if(request()->query('order_by_ser') == 'alert_quantity') selected @endif value="alert_quantity">Alert Quantity</option>
                                                 </select>
                                             </div>
                                         </div>

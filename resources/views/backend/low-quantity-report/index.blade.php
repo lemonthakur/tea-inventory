@@ -71,6 +71,7 @@
                                                     id="orderBy" name="order_by">
                                                     <option  @if(request()->query('order_by') == 'asc') selected @endif value="asc">Ascending</option>
                                                     <option  @if(request()->query('order_by') == 'desc') selected @endif value="desc">Descending</option>
+                                                    <option @if(request()->query('order_by') == 'alert_quantity') selected @endif value="alert_quantity">Alert Quantity</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -99,6 +100,9 @@
                                 $page = empty($page) ? 1 : $page;
                                 $sl = ($page-1)*20;
                                 $l = 1;
+
+                                $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+                                $site_unit_name = ($site_unit) ? $site_unit->name : '';
                             ?>
                             <div class="card-body table-responsive" id="prin-table">
                                 <span>Displaying Order from {{ ($products->total()) ? $sl+1 : 0 }} to {{ $sl+$products->count() }} out of total {{ $products->total() }}</span>
@@ -118,7 +122,7 @@
                                         <tr>
                                             <td>{{ ++$sl }}</td>
                                             <td>{{ ucwords($product->product_name) }}</td>
-                                            <td class="text-right">{{ number_format($product->product_warehouse_qty, 2) }}</td>
+                                            <td class="text-right @if($product->product_warehouse_qty <= $site_setting->alert_quantity/$site_unit_val){{'bg-warning'}}@endif">{{ number_format($product->product_warehouse_qty, 2) }}</td>
                                             <td>{{ $product->unit_name }}</td>
                                             <td>{{ ucwords($product->warehouse_name) }}</td>
                                         </tr>

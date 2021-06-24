@@ -16,12 +16,21 @@ class EmployeeController extends Controller
 {
     protected $moduleId = 10;
 
-    public function index(){
+    public function index(Request $request){
         OwnLibrary::validateAccess($this->moduleId, 1);
         $users = User::with(['role:id,name','creator:id,name','updator:id,name'])
-            ->where('id','!=', 1)
-//            ->where('isEmployee','=', 0)
-            ->orderBy('name')
+            ->where('id','!=', 1);
+
+            if($request->input('name_ser'))
+                $users->where('name', 'like', '%' . $request->input('name_ser') . '%');
+
+        if($request->input('name_ser'))
+            $users->where('name', 'like', '%' . $request->input('email') . '%');
+
+        if($request->input('name_ser'))
+            $users->where('name', 'like', '%' . $request->input('contact_no') . '%');
+
+        $users= $users->orderBy('name')
             ->paginate(20);
 
         $paginate = OwnLibrary::paginationSerial($users);

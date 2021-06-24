@@ -30,6 +30,10 @@ class ProductStockRegistersReportController extends Controller
         $user_ware_house = OwnLibrary::user_warehosue();
         $reportUrl = \App::make('url')->to('/').'/product-register-stock-report-excel?';
 
+        $site_setting = SiteSetting::find(1);
+        $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+        $site_unit_val = ($site_unit) ? $site_unit->value : 1;
+
         $products = Product::join('units', 'units.id' ,'=', 'products.unit_id');
         if($user_ware_house){
             $products->join('product_warehouse', 'product_warehouse.product_id' ,'=', 'products.id');
@@ -129,10 +133,21 @@ class ProductStockRegistersReportController extends Controller
         $products->groupBy('products.id');
 
         if($request->input('order_by_ser')){
-            $products->orderBy('qty', $request->input('order_by_ser'));
+            if($request->order_by_ser == 'alert_quantity'){
+                $products->having('qty', '<=', $site_setting->alert_quantity/$site_unit_val);
+                $products->orderBy('qty', 'asc');
+            }else{
+                $products->orderBy('qty', $request->input('order_by_ser'));
+            }
         }else{
             $products->orderBy('products.name','asc');
         }
+
+        /*if($request->input('order_by_ser')){
+            $products->orderBy('qty', $request->input('order_by_ser'));
+        }else{
+            $products->orderBy('products.name','asc');
+        }*/
         $products  = $products->paginate(20);
 
         $warehouses = Warehouse::select('id','name')->orderBy('name');
