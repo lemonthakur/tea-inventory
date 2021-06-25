@@ -91,7 +91,7 @@
             <div class="row">
                 <div class="col-12">
                     <div  style="border-top: 1px solid rgba(0,0,0,.1);">
-                        <small>Copyright ©️ 2021 Web Embed. All rights reserved.</small><br>
+                        <small>Copyright ©️ 2021 Inventory. All rights reserved.</small><br>
                         <small><a href="https://itclanbd.com" target="_blank">Design and Develop by ITclan BD</a></small>
                     </div>
                 </div>
