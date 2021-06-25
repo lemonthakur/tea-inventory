@@ -382,12 +382,12 @@
                 @endif
 
                 @if(!empty($aclList[25][1]) || !empty($aclList[26][1]) || !empty($aclList[27][1]) || !empty($aclList[28][1])
-                || !empty($aclList[30][1]) || !empty($aclList[29][1]) || !empty($aclList[31][1]) || !empty($aclList[32][1]))
+                || !empty($aclList[30][1]) || !empty($aclList[29][1]) || !empty($aclList[31][1]) || !empty($aclList[32][1]) || !empty($aclList[33][1]))
 
                     <li class="nav-item has-treeview {{ ($routeName == 'order-report.get' || $routeName == 'transfer-report.get'
                     || $routeName == 'receive-transfer-report.get' || $routeName == 'product-stock.get'
                     || $routeName == 'product-register-stock.get' || $routeName == 'product-adjustment.get'
-                    || $routeName == 'low-quantity.get' || $routeName == 'production-report.get') ? 'menu-open' : '' }}">
+                    || $routeName == 'low-quantity.get' || $routeName == 'production-report.get' || $routeName == 'product-history.get') ? 'menu-open' : '' }}">
 
                         <a href="#"
                            class="nav-link">
@@ -488,6 +488,18 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                @if(!empty($aclList[33][1]))
+                                    <li class="nav-item">
+                                        <a href="{{route("product-history.get")}}"
+                                           class="nav-link {{ ($routeName == 'product-history.get') ? 'active' : '' }}">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Product History</p>
+                                        </a>
+                                    </li>
+                                @endif
+
+
                         </ul>
                     </li>
                 @endif
@@ -535,7 +547,7 @@
                                     </a>
                                 </li>
                             @endif
-                            @if(!empty($aclList[4][1]))
+                            <!-- @if(!empty($aclList[4][1]))
                                 <li class="nav-item">
                                     <a href="{{route("module.index")}}"
                                        class="nav-link {{ ($routeName == 'module.index' || $routeName == 'module.create'|| $routeName == 'module.edit') ? 'active' : '' }}">
@@ -552,7 +564,7 @@
                                         <p>Activity Management</p>
                                     </a>
                                 </li>
-                            @endif
+                            @endif -->
                             @if(!empty($aclList[23][3]))
                                 <li class="nav-item">
                                     <a href="{{route("site.setting.edit")}}"

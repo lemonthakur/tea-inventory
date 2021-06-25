@@ -31,6 +31,7 @@ use App\Http\Controllers\ReceiveTransferReportController;
 use App\Http\Controllers\ProductStockReportController;
 use App\Http\Controllers\ProductStockRegistersReportController;
 use App\Http\Controllers\ProductAdjustmentReportController;
+use App\Http\Controllers\ProductHistoryController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -164,5 +165,9 @@ Route::group(['middleware'=>'authCheck'],function (){
 //    Production Report
     Route::any('prodcution-report/index',[ProductionReportController::class,'index'])->name('production-report.get');
     Route::get('prodcution-report/excel',[ProductionReportController::class,'excel'])->name('production-report.excel');
+
+//    product history report
+    Route::any('product-history/index',[ProductHistoryController::class,'index'])->name('product-history.get');
+    Route::get('product-history-excel',[ProductHistoryController::class,'excel']);
 });
 

@@ -92,6 +92,21 @@ class UserController extends Controller
 
 
             if ($user->save()){
+
+                $modulenactivity = \App\Models\ModuleToRole::where('role_id', $user->role_id)->get();
+                if (!empty($modulenactivity)) {
+                    $data = array();
+                    $i = 0;
+                    foreach ($modulenactivity as $item) {
+                        $data[$i]['module_id'] = $item['module_id'];
+                        $data[$i]['activity_id'] = $item['activity_id'];
+                        $data[$i]['user_id'] = $user->id;
+                        $i++;
+                    }
+
+                    \App\Models\ModuleToUser::insert($data);
+                }
+
                 session()->flash("success","User Added");
                 return redirect()->route("user.index");
             }else{
@@ -186,6 +201,29 @@ class UserController extends Controller
 
 
             if ($user->save()){
+
+                $modulenactivity = \App\Models\ModuleToRole::where('role_id', $user->role_id)->get();
+                //user previous activity
+                $previousActivity = \App\Models\\ModuleToUser::where('user_id', $id)->get();
+
+                //if exist previous user activity then delete first
+                if (!empty($previousActivity)) {
+                    \App\Models\\ModuleToUser::where('user_id', '=', $id)->delete();
+                }
+
+                if (!empty($modulenactivity)) {
+                    $data = array();
+                    $i = 0;
+                    foreach ($modulenactivity as $item) {
+                        $data[$i]['module_id'] = $item['module_id'];
+                        $data[$i]['activity_id'] = $item['activity_id'];
+                        $data[$i]['user_id'] = $user->id;
+                        $i++;
+                    }
+
+                    \App\Models\\ModuleToUser::insert($data);
+                }
+
                 session()->flash("success","User Updated");
                 return redirect()->route("user.index");
             }else{
