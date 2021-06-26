@@ -1,5 +1,6 @@
 @extends("backend.master.main-layout")
 @section("page-title","Production-Show")
+
 @section("main-content")
     <div class="content-wrapper">
         <!-- Main content -->
@@ -13,67 +14,134 @@
                         <div id="print-table">
                         <table class="table table-bordered production-table">
                             <tr>
-                                <th style="text-align: center;vertical-align: middle;" colspan="6">
+                                <th style="text-align: center;vertical-align: middle;" colspan="4">
                                     <h5 style="margin: 0;font-size: 20px">Producing Product Details</h5>
                                 </th>
                             </tr>
                             <tr>
-                                <th>Product Name</th>
-                                <td colspan="2">{{ucwords($production->product->name)}}</td>
                                 <th>Production Code</th>
-                                <td colspan="2">{{$production->production_number}}</td>
+                                <td style="text-align: right">{{$production->production_number}}</td>
+                                <th>Product Name</th>
+                                <td style="text-align: right">{{ucwords($production->product->name)}}</td>
+                            </tr>
+                            <tr>
+                                <th>Target Produce Amount</th>
+                                <td style="text-align: right">
+                                    {{number_format($production->targate_amount,2)}}
+                                    {{ucwords($production->unit_name) ?? ''}}
+                                </td>
+                                <th>Produce Amount</th>
+                                <td style="text-align: right">
+                                    {{number_format($production->produce_amount,2)}}
+                                    {{ucwords($production->unit_name) ?? ''}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Waste</th>
+                                <td style="text-align: right">
+                                    {{number_format($production->waste_amount,2)}}
+                                    {{ucwords($production->unit_name) ?? ''}}
+                                </td>
+                                <th>Note</th>
+                                <td style="text-align: right">{{$production->note}}</td>
                             </tr>
                             <tr>
                                 <th>Warehouse</th>
-                                <td colspan="2">{{$production->warehouse->name ?? ''}}</td>
+                                <td style="text-align: right">{{$production->warehouse->name ?? ''}}</td>
                                 <th>Employee</th>
-                                <td colspan="2">{{ucwords($production->employee->name) ?? ''}}</td>
+                                <td style="text-align: right">{{ucwords($production->employee->name) ?? ''}}</td>
                             </tr>
                             <tr>
-                                <th>Produce Amount</th>
-                                <td colspan="2">{{$production->produce_amount}}</td>
-                                <th>Waste</th>
-                                <td colspan="2">{{$production->waste_amount}}</td>
+                                <th>Start At</th>
+                                <td style="text-align: right">{{date('d M, Y',strtotime($production->created_at))}}</td>
+                                <th>End At</th>
+                                <td style="text-align: right">
+                                    @if($production->status == 1)
+                                        {{date('d M, Y',strtotime($production->updated_at))}}
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
-                                <th>Unit</th>
-                                <td colspan="2">{{$production->unit_name}}</td>
-                                <th>Note</th>
-                                <td colspan="2">{{$production->note}}</td>
-                            </tr>
-                            <tr>
+                                <th>Reference No.</th>
+                                <td style="text-align: right">{{$production->ref_no ?? ''}}</td>
                                 <th>Status</th>
-                                <td colspan="2">
+                                <td style="text-align: right">
                                     @if($production->status == 1)
                                         <label class="btn btn-xs btn-success">Finished</label>
                                     @else
                                         <label class="btn btn-xs btn-warning">On going</label>
                                     @endif
                                 </td>
-                                <th></th>
-                                <td colspan="2"></td>
                             </tr>
                             <tr>
-                                <th style="text-align: center;vertical-align: middle;" colspan="6">
+                                <th style="text-align: center;vertical-align: middle;" colspan="4">
                                     <h5 style="margin: 0;font-size: 20px">Product Used For Produced</h5>
                                 </th>
                             </tr>
                             @foreach($production->productionUse as $product)
                                 <tr style="background-color: #80808040;">
-                                    <th colspan="6" style="text-align: center;vertical-align: middle;">Product Name: {{ucwords($product->product->name ?? '')}}</th>
+                                    <th colspan="4" style="text-align: center;vertical-align: middle;">Product Name: {{ucwords($product->product->name ?? '')}}</th>
                                 </tr>
                                 <tr>
                                     <th>Warehouse</th>
-                                    <td>{{ucwords($product->warehouse->name ?? '')}}</td>
+                                    <td style="text-align: right">{{ucwords($product->warehouse->name ?? '')}}</td>
                                     <th>Qty</th>
-                                    <td>{{ucwords($product->qty ?? '')}}</td>
-                                    <th>Unit</th>
-                                    <td>{{ucwords($product->unit_name ?? '')}}</td>
+                                    <td style="text-align: right">
+                                        {{number_format($product->qty,2)}}
+                                        {{ucwords($product->unit_name ?? '')}}
+                                    </td>
+                                </tr>
+                            @endforeach
+                            <tr>
+                                <th style="text-align: center;vertical-align: middle;" colspan="6">
+                                    <h5 style="margin: 0;font-size: 20px">Worker Produce</h5>
+                                </th>
+                            </tr>
+                            @foreach($production->employees as $employee)
+                                <tr style="background-color: #80808040;">
+                                    <th colspan="4" style="text-align: center;vertical-align: middle;">Employee Name: {{ucwords($employee->employee_name ?? '')}}</th>
+                                </tr>
+                                <tr>
+                                    <th>Produce Amount</th>
+                                    <td style="text-align: right">
+                                        {{number_format($employee->produce_amount,2)}}
+                                        {{ucwords($production->unit_name) ?? ''}}
+                                    </td>
+                                    <th>Waste Amount</th>
+                                    <td style="text-align: right">
+                                        {{number_format($employee->waste_amount,2)}}
+                                        {{ucwords($production->unit_name) ?? ''}}
+                                    </td>
                                 </tr>
                             @endforeach
                         </table>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                        <footer>
+                            <div style="text-align: left;width: 50%;display: inline-block;float: left;padding-top: 30px;">
+                                ------------------------------------------
+                                <br/>
+                                <strong>
+                                        {{ucwords($production->employee->name) ?? ''}}
+                                </strong>
+                                <br/>
+                                {{$production->employee->email ? 'Email: '.$production->employee->email  : ''}}
+                                <br/>
+                                {{$production->employee->contact_no ? 'Contact No: '.$production->employee->contact_no  : ''}}
+                            </div>
+                            <div style="text-align: right;width: 50%;display: inline-block;float: right;padding-top: 50px">
+                                <img style="width: 50%;" src="data:image/png;base64,{{App\CustomClass\OwnLibrary::barcode_generator($production->id.'-'.$production->product_id, $production->barcode_symbology)}}" />
+                                <div style="text-align: center;width: 50%;margin-left: auto;">
+                                    {{$production->product->code}}
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                        </footer>
                         </div>
-                        <div class="my-2 text-right">
+                        <div class="my-4 text-right">
                             <a href="{{url()->previous()}}" class="btn btn-info">Go back</a>
                             @if(!empty($aclList[18][7]))
                             <button id="print-btn" type="button" class="btn btn-primary">Print</button>

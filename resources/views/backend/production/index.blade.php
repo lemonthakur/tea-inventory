@@ -109,8 +109,9 @@
                                         <th>Production Number</th>
                                         <th>Warehouse</th>
                                         <th>Product Name</th>
-                                        <th>Produce</th>
-                                        <th>Waste</th>
+                                        <th>Target Amount</th>
+                                        <th>Produce Amount</th>
+                                        <th>Waste Amount</th>
                                         <th>Unit</th>
                                         <th>Employee</th>
                                         <th>Start At</th>
@@ -126,14 +127,15 @@
                                             <td>{{ ucwords($production->production_number) }}</td>
                                             <td>{{ $production->warehouse->name ?? '' }}</td>
                                             <td>{{$production->product->name}}</td>
+                                            <td>{{$production->targate_amount ?? ''}}</td>
                                             <td>{{$production->produce_amount ?? ''}}</td>
                                             <td>{{$production->waste_amount ?? ''}}</td>
                                             <td>{{$production->unit_name ?? ''}}</td>
                                             <td>{{ucwords($production->employee->name)}}</td>
-                                            <td>{{date('d.m-Y',strtotime($production->created_at))}}</td>
+                                            <td>{{date('d M, Y',strtotime($production->created_at))}}</td>
                                             <td>
                                                 @if($production->status == 1)
-                                                    {{date('d.m-Y',strtotime($production->updated_at))}}
+                                                    {{date('d M, Y',strtotime($production->updated_at))}}
                                                     @endif
                                             </td>
                                             <td class="text-center">
@@ -152,8 +154,8 @@
                                                 @endif
                                                     @if(!empty($aclList[18][3]))
                                                 @if($production->status == 0)
-                                                    <a href="{{route('production.edit',$production->id)}}" title="Finished Production" class="btn btn-success btn-xs">
-                                                        <i class="fas fa-check"></i>
+                                                    <a href="{{route('production.edit',$production->id)}}" title="Finished Production" class="btn btn-warning btn-xs">
+                                                        <i class="fas fa-pencil-alt"></i>
                                                     </a>
                                                     @endif
                                                         @endif

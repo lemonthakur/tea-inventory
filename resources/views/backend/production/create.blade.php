@@ -7,7 +7,7 @@
             <div class="container-fluid py-3">
                 <div class="card">
                     <div class="card-header">
-                        Add Transfer
+                        Add Production
                     </div>
                     <div class="card-body">
                         <form method="post" action="{{route('production.store')}}" enctype="multipart/form-data" class="form-horizontal">
@@ -23,13 +23,41 @@
 
                                 <div class=""></div>
 
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <div class="form-group select2-parent">
                                         <label for="product">Product to Produce<span class="text-red">*</span></label>
                                         <select name="product" class="form-control product-produce" id="product-produce" style="width: 100%;" data-allow-clear="true">
                                             <option></option>
                                         </select>
                                         <span class="text-danger"> {{$errors->has("product") ? $errors->first("product") : ""}} </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="targate_amount">Produce Target Amount <span class="text-red">*</span></label>
+                                        <input name="targate_amount" type="number" step="any" class="form-control" id="targate_amount" min="0"/>
+                                        <span class="text-danger"> {{$errors->has("targate_amount") ? $errors->first("targate_amount") : ""}} </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="ref_no">Reference No. <span class="text-red">*</span></label>
+                                        <input name="ref_no" type="text" step="any" class="form-control" id="ref_no" min="0"/>
+                                        <span class="text-danger"> {{$errors->has("ref_no") ? $errors->first("ref_no") : ""}} </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>Barcode Symbology <span class="text-danger">*</span></label>
+                                        <select name="barcode_symbology" required class="form-control">
+                                            <option value="C39+" @if(old("code")=='C39+') selected @endif>Colde C39+</option>
+                                            <option value="C39" @if(old("code")=='C39') selected @endif>Code 39</option>
+                                            {{--<option value="PDF417" @if(old("code")=='PDF417') selected @endif>PDF417</option>--}}
+                                            {{--<option value="UPCE" @if(old("code")=='UPCE') selected @endif>UPC-E</option>
+                                            <option value="EAN8" @if(old("code")=='EAN8') selected @endif>EAN-8</option>
+                                            <option value="EAN13" @if(old("code")=='EAN13') selected @endif>EAN-13</option>--}}
+                                        </select>
+                                        <span class="text-danger"> {{$errors->has("barcode_symbology") ? $errors->first("barcode_symbology") : ""}} </span>
                                     </div>
                                 </div>
 {{--                                product need to produce product--}}

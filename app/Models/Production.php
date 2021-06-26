@@ -44,4 +44,9 @@ class Production extends Model
         return $this->hasMany(ProductionUseProduct::class,'production_id');
     }
 
+    public function employees()
+    {
+        return $this->hasMany(ProductionEmployee::class,'production_id');
+    }
+
 }

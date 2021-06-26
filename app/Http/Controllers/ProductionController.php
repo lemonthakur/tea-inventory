@@ -6,6 +6,7 @@ use App\CustomClass\OwnLibrary;
 use App\Models\Product;
 use App\Models\Product_Warehouse;
 use App\Models\Production;
+use App\Models\ProductionEmployee;
 use App\Models\ProductionUseProduct;
 use App\Models\Warehouse;
 use App\Models\User;
@@ -104,7 +105,7 @@ class ProductionController extends Controller
 
         foreach ($items as $item)
         {
-            if($item->id == $request->nproductId)
+            if($item->id == $request->nproductId && $item->options['warehouseId'] == $request->nWarehouseId)
             {
                 $product = Product_Warehouse::where('product_id','=',$request->nproductId)
                     ->where('warehouse_id','=',$request->nWarehouseId)->first();
@@ -171,11 +172,14 @@ class ProductionController extends Controller
         OwnLibrary::validateAccess($this->moduleId, 2);
         $rules = [
             "product" => "required",
+            "targate_amount" => "required",
             "note" => "max:220",
         ];
 
         $message = [
             "product.required" => "This field is required",
+            "targate_amount.required" => "This field is required",
+            "barcode_symbology.required" => "This field is required",
         ];
 
         $validation = Validator::make($request->all(), $rules, $message);
@@ -198,6 +202,9 @@ class ProductionController extends Controller
         $production->unit_name = $produceProduct->unit->name;
         $production->unit_id = $produceProduct->unit->id;
         $production->note = $request->note;
+        $production->targate_amount = $request->targate_amount;
+        $production->ref_no = $request->ref_no ?? '';
+        $production->barcode_symbology = $request->barcode_symbology;
 
         if ($production->save()){
             $productionId = $production->id;
@@ -231,7 +238,8 @@ class ProductionController extends Controller
 
     public function show($id){
         OwnLibrary::validateAccess($this->moduleId, 8);
-        $production = Production::with('productionUse','productionUse.product','productionUse.warehouse','product','warehouse','employee')
+        $production = Production::with('productionUse','productionUse.product','productionUse.warehouse',
+            'product','warehouse','employee','employees')
             ->find($id);
         return view('backend.production.show',compact('production'));
     }
@@ -246,10 +254,16 @@ class ProductionController extends Controller
 
     public function update(Request $request,$id){
         OwnLibrary::validateAccess($this->moduleId, 3);
+
+//        dd(count($request->employee_name));
+
+        if (count($request->employee_name) <= 0 || !$request->employee_name[0]){
+            session()->flash('error','Provide Employee Produce data');
+            return redirect()->back()->withInput();
+        }
+
         $rules = [
             "warehouse" => "required",
-            "produce_amount" => "required",
-            "waste_amount" => "required",
         ];
 
         $message = [];
@@ -262,29 +276,47 @@ class ProductionController extends Controller
 
       $production = Production::find($id);
         $production->warehouse_id = $request->warehouse;
-        $production->produce_amount = $request->produce_amount;
-        $production->waste_amount = $request->waste_amount;
         $production->status = 1;
-        if ($production->save()){
+//        $production->produce_amount = $request->produce_amount;
+//        $production->waste_amount = $request->waste_amount;
 
+        $toralProduce = 0;
+        $toralWaste = 0;
+
+        for ($i = 0; $i < count($request->employee_name); $i++){
+            $productionEmployee = new ProductionEmployee();
+            $productionEmployee->production_id = $id;
+            $productionEmployee->employee_name = $request->employee_name[$i];
+            $productionEmployee->produce_amount = $request->produce_amount[$i];
+            $productionEmployee->waste_amount = $request->waste_amount[$i];
+            $productionEmployee->save();
+
+            $toralProduce = $toralProduce + $request->produce_amount[$i];
+            $toralWaste = $toralWaste + $request->waste_amount[$i];
+        }
+
+        $production->produce_amount = $toralProduce;
+        $production->waste_amount = $toralWaste;
+
+        if ($production->save()){
             $product = Product::find($production->product_id);
-            $product->qty = $product->qty + $request->produce_amount;
-            $product->waste_qty = $product->waste_qty + $request->waste_amount;
+            $product->qty = $product->qty + $toralProduce;
+            $product->waste_qty = $product->waste_qty + $toralWaste;
             $product->save();
 
             $productWarehouse = Product_Warehouse::where('product_id','=',$production->product_id)
                 ->where('warehouse_id','=',$request->warehouse)->first();
 
             if ($productWarehouse){
-                $productWarehouse->qty = $productWarehouse->qty + $request->produce_amount;
-                $productWarehouse->waste_qty = $productWarehouse->waste_qty + $request->waste_amount;
+                $productWarehouse->qty = $productWarehouse->qty + $toralProduce;
+                $productWarehouse->waste_qty = $productWarehouse->waste_qty + $toralWaste;
                 $productWarehouse->save();
             }else{
                 $productWarehouse = new Product_Warehouse();
                 $productWarehouse->product_id = $production->product_id;
                 $productWarehouse->warehouse_id = $request->warehouse;
-                $productWarehouse->qty = $request->produce_amount;
-                $productWarehouse->waste_qty = $request->waste_amount;
+                $productWarehouse->qty = $toralProduce;
+                $productWarehouse->waste_qty = $toralWaste;
                 $productWarehouse->save();
             }
 
