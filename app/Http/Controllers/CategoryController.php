@@ -97,10 +97,21 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         OwnLibrary::validateAccess($this->moduleId, 4);
-        if ($category->delete()){
+        /*if ($category->delete()){
             session()->flash("success", "Data deleted");
         }else{
             session()->flash("error", "Data unable to delete");
+        }*/
+        if($category){
+            if($category->status==1)
+                $category->status=0;
+            else
+                $category->status=1;
+
+            $category->save();
+            session()->flash('success','Data Inactive successfully');
+        }else{
+            session()->flash('error','Action Failed!');
         }
         return redirect()->route("categories.index");
     }

@@ -214,13 +214,25 @@ class BrandController extends Controller
     public function destroy(Brand $brand)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
-        if ($brand->Delete()){
+        /*if ($brand->Delete()){
             session()->flash("success","Brand Deleted");
             return redirect()->back();
         }else{
             session()->flash("error","Brand not Deleted");
             return redirect()->back();
+        }*/
+        if($brand){
+            if($brand->status==1)
+                $brand->status=0;
+            else
+                $brand->status=1;
+
+            $brand->save();
+            session()->flash('success','Data Inactive successfully');
+        }else{
+            session()->flash('error','Action Failed!');
         }
+        return redirect()->back();
     }
 
 }

@@ -72,13 +72,13 @@ class PurchaseController extends Controller
         OwnLibrary::validateAccess($this->moduleId,2);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }
         $warehouses = $warehouses->get();
 
-        $suppliers = Supplier::select('id','name')->orderBy('name')->get();
+        $suppliers = Supplier::select('id','name')->where('status', 1)->orderBy('name')->get();
         return view('backend.purchase.create',compact('warehouses','suppliers'));
     }
 
@@ -223,13 +223,13 @@ class PurchaseController extends Controller
 
         $purchase = Purchase::find($id);
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }
         $warehouses = $warehouses->get();
 
-        $suppliers = Supplier::select('id','name')->orderBy('name')->get();
+        $suppliers = Supplier::select('id','name')->where('status', 1)->orderBy('name')->get();
         $product_purchase_data = ProductPurchase::where('purchase_id', $purchase->id)->get();
 
         return view('backend.purchase.edit',compact('purchase', 'warehouses', 'suppliers', 'product_purchase_data'));

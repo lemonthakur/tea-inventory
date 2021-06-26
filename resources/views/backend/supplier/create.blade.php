@@ -38,7 +38,7 @@
                                         <label for="name">Name<span class="text-red">*</span></label>
                                         <input type="text"
                                                class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name"
-                                               name="name" placeholder="Enter Supplier Name" value="{{old("name")}}">
+                                               name="name" required placeholder="Enter Supplier Name" value="{{old("name")}}">
                                         <span
                                             class="text-danger"> {{$errors->has("name") ? $errors->first("name") : ""}} </span>
                                     </div>
@@ -46,7 +46,7 @@
                                         <label for="email">Email<span class="text-red">*</span></label>
                                         <input type="email"
                                                class="form-control {{$errors->has("email") ? "is-invalid":""}}" id="email"
-                                               name="email" placeholder="Enter Supplier Email" value="{{old("email")}}">
+                                               name="email" required placeholder="Enter Supplier Email" value="{{old("email")}}">
                                         <span
                                             class="text-danger"> {{$errors->has("email") ? $errors->first("email") : ""}} </span>
                                     </div>
@@ -54,7 +54,7 @@
                                         <label for="contact_no">Contact NO.<span class="text-red">*</span></label>
                                         <input type="text"
                                                class="form-control {{$errors->has("contact_no") ? "is-invalid":""}}" id="contact_no"
-                                               name="contact_no" placeholder="Enter Supplier Contact Number" value="{{old("contact_no")}}">
+                                               name="contact_no" required placeholder="Enter Supplier Contact Number" value="{{old("contact_no")}}">
                                         <span
                                             class="text-danger"> {{$errors->has("contact_no") ? $errors->first("contact_no") : ""}} </span>
                                     </div>

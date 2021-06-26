@@ -18,7 +18,7 @@
                                 <div class="form-group select2-parent">
                                     <label for="warehouse">From Warehouse<span class="text-red">*</span></label>
                                     <select
-                                            class="form-control single-select2"
+                                            class="form-control single-select2" required
                                             data-placeholder="Select Warehouse" data-allow-clear="true"
                                             id="from_warehouse_id" name="from_warehouse_id">
                                         <option></option>

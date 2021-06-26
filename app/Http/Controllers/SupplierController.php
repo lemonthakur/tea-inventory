@@ -110,10 +110,21 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
-        if ($supplier->delete()){
+        /*if ($supplier->delete()){
             session()->flash("success", "Data deleted");
         }else{
             session()->flash("error", "Data unable to delete");
+        }*/
+        if($supplier){
+            if($supplier->status==1)
+                $supplier->status=0;
+            else
+                $supplier->status=1;
+
+            $supplier->save();
+            session()->flash('success','Data Inactive successfully');
+        }else{
+            session()->flash('error','Action Failed!');
         }
         return redirect()->route("suppliers.index");
     }

@@ -58,13 +58,13 @@ class TransferController extends Controller
         OwnLibrary::validateAccess($this->moduleId,2);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouse_from = Warehouse::select('id','name')->orderBy('name');
+        $warehouse_from = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouse_from->whereIn('id', $user_ware_house);
         }
         $warehouse_from = $warehouse_from->get();
 
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name')->get();
 
         return view('backend.transfer.create',compact('warehouses', 'warehouse_from'));
     }
@@ -205,12 +205,12 @@ class TransferController extends Controller
         OwnLibrary::validateAccess($this->moduleId,3);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouse_from = Warehouse::select('id','name')->orderBy('name');
+        $warehouse_from = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouse_from->whereIn('id', $user_ware_house);
         }
         $warehouse_from = $warehouse_from->get();
-        $warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name')->get();
 
         $product_transfer_data = ProductTransfer::where('transfer_id', $transfer->id)->get();
 

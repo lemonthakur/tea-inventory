@@ -52,7 +52,7 @@ class AdjustmentController extends Controller
         OwnLibrary::validateAccess($this->moduleId,2);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }
@@ -181,7 +181,7 @@ class AdjustmentController extends Controller
         $adjustment = Adjustment::find($id);
 
         $user_ware_house = OwnLibrary::user_warehosue();
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }

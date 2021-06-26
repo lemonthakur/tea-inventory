@@ -38,7 +38,7 @@
                                         <label for="name">Name<span class="text-red">*</span></label>
                                         <input type="text"
                                                class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name"
-                                               name="name" placeholder="Enter Category Name" value="{{old("name")}}">
+                                               name="name" required placeholder="Enter Category Name" value="{{old("name")}}">
                                         <span
                                             class="text-danger"> {{$errors->has("name") ? $errors->first("name") : ""}} </span>
                                     </div>

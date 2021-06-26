@@ -39,7 +39,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="name">Name<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name" name="name" placeholder="Enter User Name" value="{{old("name")}}">
+                                                <input type="text" required class="form-control {{$errors->has("name") ? "is-invalid":""}}" id="name" name="name" placeholder="Enter User Name" value="{{old("name")}}">
                                                 <span class="text-danger"> {{$errors->has("name") ? $errors->first("name") : ""}} </span>
                                             </div>
                                         </div>
@@ -47,7 +47,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="email">Email<span class="text-danger">*</span></label>
-                                                <input type="email" class="form-control {{$errors->has("email") ? "is-invalid":""}}" id="email" name="email" placeholder="Enter User Email" value="{{old("email")}}">
+                                                <input type="email" required class="form-control {{$errors->has("email") ? "is-invalid":""}}" id="email" name="email" placeholder="Enter User Email" value="{{old("email")}}">
                                                 <span class="text-danger"> {{$errors->has("email") ? $errors->first("email") : ""}} </span>
                                             </div>
                                         </div>
@@ -55,7 +55,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="contact_no">Contact No<span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control {{$errors->has("contact_no") ? "is-invalid":""}}" id="contact_no" name="contact_no" placeholder="Enter User Contact No" value="{{old("contact_no")}}">
+                                                <input type="text" required class="form-control {{$errors->has("contact_no") ? "is-invalid":""}}" id="contact_no" name="contact_no" placeholder="Enter User Contact No" value="{{old("contact_no")}}">
                                                 <span class="text-danger"> {{$errors->has("contact_no") ? $errors->first("contact_no") : ""}} </span>
                                             </div>
                                         </div>
@@ -63,7 +63,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group select2-parent">
                                                 <label for="role_id">Designation<span class="text-danger">*</span></label>
-                                                <select name="role_id" class="form-control single-select2" id="role_id"
+                                                <select name="role_id" required class="form-control single-select2" id="role_id"
                                                         style="width: 100%;" data-placeholder="Select Designation"
                                                         data-allow-clear="true">
                                                     <option></option>
@@ -108,7 +108,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="password">Password<span class="text-danger">*</span></label>
-                                                <input type="password" class="form-control {{$errors->has("password") ? "is-invalid":""}}" id="password" name="password" placeholder="Enter User Password" value="{{old("password")}}">
+                                                <input type="password" required class="form-control {{$errors->has("password") ? "is-invalid":""}}" id="password" name="password" placeholder="Enter User Password" value="{{old("password")}}">
                                                 <span class="text-danger"> {{$errors->has("password") ? $errors->first("password") : ""}} </span>
                                             </div>
                                         </div>
@@ -116,7 +116,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="confirm_password">Confirm Password<span class="text-danger">*</span></label>
-                                                <input type="password" class="form-control {{$errors->has("confirm_password") ? "is-invalid":""}}" id="confirm_password" name="confirm_password" placeholder="Confirm User Password" value="{{old("confirm_password")}}">
+                                                <input type="password" required class="form-control {{$errors->has("confirm_password") ? "is-invalid":""}}" id="confirm_password" name="confirm_password" placeholder="Confirm User Password" value="{{old("confirm_password")}}">
                                                 <span class="text-danger"> {{$errors->has("confirm_password") ? $errors->first("confirm_password") : ""}} </span>
                                             </div>
                                         </div>

@@ -234,10 +234,21 @@ class EmployeeController extends Controller
 
     public function destroy(User $employee){
         OwnLibrary::validateAccess($this->moduleId, 4);
-        if ($employee->delete()){
+        /*if ($employee->delete()){
             session()->flash('success','Data Delated');
         }else{
             session()->flash('error','Data Delated');
+        }*/
+        if($employee){
+            if($employee->status==1)
+                $employee->status=0;
+            else
+                $employee->status=1;
+
+            $employee->save();
+            session()->flash('success','Data Inactive successfully');
+        }else{
+            session()->flash('error','Action Failed!');
         }
         return redirect()->back();
     }

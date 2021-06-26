@@ -94,10 +94,19 @@
                                                             @if(!empty($aclList[20][3]))
                                                             @method('delete')
                                                             @csrf
-                                                            <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">
+                                                            {{--<button type="submit" class="btn btn-xs btn-danger text-white delete" title="Delete">
                                                                 <i class="fas fa-trash-alt"></i>
-                                                            </button>
-                                                                @endif
+                                                            </button>--}}
+                                                            @if($supplier->status == 1)
+                                                                <button type="submit" class="btn btn-xs btn-danger text-white delete" title="Inactive">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            @else
+                                                                <button type="submit" class="btn btn-xs btn-success text-white delete" title="Active">
+                                                                    <i class="fas fa-check"></i>
+                                                                </button>
+                                                            @endif
+                                                        @endif
                                                     </form>
                                             </td>
                                         </tr>

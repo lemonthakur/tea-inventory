@@ -78,13 +78,13 @@ class TransferReportController extends Controller
 
         $transfers = $transfers->paginate(50);
 
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }
         $warehouses = $warehouses->get();
 
-        $to_warehouses = Warehouse::select('id','name')->orderBy('name')->get();
+        $to_warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name')->get();
 
         $site_setting = SiteSetting::find(1);
         $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';

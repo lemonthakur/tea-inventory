@@ -190,13 +190,25 @@ class WarehouseController extends Controller
     public function destroy(Warehouse $warehouse)
     {
         OwnLibrary::validateAccess($this->moduleId,4);
-        if ($warehouse->Delete()){
+        /*if ($warehouse->Delete()){
             session()->flash("success","Warehouse Deleted");
             return redirect()->back();
         }else{
             session()->flash("error","Warehouse not Deleted");
             return redirect()->back();
+        }*/
+        if($warehouse){
+            if($warehouse->status==1)
+                $warehouse->status=0;
+            else
+                $warehouse->status=1;
+
+            $warehouse->save();
+            session()->flash('success','Data Inactive successfully');
+        }else{
+            session()->flash('error','Action Failed!');
         }
+        return redirect()->back();
     }
 
 }

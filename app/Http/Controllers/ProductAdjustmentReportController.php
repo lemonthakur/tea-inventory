@@ -76,7 +76,7 @@ class ProductAdjustmentReportController extends Controller
 
         $adjustments = $adjustments->paginate(50);
 
-        $warehouses = Warehouse::select('id','name')->orderBy('name');
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name');
         if($user_ware_house){
             $warehouses->whereIn('id', $user_ware_house);
         }
