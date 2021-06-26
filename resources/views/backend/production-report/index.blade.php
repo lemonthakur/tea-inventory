@@ -150,7 +150,7 @@
                                 $l = 1;
                             ?>
                             <div class="card-body table-responsive" id="prin-table">
-                                <span>Displaying Order from {{ ($productions->total()) ? $sl+1 : 0 }} to {{ $sl+$productions->count() }} out of total {{ $productions->total() }}</span>
+                                <span id="count_pan">Displaying Order from {{ ($productions->total()) ? $sl+1 : 0 }} to {{ $sl+$productions->count() }} out of total {{ $productions->total() }}</span>
                                 <table class="table table-bordered production-table">
                                     <thead>
                                     <tr>
@@ -239,6 +239,9 @@
                     ' table.production-table th {border: 1px solid black;text-align: left;padding: 2px 5px; vertical-align: middle}' +
                     ' table.production-table td {border: 1px solid black;text-align: left;padding: 2px 5px;vertical-align: middle}' +
                     ' table td.action, table th.action {visibility: hidden}' +
+                    ' #count_pan {visibility: hidden}' +
+                    ' .text-center {text-align: center !important}' +
+                    ' .text-right {text-align: right !important}' +
                     '</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
                 newWin.document.close();
                 setTimeout(function(){newWin.close();},10);

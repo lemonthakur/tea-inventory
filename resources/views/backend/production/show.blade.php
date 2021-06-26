@@ -93,11 +93,16 @@
                                 </tr>
                             @endforeach
                             <tr>
-                                <th style="text-align: center;vertical-align: middle;" colspan="6">
+                                <th style="text-align: center;vertical-align: middle;" colspan="4">
                                     <h5 style="margin: 0;font-size: 20px">Worker Produce</h5>
                                 </th>
                             </tr>
-                            @foreach($production->employees as $employee)
+                            <tr>
+                                <th colspan="2">Worker Name</th>
+                                <th class="text-center">Produce Amount</th>
+                                <th class="text-center">Waste Amount</th>
+                            </tr>
+                            {{--@foreach($production->employees as $employee)
                                 <tr style="background-color: #80808040;">
                                     <th colspan="4" style="text-align: center;vertical-align: middle;">Employee Name: {{ucwords($employee->employee_name ?? '')}}</th>
                                 </tr>
@@ -113,7 +118,19 @@
                                         {{ucwords($production->unit_name) ?? ''}}
                                     </td>
                                 </tr>
+                            @endforeach--}}
+                            @foreach($production->employees as $employee)
+                                <tr>
+                                    <td colspan="2">{{ucwords($employee->employee_name ?? '')}}</td>
+                                    <td class="text-right">{{number_format($employee->produce_amount,2)}} {{ucwords($production->unit_name) ?? ''}}</td>
+                                    <td class="text-right">{{number_format($employee->waste_amount,2)}} {{ucwords($production->unit_name) ?? ''}}</td>
+                                </tr>
                             @endforeach
+                            <tr>
+                                <th class="text-right" colspan="2"> <b>Total</b></th>
+                                <th class="text-right"> <b>{{number_format($production->produce_amount,2)}} {{ucwords($product->unit_name ?? '')}}</b></th>
+                                <th class="text-right"> <b>{{number_format($production->waste_amount,2)}} {{ucwords($product->unit_name ?? '')}}</b></th>
+                            </tr>
                         </table>
                             <br />
                             <br />
@@ -167,6 +184,7 @@
                 ' table.production-table {border: 1px solid black;border-collapse: collapse;width: 100%}' +
                 ' table.production-table th {border: 1px solid black;text-align: left;padding: 2px 5px; vertical-align: middle}' +
                 ' table.production-table td {border: 1px solid black;text-align: left;padding: 2px 5px;vertical-align: middle}' +
+                ' .text-right {text-align: right !important}' +
                 '</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
             newWin.document.close();
             setTimeout(function(){newWin.close();},10);

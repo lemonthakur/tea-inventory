@@ -318,6 +318,8 @@
                     ' table.production-table th {border: 1px solid black;text-align: left;padding: 2px 5px; vertical-align: middle}' +
                     ' table.production-table td {border: 1px solid black;text-align: left;padding: 2px 5px;vertical-align: middle}' +
                     ' #count_pan {visibility: hidden}' +
+                    ' .text-center {text-align: center !important}' +
+                    ' .text-right {text-align: right !important}' +
                     '</style><body onload="window.print()">'+divToPrint.innerHTML+'</body>');
                 newWin.document.close();
                 setTimeout(function(){newWin.close();},10);
