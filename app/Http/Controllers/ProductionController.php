@@ -39,6 +39,14 @@ class ProductionController extends Controller
         if($request->input('end_date'))
             $productions->whereDate('created_at','<=', date("Y-m-d", strtotime($request->input('end_date'))));
 
+        if($request->barcode){
+            $value = explode('-', $request->barcode);
+            $production_id = $value[0];
+            $product_id = isset($value[1]) ? $value[1] : 0;
+
+            $productions->where('id', $production_id);
+            $productions->where('product_id', $product_id);
+        }
 
         $productions = $productions->paginate(20);
 

@@ -41,7 +41,7 @@ class PurchaseController extends Controller
         if($request->barcode){
             $value = explode('-', $request->barcode);
             $product_id = $value[0];
-            $purchase_id = $value[1];
+            $purchase_id = isset($value[1]) ?$value[1] : 0;
             //$reference_no = (isset($value[2])) ? $value[2] : '';
 
             $purchases->whereHas('purchase_details', function($query) use($product_id, $purchase_id) {

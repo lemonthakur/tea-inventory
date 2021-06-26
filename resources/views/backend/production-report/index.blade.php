@@ -47,6 +47,13 @@
                                             </div>
                                         </div>
                                         <div class="col-md-2">
+                                            <div class="form-group">
+                                                <label for="name">Search Barcode</label>
+                                                <input type="text" class="form-control" name="barcode"
+                                                       value="">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
                                             <div class="form-group select2-parent">
                                                 <label for="warehouse">Warehouse</label>
                                                 <select
@@ -188,7 +195,7 @@
                                             <td class="text-center action">
 
                                                 @if(!empty($aclList[18][8]))
-                                                    <a href="{{route('production.show',$production->production_id)}}" title="Details" class="btn btn-info btn-xs">
+                                                    <a href="{{route('production.show',$production->production_id)}}" title="Details" class="btn btn-info btn-xs" target="_blank">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 @endif

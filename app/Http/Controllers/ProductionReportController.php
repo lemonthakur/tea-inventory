@@ -73,6 +73,14 @@ class ProductionReportController extends Controller
         }
         if($request->input('employee_ser'))
             $productions->where('productions.employee_id','=', $request->input('employee_ser'));
+        if($request->barcode){
+            $value = explode('-', $request->barcode);
+            $production_id = $value[0];
+            $product_id = isset($value[1]) ? $value[1] : 0;
+
+            $productions->where('productions.id', $production_id);
+            $productions->where('productions.product_id', $product_id);
+        }
 
         $productions = $productions->paginate(20);
 

@@ -34,6 +34,13 @@
                         </div>
                     </div>
                     <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="name">Search Barcode</label>
+                            <input type="text" class="form-control" name="barcode"
+                                   value="">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group select2-parent">
                             <label for="warehouse">Warehouse</label>
                             <select
@@ -75,7 +82,7 @@
                     </div>
 
                     <div class="col-md-2">
-                        <div class="form-group" style="padding-top: 33px;">
+                        <div class="form-group" {{--style="padding-top: 33px;"--}}>
                             <button class="btn btn-dark " type="submit" id="search_btn">Search</button>
                             <a href="{{route("production.index")}}" class="btn btn-danger " type="reset" id="reset_btn">Reset</a>
                         </div>
@@ -148,7 +155,7 @@
                                             <td class="text-center">
 
                                                 @if(!empty($aclList[18][8]))
-                                                    <a href="{{route('production.show',$production->id)}}" title="Details" class="btn btn-info btn-xs">
+                                                    <a href="{{route('production.show',$production->id)}}" title="Details" class="btn btn-info btn-xs" target="_blank">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 @endif

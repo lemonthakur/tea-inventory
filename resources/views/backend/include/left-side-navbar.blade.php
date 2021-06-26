@@ -408,7 +408,7 @@
                                 </li>
                             @endif
 
-                            @if(!empty($aclList[26][1]))
+                            {{--@if(!empty($aclList[26][1]))
                                 <li class="nav-item">
                                     <a href="{{route("low-quantity.get")}}"
                                        class="nav-link {{ ($routeName == 'low-quantity.get') ? 'active' : '' }}">
@@ -416,7 +416,7 @@
                                         <p>Quantity Report</p>
                                     </a>
                                 </li>
-                            @endif
+                            @endif--}}
 
                             @if(!empty($aclList[27][1]))
                                 <li class="nav-item">
