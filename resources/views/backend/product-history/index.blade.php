@@ -73,10 +73,11 @@
                                             {{ 'Order' }}
                                             <?php $in_stock += $ph->purchase_qty; $qty = $ph->purchase_qty; $action = '+'; ?>
                                         @elseif($ph->adjustment_qty)
-                                            {{ 'Adjustment' }}
                                             @if($ph->action == '+')
+                                                {{ 'Adjustment (Addition)' }}
                                                 <?php $in_stock += $ph->adjustment_qty; $qty = $ph->adjustment_qty; $action = '+'; ?>
                                             @else
+                                                {{ 'Adjustment (Subtraction)' }}
                                                 <?php $in_stock -= $ph->adjustment_qty; $qty = $ph->adjustment_qty; $action = '-'; ?>
                                             @endif
                                         @elseif($ph->production_qty)

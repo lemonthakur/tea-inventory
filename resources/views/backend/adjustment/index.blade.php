@@ -104,7 +104,7 @@
                                             <td>
                                                 @if($adjustment->adjustment_projectst)
                                                     @foreach($adjustment->adjustment_projectst as $p)
-                                                        {{$p->product->name}} [{{ $p->product->code }}] {{"Qty: ".$p->qty}}<br>
+                                                        ({{ $p->action }}) {{$p->product->name}} [{{ $p->product->code }}] {{"Qty: ".$p->qty}}<br>
                                                     @endforeach
                                                 @endif
                                             </td>
