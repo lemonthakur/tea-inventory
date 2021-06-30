@@ -103,7 +103,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="password">Password<span class="text-danger">*</span></label>
-                                                <input type="password" required class="form-control {{$errors->has("password") ? "is-invalid":""}}" id="password" name="password" placeholder="Enter User Password" value="{{old("password")}}">
+                                                <input type="password" class="form-control {{$errors->has("password") ? "is-invalid":""}}" id="password" name="password" placeholder="Enter User Password" value="{{old("password")}}">
                                                 <span class="text-danger"> {{$errors->has("password") ? $errors->first("password") : ""}} </span>
                                             </div>
                                         </div>
@@ -111,7 +111,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="confirm_password">Confirm Password<span class="text-danger">*</span></label>
-                                                <input type="password" required class="form-control {{$errors->has("confirm_password") ? "is-invalid":""}}" id="confirm_password" name="confirm_password" placeholder="Confirm User Password" value="{{old("confirm_password")}}">
+                                                <input type="password" class="form-control {{$errors->has("confirm_password") ? "is-invalid":""}}" id="confirm_password" name="confirm_password" placeholder="Confirm User Password" value="{{old("confirm_password")}}">
                                                 <span class="text-danger"> {{$errors->has("confirm_password") ? $errors->first("confirm_password") : ""}} </span>
                                             </div>
                                         </div>
