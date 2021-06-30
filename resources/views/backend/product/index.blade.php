@@ -35,12 +35,26 @@
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <div class="form-group select2-parent">
+                            <label for="warehouse">Warehouse</label>
+                            <select
+                                    class="form-control single-select2"
+                                    data-placeholder="Select Warehouse" data-allow-clear="true"
+                                    id="warehouse_ser" name="warehouse_ser">
+                                <option></option>
+                                @foreach($warehouses as $warehouse)
+                                    <option value="{{$warehouse->id}}" @if(request()->query('warehouse_ser') == $warehouse->id) selected @endif>{{ucwords($warehouse->name)}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="name">Quantity From</label>
                             <input type="number" class="form-control" id="quantity_from_ser" name="quantity_from_ser" value="{{request()->query('quantity_from_ser')}}">
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label for="name">Quantity To</label>
                             <input type="number" class="form-control" id="quantity_to_ser" name="quantity_to_ser" value="{{request()->query('quantity_to_ser')}}">
@@ -202,7 +216,8 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{$products->links("backend.include.pagination")}}
+                                {{ $products->appends(\Request::except('page'))->links("backend.include.pagination") }}
+                                {{--{{$products->links("backend.include.pagination")}}--}}
                             </div>
                         </div>
                     </div>

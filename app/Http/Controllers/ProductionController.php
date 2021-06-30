@@ -43,9 +43,16 @@ class ProductionController extends Controller
             $value = explode('-', $request->barcode);
             $production_id = $value[0];
             $product_id = isset($value[1]) ? $value[1] : 0;
+            $full_req = $request->barcode;
 
-            $productions->where('id', $production_id);
-            $productions->where('product_id', $product_id);
+            $productions->where(function($query) use($production_id, $product_id, $full_req){
+                $query->where('id', $production_id);
+                $query->where('product_id', $product_id);
+                $query->orWhere('production_number', $full_req);
+            });
+
+            //$productions->where('id', $production_id);
+            //$productions->where('product_id', $product_id);
         }
 
         $productions = $productions->paginate(20);

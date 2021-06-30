@@ -164,37 +164,6 @@
         <!-- /.content -->
     </div>
 
-    <div id="purchase-details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" class="modal fade text-left">
-        <div role="document" class="modal-dialog modal-lg">
-            <div class="modal-content">
-                {{--<div class="modal-header">
-                    <h5 id="exampleModalLabel" class="modal-title">{{'Order In Details'}}</h5>
-                    <button id="print-btn" type="button" class="btn btn-default btn-sm ml-3"><i class="fa fa-print"></i> {{'Print'}}</button>
-                    <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
-                </div>--}}
-
-                <div class="container mt-3 pb-2 border-bottom">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <button id="print-btn" type="button" class="btn btn-default btn-sm d-print-none"><i class="fa fa-print"></i> Print</button>
-                        </div>
-                        <div class="col-md-6">
-                            <h3 id="exampleModalLabel" class="modal-title text-center container-fluid">{{ $siteSetting->site_title ?? '' }}</h3>
-                        </div>
-                        <div class="col-md-3">
-                            <button type="button" id="close-btn" data-dismiss="modal" aria-label="Close" class="close d-print-none"><span aria-hidden="true">×</span></button>
-                        </div>
-                        <div class="col-md-12 text-center">
-                            <i style="font-size: 15px;">Order In Details</i>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-body" id="product-edtils-body">
-
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('js')

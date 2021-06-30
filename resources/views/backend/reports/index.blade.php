@@ -180,7 +180,6 @@
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
                                 {{ $purchases->appends(\Request::except('page'))->links("backend.include.pagination") }}
-                                {{--{{$purchases->links("backend.include.pagination")}}--}}
                             </div>
                         </div>
                     </div>

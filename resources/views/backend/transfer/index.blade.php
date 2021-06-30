@@ -149,7 +149,8 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{$transfers->links("backend.include.pagination")}}
+                                {{ $transfers->appends(\Request::except('page'))->links("backend.include.pagination") }}
+                                {{--{{$transfers->links("backend.include.pagination")}}--}}
                             </div>
                         </div>
                     </div>

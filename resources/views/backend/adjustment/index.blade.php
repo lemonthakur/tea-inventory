@@ -150,7 +150,8 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{$adjustments->links("backend.include.pagination")}}
+                                {{ $adjustments->appends(\Request::except('page'))->links("backend.include.pagination") }}
+                                {{--{{$adjustments->links("backend.include.pagination")}}--}}
                             </div>
                         </div>
                     </div>

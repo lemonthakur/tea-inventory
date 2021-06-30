@@ -58,6 +58,34 @@ class ProductController extends Controller
             //$products->whereIn('product_warehouse.warehouse_id', $user_ware_house);
             $products->groupBy('products.id');
         }*/
+        if($request->input('warehouse_ser')){
+            $products->leftjoin('product_warehouse', 'product_warehouse.product_id' ,'=', 'products.id');
+            $products->select(
+                DB::raw("SUM(product_warehouse.qty) as qty")
+                , 'products.id'
+                , 'products.name'
+                , 'products.code'
+                , 'products.barcode_symbology'
+                , 'products.brand_id'
+                , 'products.category_id'
+                , 'products.unit_id'
+                , 'products.product_price'
+                //, 'products.qty'
+                , 'products.waste_qty'
+                , 'products.alert_quantity'
+                , 'products.image'
+                , 'products.file'
+                , 'products.product_details'
+                , 'products.status'
+                , 'products.deleted_at'
+                , 'products.created_by'
+                , 'products.updated_by'
+                , 'products.created_at'
+                , 'products.updated_at'
+            );
+            $products->where('product_warehouse.warehouse_id', $request->input('warehouse_ser'));
+            $products->groupBy('products.id');
+        }
         if($request->input('product_ser'))
             $products->where('products.id', $request->input('product_ser'));
         if($request->input('quantity_from_ser'))
@@ -70,8 +98,9 @@ class ProductController extends Controller
         $products = $products->paginate(20);
         $site_setting = SiteSetting::find(1);
         $site_unit = ($site_setting->display_unit) ? Unit::find($site_setting->display_unit) : '';
+        $warehouses = Warehouse::select('id','name')->where('status', 1)->orderBy('name')->get();
 
-        return view('backend.product.index', compact('products', 'site_setting', 'site_unit'));
+        return view('backend.product.index', compact('products', 'site_setting', 'site_unit', 'warehouses'));
 
     }
 

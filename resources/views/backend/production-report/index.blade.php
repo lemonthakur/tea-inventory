@@ -48,7 +48,7 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <label for="name">Search Barcode</label>
+                                                <label for="name">Ser. Barcode/Pro. Num.</label>
                                                 <input type="text" class="form-control" name="barcode"
                                                        value="">
                                             </div>

@@ -122,7 +122,8 @@
                             </div>
                             <!-- /.card-body -->
                             <div class="card-footer clearfix text-right">
-                                {{$categories->links("backend.include.pagination")}}
+                                {{ $categories->appends(\Request::except('page'))->links("backend.include.pagination") }}
+                                {{--{{$categories->links("backend.include.pagination")}}--}}
                             </div>
                         </div>
                     </div>
