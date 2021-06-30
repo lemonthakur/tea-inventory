@@ -157,10 +157,12 @@ class ProductHistoryController extends Controller
                     $text = 'Order';
                     $in_stock += $ph->purchase_qty; $qty = $ph->purchase_qty; $action = '+';
                 }elseif($ph->adjustment_qty){
-                    $text = 'Adjustment';
+                    $text = 'Adjustment (Addition)';
                     if($ph->action == '+'){
+                        $text = 'Adjustment (Addition)';
                         $in_stock += $ph->adjustment_qty; $qty = $ph->adjustment_qty; $action = '+';
                     } else{
+                        $text = 'Adjustment (Subtraction)';
                         $in_stock -= $ph->adjustment_qty; $qty = $ph->adjustment_qty; $action = '-';
                     }
                 }elseif($ph->production_qty){

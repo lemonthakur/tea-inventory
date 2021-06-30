@@ -166,6 +166,18 @@ class ProductionReportController extends Controller
         }
         if($request->input('employee_ser'))
             $productions->where('productions.employee_id','=', $request->input('employee_ser'));
+        if($request->barcode){
+            $value = explode('-', $request->barcode);
+            $production_id = $value[0];
+            $product_id = isset($value[1]) ? $value[1] : 0;
+            $full_req = $request->barcode;
+
+            $productions->where(function($query) use($production_id, $product_id, $full_req){
+                $query->where('productions.id', $production_id);
+                $query->where('productions.product_id', $product_id);
+                $query->orWhere('productions.production_number', $full_req);
+            });
+        }
 
         $productions = $productions->get();
 
