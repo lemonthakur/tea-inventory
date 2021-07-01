@@ -155,7 +155,7 @@
                                             <td class="text-center">
 
                                                 @if(!empty($aclList[18][8]))
-                                                    <a href="{{route('production.show',$production->id)}}" title="Details" class="btn btn-info btn-xs" target="_blank">
+                                                    <a href="{{route('production.show',$production->id)}}" title="Details" class="btn btn-info btn-xs">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 @endif
