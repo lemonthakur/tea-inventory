@@ -41,8 +41,6 @@ class DashboardController extends Controller
             $purchaseQty = Purchase::sum('total_qty');
         }
 
-//        dd($productQty);
-
         return view("backend.dashboard.index",
             compact('userCount','productCount','warehouseCount','purchasesCount','productQty','productionQty',
             'productionWasteQty','purchaseCount','purchaseQty','user_ware_house'));
