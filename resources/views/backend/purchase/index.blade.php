@@ -133,7 +133,7 @@
                                                         @if(!empty($aclList[15][7]))
                                                         @if($purchase->status == 1)
                                                             <li>
-                                                                <a type="button" class="btn btn-link" href="{{route('order.label', $purchase->id)}}" target="_blank">
+                                                                <a type="button" class="btn btn-link" href="{{route('order.label', $purchase->id)}}">
                                                                     <i class="fa fa-check"></i> Print Label</a>
                                                             </li>
                                                         @endif

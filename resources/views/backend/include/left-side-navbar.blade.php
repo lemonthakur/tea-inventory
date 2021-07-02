@@ -60,15 +60,6 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            @if(!empty($aclList[6][1]))
-                                {{--                            <li class="nav-item">--}}
-                                {{--                                <a href="{{route("user.index")}}"--}}
-                                {{--                                   class="nav-link {{ ($routeName == 'user.index' || $routeName == 'user.create'|| $routeName == 'user.edit') ? 'active' : '' }}">--}}
-                                {{--                                    <i class="far fa-circle nav-icon"></i>--}}
-                                {{--                                    <p>Admin Panel User</p>--}}
-                                {{--                                </a>--}}
-                                {{--                            </li>--}}
-                            @endif
                             @if(!empty($aclList[10][1]))
                                 <li class="nav-item">
                                     <a href="{{route("employees.index")}}"
@@ -139,7 +130,7 @@
                  || $routeName == 'categories.edit' || $routeName == 'product.index' || $routeName == 'product.create'
                 || $routeName == 'product.edit' || $routeName == 'product.printBarcode' || $routeName == 'qty_adjustment.index' || $routeName == 'qty_adjustment.create' || $routeName == 'qty_adjustment.edit') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fab fa-product-hunt"></i>
                             <p>
                                 Product
                                 <i class="right fas fa-angle-left"></i>
@@ -217,7 +208,7 @@
                     <li class="nav-item has-treeview {{ ($routeName == 'order.index' || $routeName == 'order.create' ||
                 $routeName == 'order.edit' || $routeName == 'order.label') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fas fa-luggage-cart"></i>
                             <p>
                                 Order
                                 <i class="right fas fa-angle-left"></i>
@@ -250,7 +241,7 @@
                     <li class="nav-item has-treeview {{ ($routeName == 'transfer.index' || $routeName == 'transfer.create' ||
                 $routeName == 'transfer.edit' || $routeName == 'transfer-received.index') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fas fa-random"></i>
                             <p>
                                 Transfer
                                 <i class="right fas fa-angle-left"></i>
@@ -290,7 +281,7 @@
                 @if(!empty($aclList[18][1]) || !empty($aclList[18][2]))
                     <li class="nav-item has-treeview {{ ($routeName == 'production.index' || $routeName == 'production.create') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fas fa-retweet"></i>
                             <p>
                                 Production
                                 <i class="right fas fa-angle-left"></i>
@@ -321,7 +312,7 @@
                 @if(!empty($aclList[19][1]) || !empty($aclList[19][2]))
                     <li class="nav-item has-treeview {{ ($routeName == 'brand.index' || $routeName == 'brand.create' || $routeName == 'brand.edit') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fab fa-bootstrap"></i>
                             <p>
                                 Brand
                                 <i class="right fas fa-angle-left"></i>
@@ -352,7 +343,7 @@
                 @if(!empty($aclList[20][1]) || !empty($aclList[20][2]))
                     <li class="nav-item has-treeview {{ ($routeName == 'suppliers.index' || $routeName == 'suppliers.create' || $routeName == 'suppliers.edit') ? 'menu-open' : '' }}">
                         <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                            <i class="nav-icon fas fa-parachute-box"></i>
                             <p>
                                 Supplier
                                 <i class="right fas fa-angle-left"></i>
@@ -391,7 +382,7 @@
 
                         <a href="#"
                            class="nav-link">
-                            <i class="nav-icon fas fa-cog"></i>
+                            <i class="nav-icon fas fa-clipboard-list"></i>
                             <p>
                                 Reports
                                 <i class="right fas fa-angle-left"></i>
