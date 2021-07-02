@@ -211,7 +211,7 @@
 
 @section('js')
     <script src="{{asset("/public/admin-lte/plugins/bs-custom-file-input/bs-custom-file-input.min.js")}}"></script>
-    <script src="https://demo.codesbright.com/public/admin-lte/plugins/tinymce/tinymce.min.js"></script>
+    <script src="{{asset("/public/admin-lte/plugins/tinymce/tinymce.min.js")}}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
             bsCustomFileInput.init();
